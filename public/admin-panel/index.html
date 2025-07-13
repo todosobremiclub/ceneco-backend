@@ -48,6 +48,14 @@
       background-color: #f44336;
     }
   </style>
+
+  <!-- ⚠️ Script para verificar autenticación antes de mostrar nada -->
+  <script>
+    if (localStorage.getItem('auth') !== 'ok') {
+      window.location.href = 'login.html';
+    }
+  </script>
+
 </head>
 <body>
 
@@ -77,7 +85,7 @@
 </main>
 
 <script>
-  const API_URL = 'http://localhost:3000/pacientes'; // ⚠️ Cambiar si deployás en Render
+  const API_URL = '/pacientes'; // relativo porque backend + frontend están en el mismo dominio
 
   async function cargarPacientes() {
     const response = await fetch(API_URL);
