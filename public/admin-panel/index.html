@@ -3,48 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gestión de Pacientes</title>
+  <title>Gestión de Pacientes - Ceneco</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      background-color: #f9f9f9;
+      font-family: Arial, sans-serif;
+      background: url('/fondo.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
     }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200px;
+      height: 100vh;
+      background-color: rgba(0, 47, 108, 0.95);
+      padding-top: 60px;
+      box-sizing: border-box;
+    }
+
+    .sidebar a, .sidebar button {
+      display: block;
+      width: 100%;
+      padding: 10px 15px;
+      background: none;
+      border: none;
+      color: #fff;
+      text-align: left;
+      font-weight: bold;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .sidebar a:hover, .sidebar button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
     header {
-      background-color: #e0e0e0;
-      padding: 10px 20px;
+      position: fixed;
+      top: 0;
+      left: 200px;
+      right: 0;
+      height: 60px;
+      background-color: rgba(255, 255, 255, 0.9);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-sizing: border-box;
     }
+
     header h1 {
       margin: 0;
-      font-size: 20px;
+      font-size: 18px;
       color: #333;
     }
+
     .logout-btn {
-      padding: 4px 8px;
+      padding: 6px 12px;
       border: none;
       background-color: #f44336;
       color: #fff;
       cursor: pointer;
-      border-radius: 3px;
+      border-radius: 4px;
       font-size: 14px;
     }
+
+    main {
+      margin-left: 200px;
+      padding: 80px 20px 20px 20px;
+      box-sizing: border-box;
+    }
+
+    .content-box {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      overflow-x: auto;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin: 20px 0;
       background: #fff;
     }
+
     th, td {
       border: 1px solid #ddd;
       padding: 8px;
       text-align: left;
+      font-size: 14px;
     }
+
     th {
       background-color: #f0f0f0;
     }
+
     button {
       padding: 4px 8px;
       margin: 0 2px;
@@ -53,7 +112,9 @@
       color: #fff;
       cursor: pointer;
       border-radius: 3px;
+      font-size: 12px;
     }
+
     button.delete {
       background-color: #f44336;
     }
@@ -64,84 +125,92 @@
       window.location.href = 'login.html';
     }
   </script>
-
 </head>
 <body>
 
-<header>
-  <h1>Gestión de Pacientes - Ceneco</h1>
-  <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
-</header>
+  <div class="sidebar">
+    <a href="index.html">👤 Pacientes</a>
+    <!-- Podés agregar más opciones al menú aquí -->
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
 
-<main>
-  <table id="pacientesTable">
-    <thead>
-      <tr>
-        <th>N° Paciente</th>
-        <th>Nombre</th>
-        <th>Apellido</th>
-        <th>DNI</th>
-        <th>Fecha Nacimiento</th>
-        <th>Edad</th>
-        <th>Psicopedagoga</th>
-        <th>Supervisora</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Datos dinámicos -->
-    </tbody>
-  </table>
-</main>
+  <header>
+    <h1>Gestión de Pacientes - Ceneco</h1>
+    <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+  </header>
 
-<script>
-  const API_URL = '/pacientes';
+  <main>
+    <div class="content-box">
+      <table id="pacientesTable">
+        <thead>
+          <tr>
+            <th>N° Paciente</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>DNI</th>
+            <th>Fecha Nacimiento</th>
+            <th>Edad</th>
+            <th>Psicopedagoga</th>
+            <th>Supervisora</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Datos dinámicos -->
+        </tbody>
+      </table>
+    </div>
+  </main>
 
-  async function cargarPacientes() {
-    const response = await fetch(API_URL);
-    const pacientes = await response.json();
+  <script>
+    const API_URL = '/pacientes';
 
-    const tbody = document.querySelector('#pacientesTable tbody');
-    tbody.innerHTML = '';
+    async function cargarPacientes() {
+      const response = await fetch(API_URL);
+      const pacientes = await response.json();
 
-    pacientes.forEach(p => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${p.numero_paciente}</td>
-        <td>${p.nombre}</td>
-        <td>${p.apellido}</td>
-        <td>${p.dni}</td>
-        <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
-        <td>${p.edad}</td>
-        <td>${p.psicopedagoga || ''}</td>
-        <td>${p.supervisora || ''}</td>
-        <td>
-          <button onclick="editarPaciente(${p.id})">Editar</button>
-          <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
+      const tbody = document.querySelector('#pacientesTable tbody');
+      tbody.innerHTML = '';
 
-  async function eliminarPaciente(id) {
-    if (confirm('¿Seguro que querés eliminar este paciente?')) {
-      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-      cargarPacientes();
+      pacientes.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.numero_paciente}</td>
+          <td>${p.nombre}</td>
+          <td>${p.apellido}</td>
+          <td>${p.dni}</td>
+          <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
+          <td>${p.edad}</td>
+          <td>${p.psicopedagoga || ''}</td>
+          <td>${p.supervisora || ''}</td>
+          <td>
+            <button onclick="editarPaciente(${p.id})">Editar</button>
+            <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
-  }
 
-  function editarPaciente(id) {
-    alert('Funcionalidad de edición pendiente'); 
-  }
+    async function eliminarPaciente(id) {
+      if (confirm('¿Seguro que querés eliminar este paciente?')) {
+        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        cargarPacientes();
+      }
+    }
 
-  function logout() {
-    localStorage.removeItem('auth');
-    window.location.href = 'login.html';
-  }
+    function editarPaciente(id) {
+      alert('Funcionalidad de edición pendiente'); 
+    }
 
-  cargarPacientes();
-</script>
+    function logout() {
+      localStorage.removeItem('auth');
+      window.location.href = 'login.html';
+    }
+
+    cargarPacientes();
+  </script>
 
 </body>
 </html>
+
