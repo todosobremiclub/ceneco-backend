@@ -24,10 +24,11 @@
 
   <div class="sidebar">
     <a href="index.html">👤 Pacientes</a>
+<a href="historia_clinica.html">📄 Historia Clínica</a>
     <a href="configuracion.html">⚙️ Configuración</a>
-    <a href="historia_clinica.html">📄 Historia Clínica</a>
     <button onclick="logout()">Cerrar sesión</button>
   </div>
+
 
   <header>
     <h1>Historia Clínica - Ceneco</h1>
@@ -50,19 +51,24 @@
       const container = document.getElementById('pacientesContainer');
       container.innerHTML = '';
 
-      pacientes.forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'paciente';
-        div.innerHTML = `
-          <strong>${p.nombre} ${p.apellido}</strong> (DNI: ${p.dni})<br>
-          Edad: ${p.edad} | Psicopedagoga: ${p.psicopedagoga || '-'} | Supervisora: ${p.supervisora || '-'}<br>
-          <button class="small" onclick="toggleHistoria(${p.id})">Ver/ocultar historia</button>
-          <button class="small" onclick="mostrarFormulario(${p.id})">Agregar actividad</button>
-          <div id="historia-${p.id}" class="historia"></div>
-          <div id="formulario-${p.id}" class="formulario"></div>
-        `;
-        container.appendChild(div);
-      });
+      ...
+pacientes.forEach(p => {
+  const pacienteKey = p.numero_paciente; // <--- corrección aquí
+
+  const div = document.createElement('div');
+  div.className = 'paciente';
+  div.innerHTML = `
+    <strong>${p.nombre} ${p.apellido}</strong> (DNI: ${p.dni})<br>
+    Edad: ${p.edad} | Psicopedagoga: ${p.psicopedagoga || '-'} | Supervisora: ${p.supervisora || '-'}<br>
+    <button class="small" onclick="toggleHistoria('${pacienteKey}')">Ver/ocultar historia</button>
+    <button class="small" onclick="mostrarFormulario('${pacienteKey}')">Agregar actividad</button>
+    <div id="historia-${pacienteKey}" class="historia"></div>
+    <div id="formulario-${pacienteKey}" class="formulario"></div>
+  `;
+  container.appendChild(div);
+});
+...
+
     }
 
     async function toggleHistoria(pacienteId) {
