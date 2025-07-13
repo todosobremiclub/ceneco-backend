@@ -2,6 +2,36 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
+// Obtener un paciente por ID (necesario para editar)
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(`
+      SELECT 
+        id,
+        numero_paciente,
+        nombre,
+        apellido,
+        dni,
+        fecha_nacimiento,
+        EXTRACT(YEAR FROM AGE(CURRENT_DATE, fecha_nacimiento)) AS edad,
+        psicopedagoga,
+        supervisora
+      FROM pacientes
+      WHERE id = $1
+    `, [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).send('Paciente no encontrado');
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error al obtener paciente por ID');
+  }
+});
+
 // Obtener todos los pacientes con edad calculada
 router.get('/', async (req, res) => {
   try {
@@ -81,3 +111,4 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
+
