@@ -276,16 +276,14 @@
             <th>Acciones</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- Datos dinámicos -->
-        </tbody>
+        <tbody></tbody>
       </table>
     </div>
   </main>
 
   <div id="modal" class="modal">
     <div class="modal-content">
-      <h3>Nuevo Paciente</h3>
+      <h3 id="modal-title">Nuevo Paciente</h3>
       <label>Nro Paciente</label>
       <input type="text" id="nuevo_numero_paciente" readonly>
 
@@ -316,11 +314,11 @@
 
   <script>
     const API_URL = '/pacientes';
+    let pacienteEditandoId = null;
 
     async function cargarPacientes() {
       const response = await fetch(API_URL);
       const pacientes = await response.json();
-
       const tbody = document.querySelector('#pacientesTable tbody');
       tbody.innerHTML = '';
 
@@ -351,24 +349,41 @@
       }
     }
 
-    function editarPaciente(id) {
-      alert('Funcionalidad de edición pendiente');
+    async function editarPaciente(id) {
+      const paciente = await fetch(`${API_URL}/${id}`).then(res => res.json());
+      abrirModal(paciente);
     }
 
-    function logout() {
-      localStorage.removeItem('auth');
-      window.location.href = 'login.html';
-    }
-
-    async function abrirModal() {
+    async function abrirModal(paciente = null) {
       document.getElementById('modal').style.display = 'flex';
-      const pacientes = await fetch(API_URL).then(res => res.json());
-      let maxNumero = Math.max(0, ...pacientes.map(p => parseInt(p.numero_paciente)));
-      const siguienteNumero = String(maxNumero + 1).padStart(4, '0');
-      document.getElementById('nuevo_numero_paciente').value = siguienteNumero;
-
       await cargarSelectPersonas('nuevo_psicopedagoga');
       await cargarSelectPersonas('nuevo_supervisora');
+
+      if (paciente) {
+        pacienteEditandoId = paciente.id;
+        document.getElementById('modal-title').innerText = 'Editar Paciente';
+        document.getElementById('nuevo_numero_paciente').value = paciente.numero_paciente;
+        document.getElementById('nuevo_nombre').value = paciente.nombre;
+        document.getElementById('nuevo_apellido').value = paciente.apellido;
+        document.getElementById('nuevo_dni').value = paciente.dni;
+        document.getElementById('nuevo_fecha_nacimiento').value = paciente.fecha_nacimiento.split('T')[0];
+        document.getElementById('nuevo_psicopedagoga').value = paciente.psicopedagoga || '';
+        document.getElementById('nuevo_supervisora').value = paciente.supervisora || '';
+      } else {
+        pacienteEditandoId = null;
+        document.getElementById('modal-title').innerText = 'Nuevo Paciente';
+        const pacientes = await fetch(API_URL).then(res => res.json());
+        let maxNumero = Math.max(0, ...pacientes.map(p => parseInt(p.numero_paciente)));
+        const siguienteNumero = String(maxNumero + 1).padStart(4, '0');
+        document.getElementById('nuevo_numero_paciente').value = siguienteNumero;
+
+        document.getElementById('nuevo_nombre').value = '';
+        document.getElementById('nuevo_apellido').value = '';
+        document.getElementById('nuevo_dni').value = '';
+        document.getElementById('nuevo_fecha_nacimiento').value = '';
+        document.getElementById('nuevo_psicopedagoga').value = '';
+        document.getElementById('nuevo_supervisora').value = '';
+      }
     }
 
     function cerrarModal() {
@@ -390,14 +405,18 @@
       }
 
       const pacientes = await fetch(API_URL).then(res => res.json());
-      if (pacientes.find(p => p.dni == dni)) {
+      if (pacienteEditandoId === null && pacientes.find(p => p.dni == dni)) {
         alert('El DNI ya está registrado.');
+        return;
+      }
+      if (pacienteEditandoId !== null && pacientes.find(p => p.dni == dni && p.id != pacienteEditandoId)) {
+        alert('El DNI ya está registrado en otro paciente.');
         return;
       }
 
       const edad = calcularEdad(fecha_nacimiento);
 
-      const nuevoPaciente = {
+      const datos = {
         numero_paciente,
         nombre,
         apellido,
@@ -408,11 +427,19 @@
         supervisora
       };
 
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(nuevoPaciente)
-      });
+      if (pacienteEditandoId === null) {
+        await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(datos)
+        });
+      } else {
+        await fetch(`${API_URL}/${pacienteEditandoId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(datos)
+        });
+      }
 
       cerrarModal();
       cargarPacientes();
@@ -442,6 +469,11 @@
     function toggleSidebar() {
       const sidebar = document.querySelector('.sidebar');
       sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function logout() {
+      localStorage.removeItem('auth');
+      window.location.href = 'login.html';
     }
 
     cargarPacientes();

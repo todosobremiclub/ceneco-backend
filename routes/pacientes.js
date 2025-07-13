@@ -42,16 +42,25 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Editar paciente
+// Editar paciente con validación DNI único
 router.put('/:id', async (req, res) => {
   const id = req.params.id;
   const { numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora } = req.body;
   try {
+    const existente = await pool.query(
+      'SELECT 1 FROM pacientes WHERE dni = $1 AND id != $2',
+      [dni, id]
+    );
+    if (existente.rowCount > 0) {
+      return res.status(400).json({ error: 'El DNI ya está registrado en otro paciente.' });
+    }
+
     await pool.query(`
       UPDATE pacientes
       SET numero_paciente=$1, nombre=$2, apellido=$3, dni=$4, fecha_nacimiento=$5, psicopedagoga=$6, supervisora=$7
       WHERE id=$8
     `, [numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora, id]);
+
     res.send('Paciente actualizado');
   } catch (err) {
     console.error(err);
