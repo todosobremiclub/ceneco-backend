@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Historia Clínica - Ceneco</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: url('/fondo.png') no-repeat center center fixed; background-size: cover; color: #333; }
+    .sidebar { position: fixed; top: 0; left: 0; width: 200px; height: 100vh; background-color: rgba(0, 47, 108, 0.95); padding-top: 60px; box-sizing: border-box; }
+    .sidebar a, .sidebar button { display: block; width: 100%; padding: 10px 15px; background: none; border: none; color: #fff; text-align: left; font-weight: bold; text-decoration: none; cursor: pointer; font-size: 14px; }
+    header { position: fixed; top: 0; left: 200px; right: 0; height: 60px; background-color: rgba(255, 255, 255, 0.9); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box; }
+    main { margin-left: 200px; padding: 80px 20px 20px 20px; box-sizing: border-box; }
+    table { width: 100%; border-collapse: collapse; background: #fff; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
+    th { background-color: #f0f0f0; }
+    select, input[type="text"], textarea { width: 100%; padding: 6px; margin: 6px 0; border: 1px solid #ccc; border-radius: 4px; }
+    button { padding: 6px 12px; margin-top: 10px; background-color: #2196F3; border: none; color: white; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <a href="index.html">👤 Pacientes</a>
+    <a href="configuracion.html">⚙️ Configuración</a>
+    <a href="historia_clinica.html">📄 Historia Clínica</a>
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
+
+  <header>
+    <h1>Historia Clínica - Ceneco</h1>
+    <button onclick="logout()">Cerrar sesión</button>
+  </header>
+
+  <main>
+    <label>Seleccionar Paciente:</label>
+    <select id="pacienteSelect" onchange="cargarHistoria()"></select>
+
+    <h3>Historia Clínica</h3>
+    <table id="historiaTable">
+      <thead>
+        <tr><th>Fecha</th><th>Tipo</th><th>Contenido</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <h3>Agregar Entrada</h3>
+    <select id="tipoEntrada">
+      <option value="diagnostico">Diagnóstico</option>
+      <option value="texto">Texto</option>
+      <option value="estudio">Estudio</option>
+    </select>
+    <textarea id="contenidoEntrada" placeholder="Escribir contenido..."></textarea>
+    <button onclick="agregarEntrada()">Agregar</button>
+
+    <h3>Subir Documento</h3>
+    <input type="file" id="archivoDoc">
+    <button onclick="subirDocumento()">Subir Documento</button>
+  </main>
+
+  <script>
+    async function cargarPacientes() {
+      const res = await fetch('/pacientes');
+      const pacientes = await res.json();
+      const sel = document.getElementById('pacienteSelect');
+      sel.innerHTML = '<option value="">Seleccionar...</option>';
+      pacientes.forEach(p => {
+        sel.innerHTML += `<option value="${p.id}">${p.numero_paciente} - ${p.nombre} ${p.apellido}</option>`;
+      });
+    }
+
+    async function cargarHistoria() {
+      const id = document.getElementById('pacienteSelect').value;
+      if (!id) return;
+      const res = await fetch(`/historia/${id}`);
+      const historia = await res.json();
+      const tbody = document.getElementById('historiaTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      historia.forEach(h => {
+        const content = h.tipo === 'documento' ? `<a href="${h.contenido}" target="_blank">Ver documento</a>` : h.contenido;
+        tbody.innerHTML += `<tr><td>${new Date(h.fecha).toLocaleString()}</td><td>${h.tipo}</td><td>${content}</td></tr>`;
+      });
+    }
+
+    async function agregarEntrada() {
+      const pacienteId = document.getElementById('pacienteSelect').value;
+      const tipo = document.getElementById('tipoEntrada').value;
+      const contenido = document.getElementById('contenidoEntrada').value;
+      if (!pacienteId || !contenido) return alert('Completar paciente y contenido');
+      await fetch('/historia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paciente_id: pacienteId, tipo, contenido })
+      });
+      cargarHistoria();
+      document.getElementById('contenidoEntrada').value = '';
+    }
+
+    async function subirDocumento() {
+      const pacienteId = document.getElementById('pacienteSelect').value;
+      const archivo = document.getElementById('archivoDoc').files[0];
+      if (!pacienteId || !archivo) return alert('Seleccionar paciente y archivo');
+      const fd = new FormData();
+      fd.append('paciente_id', pacienteId);
+      fd.append('archivo', archivo);
+      await fetch('/historia/documento', { method: 'POST', body: fd });
+      cargarHistoria();
+      document.getElementById('archivoDoc').value = '';
+    }
+
+    function logout() {
+      localStorage.removeItem('auth');
+      window.location.href = 'login.html';
+    }
+
+    cargarPacientes();
+  </script>
+
+</body>
+</html>
