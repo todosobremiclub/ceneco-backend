@@ -356,8 +356,9 @@
 
     async function abrirModal(paciente = null) {
       document.getElementById('modal').style.display = 'flex';
-      await cargarSelectPersonas('nuevo_psicopedagoga');
-      await cargarSelectPersonas('nuevo_supervisora');
+      await cargarSelectPersonasPsico();
+await cargarSelectPersonasSuper();
+
 
       if (paciente) {
         pacienteEditandoId = paciente.id;
@@ -456,15 +457,30 @@
       return edad;
     }
 
-    async function cargarSelectPersonas(selectId) {
-      const response = await fetch('/personas');
-      const personas = await response.json();
-      const select = document.getElementById(selectId);
-      select.innerHTML = '<option value="">Seleccionar...</option>';
-      personas.forEach(p => {
-        select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-      });
-    }
+    async function cargarSelectPersonasPsico() {
+  const response = await fetch('/personas');
+  const personas = await response.json();
+  const select = document.getElementById('nuevo_psicopedagoga');
+  select.innerHTML = '<option value="">Seleccionar...</option>';
+  personas
+    .filter(p => p.tipo === 'psicopedagoga')
+    .forEach(p => {
+      select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
+    });
+}
+
+async function cargarSelectPersonasSuper() {
+  const response = await fetch('/personas');
+  const personas = await response.json();
+  const select = document.getElementById('nuevo_supervisora');
+  select.innerHTML = '<option value="">Seleccionar...</option>';
+  personas
+    .filter(p => p.tipo === 'supervisora')
+    .forEach(p => {
+      select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
+    });
+}
+
 
     function toggleSidebar() {
       const sidebar = document.querySelector('.sidebar');
