@@ -5,16 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login - Ceneco</title>
   <style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: url('/fondo.png') no-repeat center center fixed;
-    background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('/fondo.png') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
     .login-box {
       background-color: rgba(255, 255, 255, 0.9);
       padding: 30px 20px;
@@ -23,10 +24,12 @@
       width: 300px;
       text-align: center;
     }
+
     .login-box img {
       width: 120px;
       margin-bottom: 15px;
     }
+
     h2 {
       margin-top: 0;
       margin-bottom: 20px;
@@ -34,6 +37,7 @@
       color: #333;
       font-size: 18px;
     }
+
     input[type="text"], input[type="password"] {
       width: 100%;
       padding: 8px;
@@ -41,6 +45,7 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+
     button {
       width: 100%;
       padding: 10px;
@@ -52,11 +57,28 @@
       margin-top: 10px;
       font-size: 14px;
     }
+
     .error {
       color: #f44336;
       font-size: 13px;
       margin-top: 5px;
       display: none;
+    }
+
+    /* 🔔 Responsividad */
+    @media (max-width: 500px) {
+      .login-box {
+        width: 90%;
+        padding: 20px;
+      }
+
+      .login-box img {
+        width: 100px;
+      }
+
+      h2 {
+        font-size: 16px;
+      }
     }
   </style>
 </head>

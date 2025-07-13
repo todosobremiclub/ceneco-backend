@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,6 +22,7 @@
       background-color: rgba(0, 47, 108, 0.95);
       padding-top: 60px;
       box-sizing: border-box;
+      z-index: 1000;
     }
 
     .sidebar a, .sidebar button {
@@ -36,6 +39,10 @@
       font-size: 14px;
     }
 
+    .sidebar a:hover, .sidebar button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
     header {
       position: fixed;
       top: 0;
@@ -49,6 +56,7 @@
       padding: 0 20px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       box-sizing: border-box;
+      z-index: 500;
     }
 
     .header-left {
@@ -131,10 +139,58 @@
       margin-bottom: 5px;
       padding: 4px;
     }
+
+    .toggle-btn {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: rgba(0,47,108,0.95);
+      color: white;
+      border: none;
+      padding: 10px 12px;
+      font-size: 18px;
+      border-radius: 4px;
+      z-index: 3000;
+    }
+
+    @media (max-width: 768px) {
+      .toggle-btn {
+        display: block;
+      }
+
+      .sidebar {
+        display: none;
+        position: absolute;
+        width: 100%;
+        height: auto;
+        padding-top: 0;
+      }
+
+      header {
+        left: 0;
+        width: 100%;
+      }
+
+      main {
+        margin-left: 0;
+        padding-top: 120px;
+      }
+
+      table, th, td {
+        font-size: 12px;
+      }
+
+      .form-inline input {
+        width: 100%;
+        margin-right: 0;
+      }
+    }
   </style>
 </head>
-
 <body>
+
+  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
 
   <div class="sidebar">
     <a href="index.html">👤 Pacientes</a>
@@ -143,8 +199,11 @@
   </div>
 
   <header>
-    <h1>Configuración - Ceneco</h1>
-    <button onclick="logout()">Cerrar sesión</button>
+    <div class="header-left">
+      <img src="logo.png" alt="Logo" class="logo-header">
+      <h1>Configuración - Ceneco</h1>
+    </div>
+    <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
   </header>
 
   <main>
@@ -272,8 +331,14 @@
       window.location.href = 'login.html';
     }
 
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
+    }
+
     cargarPersonas();
   </script>
 
 </body>
 </html>
+

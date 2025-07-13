@@ -22,6 +22,7 @@
       background-color: rgba(0, 47, 108, 0.95);
       padding-top: 60px;
       box-sizing: border-box;
+      z-index: 1000;
     }
 
     .sidebar a, .sidebar button {
@@ -55,6 +56,7 @@
       padding: 0 20px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       box-sizing: border-box;
+      z-index: 500;
     }
 
     .header-left {
@@ -181,12 +183,71 @@
       margin-top: 15px;
       text-align: right;
     }
+
+    .toggle-btn {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: rgba(0,47,108,0.95);
+      color: white;
+      border: none;
+      padding: 10px 12px;
+      font-size: 18px;
+      border-radius: 4px;
+      z-index: 3000;
+    }
+
+    @media (max-width: 768px) {
+      .toggle-btn {
+        display: block;
+      }
+
+      .sidebar {
+        display: none;
+        position: absolute;
+        width: 100%;
+        height: auto;
+        padding-top: 0;
+      }
+
+      header {
+        left: 0;
+        width: 100%;
+      }
+
+      main {
+        margin-left: 0;
+        padding-top: 120px;
+      }
+
+      .content-box {
+        padding: 10px;
+      }
+
+      table, th, td {
+        font-size: 12px;
+      }
+
+      .header-left h1 {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .modal-content {
+        width: 90%;
+      }
+    }
   </style>
 </head>
 <body>
 
+  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
   <div class="sidebar">
     <a href="index.html">👤 Pacientes</a>
+    <a href="configuracion.html">⚙️ Configuración</a>
     <button onclick="logout()">Cerrar sesión</button>
   </div>
 
@@ -376,6 +437,11 @@
       personas.forEach(p => {
         select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
       });
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
     }
 
     cargarPacientes();
