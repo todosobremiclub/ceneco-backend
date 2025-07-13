@@ -15,11 +15,21 @@
       padding: 10px 20px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
     }
     header h1 {
       margin: 0;
       font-size: 20px;
       color: #333;
+    }
+    .logout-btn {
+      padding: 4px 8px;
+      border: none;
+      background-color: #f44336;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 3px;
+      font-size: 14px;
     }
     table {
       width: 100%;
@@ -49,7 +59,6 @@
     }
   </style>
 
-  <!-- ⚠️ Script para verificar autenticación antes de mostrar nada -->
   <script>
     if (localStorage.getItem('auth') !== 'ok') {
       window.location.href = 'login.html';
@@ -61,6 +70,7 @@
 
 <header>
   <h1>Gestión de Pacientes - Ceneco</h1>
+  <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
 </header>
 
 <main>
@@ -85,7 +95,7 @@
 </main>
 
 <script>
-  const API_URL = '/pacientes'; // relativo porque backend + frontend están en el mismo dominio
+  const API_URL = '/pacientes';
 
   async function cargarPacientes() {
     const response = await fetch(API_URL);
@@ -123,6 +133,11 @@
 
   function editarPaciente(id) {
     alert('Funcionalidad de edición pendiente'); 
+  }
+
+  function logout() {
+    localStorage.removeItem('auth');
+    window.location.href = 'login.html';
   }
 
   cargarPacientes();
