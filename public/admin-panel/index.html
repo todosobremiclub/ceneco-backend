@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestión de Pacientes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f9f9f9;
+    }
+    header {
+      background-color: #e0e0e0;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    button {
+      padding: 4px 8px;
+      margin: 0 2px;
+      border: none;
+      background-color: #2196F3;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    button.delete {
+      background-color: #f44336;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Gestión de Pacientes - Ceneco</h1>
+</header>
+
+<main>
+  <table id="pacientesTable">
+    <thead>
+      <tr>
+        <th>N° Paciente</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>DNI</th>
+        <th>Fecha Nacimiento</th>
+        <th>Edad</th>
+        <th>Psicopedagoga</th>
+        <th>Supervisora</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Datos dinámicos -->
+    </tbody>
+  </table>
+</main>
+
+<script>
+  const API_URL = 'http://localhost:3000/pacientes'; // ⚠️ Cambiar si deployás en Render
+
+  async function cargarPacientes() {
+    const response = await fetch(API_URL);
+    const pacientes = await response.json();
+
+    const tbody = document.querySelector('#pacientesTable tbody');
+    tbody.innerHTML = '';
+
+    pacientes.forEach(p => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${p.numero_paciente}</td>
+        <td>${p.nombre}</td>
+        <td>${p.apellido}</td>
+        <td>${p.dni}</td>
+        <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
+        <td>${p.edad}</td>
+        <td>${p.psicopedagoga || ''}</td>
+        <td>${p.supervisora || ''}</td>
+        <td>
+          <button onclick="editarPaciente(${p.id})">Editar</button>
+          <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function eliminarPaciente(id) {
+    if (confirm('¿Seguro que querés eliminar este paciente?')) {
+      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+      cargarPacientes();
+    }
+  }
+
+  function editarPaciente(id) {
+    alert('Funcionalidad de edición pendiente'); 
+  }
+
+  cargarPacientes();
+</script>
+
+</body>
+</html>
