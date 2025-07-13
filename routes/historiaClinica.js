@@ -5,7 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configuración de multer para subir archivos
+// Configuración multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = path.join(__dirname, '../uploads');
@@ -19,20 +19,16 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Obtener historia clínica de un paciente
-router.get('/:pacienteId', async (req, res) => {
-  const { pacienteId } = req.params;
+// Obtener historia clínica por numero_paciente
+router.get('/:numero_paciente', async (req, res) => {
+  const { numero_paciente } = req.params;
   try {
     const result = await pool.query(
-      `SELECT fecha, tipo, 
-         CASE 
-           WHEN archivo IS NOT NULL THEN archivo 
-           ELSE contenido 
-         END AS contenido
+      `SELECT fecha, tipo, contenido, archivo
        FROM historia_clinica
        WHERE paciente_id = $1
        ORDER BY fecha ASC`,
-      [pacienteId]
+      [numero_paciente]
     );
     res.json(result.rows);
   } catch (err) {
@@ -41,12 +37,13 @@ router.get('/:pacienteId', async (req, res) => {
   }
 });
 
-// Guardar nueva línea en historia clínica (texto simple)
+// Guardar texto simple
 router.post('/', async (req, res) => {
   const { paciente_id, tipo, contenido } = req.body;
   try {
     await pool.query(
-      'INSERT INTO historia_clinica (paciente_id, tipo, contenido, fecha) VALUES ($1, $2, $3, NOW())',
+      `INSERT INTO historia_clinica (paciente_id, tipo, contenido, fecha)
+       VALUES ($1, $2, $3, NOW())`,
       [paciente_id, tipo, contenido]
     );
     res.sendStatus(200);
@@ -56,13 +53,14 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Guardar línea con archivo
+// Guardar con archivo
 router.post('/documento', upload.single('archivo'), async (req, res) => {
   const { paciente_id, tipo, contenido } = req.body;
   const archivo = req.file ? req.file.filename : null;
   try {
     await pool.query(
-      'INSERT INTO historia_clinica (paciente_id, tipo, contenido, archivo, fecha) VALUES ($1, $2, $3, $4, NOW())',
+      `INSERT INTO historia_clinica (paciente_id, tipo, contenido, archivo, fecha)
+       VALUES ($1, $2, $3, $4, NOW())`,
       [paciente_id, tipo, contenido, archivo]
     );
     res.sendStatus(200);
