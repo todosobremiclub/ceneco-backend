@@ -57,6 +57,17 @@
       box-sizing: border-box;
     }
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-header {
+      height: 40px;
+      width: auto;
+    }
+
     header h1 {
       margin: 0;
       font-size: 18px;
@@ -118,29 +129,78 @@
     button.delete {
       background-color: #f44336;
     }
-  </style>
 
-  <script>
-    if (localStorage.getItem('auth') !== 'ok') {
-      window.location.href = 'login.html';
+    .nuevo-btn {
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
     }
-  </script>
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      font-size: 16px;
+    }
+
+    .modal-content label {
+      font-size: 13px;
+      display: block;
+      margin-top: 10px;
+    }
+
+    .modal-content input, .modal-content select {
+      width: 100%;
+      padding: 6px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .modal-actions {
+      margin-top: 15px;
+      text-align: right;
+    }
+  </style>
 </head>
 <body>
 
   <div class="sidebar">
     <a href="index.html">👤 Pacientes</a>
-    <!-- Podés agregar más opciones al menú aquí -->
     <button onclick="logout()">Cerrar sesión</button>
   </div>
 
   <header>
-    <h1>Gestión de Pacientes - Ceneco</h1>
+    <div class="header-left">
+      <img src="logo.png" alt="Logo" class="logo-header">
+      <h1>Gestión de Pacientes - Ceneco</h1>
+    </div>
     <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
   </header>
 
   <main>
     <div class="content-box">
+      <button class="nuevo-btn" onclick="abrirModal()">➕ Nuevo Paciente</button>
       <table id="pacientesTable">
         <thead>
           <tr>
@@ -161,6 +221,37 @@
       </table>
     </div>
   </main>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h3>Nuevo Paciente</h3>
+      <label>Nro Paciente</label>
+      <input type="text" id="nuevo_numero_paciente" readonly>
+
+      <label>Nombre</label>
+      <input type="text" id="nuevo_nombre">
+
+      <label>Apellido</label>
+      <input type="text" id="nuevo_apellido">
+
+      <label>DNI</label>
+      <input type="number" id="nuevo_dni">
+
+      <label>Fecha Nacimiento</label>
+      <input type="date" id="nuevo_fecha_nacimiento">
+
+      <label>Psicopedagoga</label>
+      <select id="nuevo_psicopedagoga"></select>
+
+      <label>Supervisora</label>
+      <select id="nuevo_supervisora"></select>
+
+      <div class="modal-actions">
+        <button onclick="guardarPaciente()">Guardar</button>
+        <button onclick="cerrarModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     const API_URL = '/pacientes';
@@ -200,7 +291,7 @@
     }
 
     function editarPaciente(id) {
-      alert('Funcionalidad de edición pendiente'); 
+      alert('Funcionalidad de edición pendiente');
     }
 
     function logout() {
@@ -208,9 +299,87 @@
       window.location.href = 'login.html';
     }
 
+    async function abrirModal() {
+      document.getElementById('modal').style.display = 'flex';
+      const pacientes = await fetch(API_URL).then(res => res.json());
+      let maxNumero = Math.max(0, ...pacientes.map(p => parseInt(p.numero_paciente)));
+      const siguienteNumero = String(maxNumero + 1).padStart(4, '0');
+      document.getElementById('nuevo_numero_paciente').value = siguienteNumero;
+
+      await cargarSelectPersonas('nuevo_psicopedagoga');
+      await cargarSelectPersonas('nuevo_supervisora');
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    async function guardarPaciente() {
+      const numero_paciente = document.getElementById('nuevo_numero_paciente').value;
+      const nombre = document.getElementById('nuevo_nombre').value;
+      const apellido = document.getElementById('nuevo_apellido').value;
+      const dni = document.getElementById('nuevo_dni').value;
+      const fecha_nacimiento = document.getElementById('nuevo_fecha_nacimiento').value;
+      const psicopedagoga = document.getElementById('nuevo_psicopedagoga').value;
+      const supervisora = document.getElementById('nuevo_supervisora').value;
+
+      if (!nombre || !apellido || !dni || !fecha_nacimiento) {
+        alert('Por favor completá todos los campos obligatorios.');
+        return;
+      }
+
+      const pacientes = await fetch(API_URL).then(res => res.json());
+      if (pacientes.find(p => p.dni == dni)) {
+        alert('El DNI ya está registrado.');
+        return;
+      }
+
+      const edad = calcularEdad(fecha_nacimiento);
+
+      const nuevoPaciente = {
+        numero_paciente,
+        nombre,
+        apellido,
+        dni,
+        fecha_nacimiento,
+        edad,
+        psicopedagoga,
+        supervisora
+      };
+
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nuevoPaciente)
+      });
+
+      cerrarModal();
+      cargarPacientes();
+    }
+
+    function calcularEdad(fecha) {
+      const nacimiento = new Date(fecha);
+      const hoy = new Date();
+      let edad = hoy.getFullYear() - nacimiento.getFullYear();
+      const m = hoy.getMonth() - nacimiento.getMonth();
+      if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+        edad--;
+      }
+      return edad;
+    }
+
+    async function cargarSelectPersonas(selectId) {
+      const response = await fetch('/personas');
+      const personas = await response.json();
+      const select = document.getElementById(selectId);
+      select.innerHTML = '<option value="">Seleccionar...</option>';
+      personas.forEach(p => {
+        select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
+      });
+    }
+
     cargarPacientes();
   </script>
 
 </body>
 </html>
-
