@@ -6,24 +6,32 @@
   <title>Login - Ceneco</title>
   <style>
     body {
+      margin: 0;
+      background-color: #e0e0e0;
       font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
     }
     .login-box {
       background-color: #fff;
-      padding: 20px;
+      padding: 30px 20px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       width: 300px;
+      text-align: center;
+    }
+    .login-box img {
+      width: 120px;
+      margin-bottom: 15px;
     }
     h2 {
-      text-align: center;
+      margin-top: 0;
       margin-bottom: 20px;
+      font-weight: normal;
+      color: #333;
+      font-size: 18px;
     }
     input[type="text"], input[type="password"] {
       width: 100%;
@@ -41,17 +49,20 @@
       border-radius: 4px;
       cursor: pointer;
       margin-top: 10px;
+      font-size: 14px;
     }
     .error {
-      color: red;
-      font-size: 14px;
-      text-align: center;
+      color: #f44336;
+      font-size: 13px;
+      margin-top: 5px;
       display: none;
     }
   </style>
 </head>
 <body>
+
   <div class="login-box">
+    <img src="logo.png" alt="Logo Ceneco">
     <h2>Acceso a Ceneco</h2>
     <input type="text" id="usuario" placeholder="Usuario">
     <input type="password" id="clave" placeholder="Contraseña">
@@ -71,10 +82,11 @@
       }
     }
 
-    // Si ya está logueado redirige automáticamente:
+    // Redirección si ya está autenticado
     if (localStorage.getItem('auth') === 'ok') {
       window.location.href = 'index.html';
     }
   </script>
+
 </body>
 </html>
