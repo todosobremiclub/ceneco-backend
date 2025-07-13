@@ -95,10 +95,11 @@
         <button onclick="guardarActividad(${pacienteId})">Guardar</button>
       `;
       div.innerHTML = html;
+      toggleArchivo(pacienteId); // asegúrate que si el primer valor ya es documento/estudio lo muestre inmediatamente
     }
 
     function toggleArchivo(pacienteId) {
-      const tipo = document.getElementById(`tipo-${pacienteId}`).value;
+      const tipo = document.getElementById(`tipo-${pacienteId}`).value.toLowerCase();
       const inputFile = document.getElementById(`archivo-${pacienteId}`);
       if (tipo === 'documento' || tipo === 'estudio') {
         inputFile.style.display = 'block';
@@ -112,12 +113,12 @@
       const contenido = document.getElementById(`contenido-${pacienteId}`).value;
       const archivo = document.getElementById(`archivo-${pacienteId}`).files[0];
 
-      if (!contenido && (tipo !== 'documento' && tipo !== 'estudio')) {
+      if (!contenido && (tipo.toLowerCase() !== 'documento' && tipo.toLowerCase() !== 'estudio')) {
         alert('El contenido no puede estar vacío.');
         return;
       }
 
-      if (tipo === 'documento' || tipo === 'estudio') {
+      if (tipo.toLowerCase() === 'documento' || tipo.toLowerCase() === 'estudio') {
         const fd = new FormData();
         fd.append('paciente_id', pacienteId);
         fd.append('tipo', tipo);
