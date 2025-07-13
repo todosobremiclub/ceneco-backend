@@ -11,6 +11,9 @@ app.use(express.json());
 const pacientesRoutes = require('./routes/pacientes');
 app.use('/pacientes', pacientesRoutes);
 
+const personasRoutes = require('./routes/personasRoutes');
+app.use('/personas', personasRoutes);
+
 // ✅ Servir archivos estáticos desde /public/admin-panel como raíz web
 app.use(express.static(path.join(__dirname, 'public/admin-panel')));
 

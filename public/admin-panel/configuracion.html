@@ -1,0 +1,279 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configuración - Ceneco</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('/fondo.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200px;
+      height: 100vh;
+      background-color: rgba(0, 47, 108, 0.95);
+      padding-top: 60px;
+      box-sizing: border-box;
+    }
+
+    .sidebar a, .sidebar button {
+      display: block;
+      width: 100%;
+      padding: 10px 15px;
+      background: none;
+      border: none;
+      color: #fff;
+      text-align: left;
+      font-weight: bold;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 200px;
+      right: 0;
+      height: 60px;
+      background-color: rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-sizing: border-box;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-header {
+      height: 40px;
+      width: auto;
+    }
+
+    .logout-btn {
+      padding: 6px 12px;
+      border: none;
+      background-color: #f44336;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    main {
+      margin-left: 200px;
+      padding: 80px 20px 20px 20px;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      margin-top: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      margin-bottom: 30px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    button {
+      padding: 4px 8px;
+      margin: 0 2px;
+      border: none;
+      background-color: #2196F3;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+
+    button.delete {
+      background-color: #f44336;
+    }
+
+    .nuevo-btn {
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .form-inline input {
+      margin-right: 10px;
+      margin-bottom: 5px;
+      padding: 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <a href="index.html">👤 Pacientes</a>
+    <a href="configuracion.html">⚙️ Configuración</a>
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
+
+  <header>
+    <h1>Configuración - Ceneco</h1>
+    <button onclick="logout()">Cerrar sesión</button>
+  </header>
+
+  <main>
+    <section>
+      <h2>Psicopedagogas</h2>
+      <div class="form-inline">
+        <input type="text" id="psico_nombre" placeholder="Nombre">
+        <input type="text" id="psico_apellido" placeholder="Apellido">
+        <input type="number" id="psico_dni" placeholder="DNI">
+        <input type="text" id="psico_telefono" placeholder="Teléfono">
+        <input type="email" id="psico_mail" placeholder="Mail">
+        <button onclick="agregarPersona('psicopedagoga')">Agregar</button>
+      </div>
+      <table id="tabla_psicopedagogas">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>DNI</th>
+            <th>Teléfono</th>
+            <th>Mail</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Supervisoras</h2>
+      <div class="form-inline">
+        <input type="text" id="sup_nombre" placeholder="Nombre">
+        <input type="text" id="sup_apellido" placeholder="Apellido">
+        <input type="number" id="sup_dni" placeholder="DNI">
+        <input type="text" id="sup_telefono" placeholder="Teléfono">
+        <input type="email" id="sup_mail" placeholder="Mail">
+        <button onclick="agregarPersona('supervisora')">Agregar</button>
+      </div>
+      <table id="tabla_supervisoras">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>DNI</th>
+            <th>Teléfono</th>
+            <th>Mail</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const API_PERSONAS = '/personas';
+
+    async function cargarPersonas() {
+      const res = await fetch(API_PERSONAS);
+      const personas = await res.json();
+
+      const tbodyPsico = document.querySelector('#tabla_psicopedagogas tbody');
+      const tbodySup = document.querySelector('#tabla_supervisoras tbody');
+
+      tbodyPsico.innerHTML = '';
+      tbodySup.innerHTML = '';
+
+      personas.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.nombre}</td>
+          <td>${p.apellido}</td>
+          <td>${p.dni}</td>
+          <td>${p.telefono || ''}</td>
+          <td>${p.mail || ''}</td>
+          <td><button class="delete" onclick="eliminarPersona(${p.id})">Eliminar</button></td>
+        `;
+        if (p.tipo === 'psicopedagoga') {
+          tbodyPsico.appendChild(tr);
+        } else if (p.tipo === 'supervisora') {
+          tbodySup.appendChild(tr);
+        }
+      });
+    }
+
+    async function agregarPersona(tipo) {
+      const nombre = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_nombre`).value;
+      const apellido = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_apellido`).value;
+      const dni = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_dni`).value;
+      const telefono = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_telefono`).value;
+      const mail = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_mail`).value;
+
+      if (!nombre || !apellido || !dni) {
+        alert('Nombre, Apellido y DNI son obligatorios.');
+        return;
+      }
+
+      const res = await fetch(API_PERSONAS);
+      const personas = await res.json();
+      if (personas.find(p => p.dni == dni)) {
+        alert('El DNI ya existe.');
+        return;
+      }
+
+      const nuevaPersona = { nombre, apellido, dni, telefono, mail, tipo };
+
+      await fetch(API_PERSONAS, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nuevaPersona)
+      });
+
+      cargarPersonas();
+    }
+
+    async function eliminarPersona(id) {
+      if (confirm('¿Eliminar esta persona?')) {
+        await fetch(`${API_PERSONAS}/${id}`, { method: 'DELETE' });
+        cargarPersonas();
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('auth');
+      window.location.href = 'login.html';
+    }
+
+    cargarPersonas();
+  </script>
+
+</body>
+</html>
