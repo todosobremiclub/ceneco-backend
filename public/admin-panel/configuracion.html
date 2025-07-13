@@ -12,7 +12,6 @@
       background-size: cover;
       color: #333;
     }
-
     .sidebar {
       position: fixed;
       top: 0;
@@ -24,7 +23,6 @@
       box-sizing: border-box;
       z-index: 1000;
     }
-
     .sidebar a, .sidebar button {
       display: block;
       width: 100%;
@@ -38,11 +36,9 @@
       cursor: pointer;
       font-size: 14px;
     }
-
     .sidebar a:hover, .sidebar button:hover {
       background-color: rgba(255, 255, 255, 0.1);
     }
-
     header {
       position: fixed;
       top: 0;
@@ -58,18 +54,15 @@
       box-sizing: border-box;
       z-index: 500;
     }
-
     .header-left {
       display: flex;
       align-items: center;
       gap: 10px;
     }
-
     .logo-header {
       height: 40px;
       width: auto;
     }
-
     .logout-btn {
       padding: 6px 12px;
       border: none;
@@ -79,35 +72,29 @@
       border-radius: 4px;
       font-size: 14px;
     }
-
     main {
       margin-left: 200px;
       padding: 80px 20px 20px 20px;
       box-sizing: border-box;
     }
-
     h2 {
       margin-top: 20px;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       background: #fff;
       margin-bottom: 30px;
     }
-
     th, td {
       border: 1px solid #ddd;
       padding: 8px;
       text-align: left;
       font-size: 14px;
     }
-
     th {
       background-color: #f0f0f0;
     }
-
     button {
       padding: 4px 8px;
       margin: 0 2px;
@@ -118,11 +105,9 @@
       border-radius: 3px;
       font-size: 12px;
     }
-
     button.delete {
       background-color: #f44336;
     }
-
     .nuevo-btn {
       margin-bottom: 10px;
       padding: 8px 12px;
@@ -133,13 +118,11 @@
       cursor: pointer;
       font-size: 14px;
     }
-
     .form-inline input {
       margin-right: 10px;
       margin-bottom: 5px;
       padding: 4px;
     }
-
     .toggle-btn {
       display: none;
       position: fixed;
@@ -153,38 +136,13 @@
       border-radius: 4px;
       z-index: 3000;
     }
-
     @media (max-width: 768px) {
-      .toggle-btn {
-        display: block;
-      }
-
-      .sidebar {
-        display: none;
-        position: absolute;
-        width: 100%;
-        height: auto;
-        padding-top: 0;
-      }
-
-      header {
-        left: 0;
-        width: 100%;
-      }
-
-      main {
-        margin-left: 0;
-        padding-top: 120px;
-      }
-
-      table, th, td {
-        font-size: 12px;
-      }
-
-      .form-inline input {
-        width: 100%;
-        margin-right: 0;
-      }
+      .toggle-btn { display: block; }
+      .sidebar { display: none; position: absolute; width: 100%; height: auto; padding-top: 0; }
+      header { left: 0; width: 100%; }
+      main { margin-left: 0; padding-top: 120px; }
+      table, th, td { font-size: 12px; }
+      .form-inline input { width: 100%; margin-right: 0; }
     }
   </style>
 </head>
@@ -256,10 +214,28 @@
         <tbody></tbody>
       </table>
     </section>
+
+    <section>
+      <h2>Tipos de Actividad (Historia Clínica)</h2>
+      <div class="form-inline">
+        <input type="text" id="nuevo_tipo" placeholder="Nuevo tipo">
+        <button onclick="agregarTipo()">Agregar</button>
+      </div>
+      <table id="tabla_tipos">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
   </main>
 
   <script>
     const API_PERSONAS = '/personas';
+    const API_TIPOS = '/tipos-registro';
 
     async function cargarPersonas() {
       const res = await fetch(API_PERSONAS);
@@ -286,6 +262,21 @@
         } else if (p.tipo === 'supervisora') {
           tbodySup.appendChild(tr);
         }
+      });
+    }
+
+    async function cargarTipos() {
+      const res = await fetch(API_TIPOS);
+      const tipos = await res.json();
+      const tbody = document.querySelector('#tabla_tipos tbody');
+      tbody.innerHTML = '';
+      tipos.forEach(t => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${t.nombre}</td>
+          <td><button class="delete" onclick="eliminarTipo(${t.id})">Eliminar</button></td>
+        `;
+        tbody.appendChild(tr);
       });
     }
 
@@ -319,10 +310,34 @@
       cargarPersonas();
     }
 
+    async function agregarTipo() {
+      const nombre = document.getElementById('nuevo_tipo').value.trim();
+      if (!nombre) {
+        alert('Ingresá un nombre de tipo.');
+        return;
+      }
+
+      await fetch(API_TIPOS, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre })
+      });
+
+      document.getElementById('nuevo_tipo').value = '';
+      cargarTipos();
+    }
+
     async function eliminarPersona(id) {
       if (confirm('¿Eliminar esta persona?')) {
         await fetch(`${API_PERSONAS}/${id}`, { method: 'DELETE' });
         cargarPersonas();
+      }
+    }
+
+    async function eliminarTipo(id) {
+      if (confirm('¿Eliminar este tipo?')) {
+        await fetch(`${API_TIPOS}/${id}`, { method: 'DELETE' });
+        cargarTipos();
       }
     }
 
@@ -337,8 +352,8 @@
     }
 
     cargarPersonas();
+    cargarTipos();
   </script>
 
 </body>
 </html>
-
