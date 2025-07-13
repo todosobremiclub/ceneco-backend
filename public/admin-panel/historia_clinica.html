@@ -10,11 +10,14 @@
     .sidebar a, .sidebar button { display: block; width: 100%; padding: 10px 15px; background: none; border: none; color: #fff; text-align: left; font-weight: bold; text-decoration: none; cursor: pointer; font-size: 14px; }
     header { position: fixed; top: 0; left: 200px; right: 0; height: 60px; background-color: rgba(255, 255, 255, 0.9); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box; }
     main { margin-left: 200px; padding: 80px 20px 20px 20px; box-sizing: border-box; }
-    table { width: 100%; border-collapse: collapse; background: #fff; margin-top: 10px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
-    th { background-color: #f0f0f0; }
-    select, input[type="text"], textarea { width: 100%; padding: 6px; margin: 6px 0; border: 1px solid #ccc; border-radius: 4px; }
-    button { padding: 6px 12px; margin-top: 10px; background-color: #2196F3; border: none; color: white; border-radius: 4px; cursor: pointer; }
+    .paciente { background: rgba(255,255,255,0.9); border-radius: 8px; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    .historia { display: none; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; }
+    th, td { border: 1px solid #ddd; padding: 6px; font-size: 13px; }
+    th { background: #f0f0f0; }
+    select, textarea { width: 100%; margin-top: 6px; }
+    button { padding: 6px 10px; background-color: #2196F3; border: none; color: white; border-radius: 4px; cursor: pointer; font-size: 13px; }
+    button.small { padding: 4px 8px; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -31,80 +34,80 @@
     <button onclick="logout()">Cerrar sesión</button>
   </header>
 
-  <main>
-    <label>Seleccionar Paciente:</label>
-    <select id="pacienteSelect" onchange="cargarHistoria()"></select>
-
-    <h3>Historia Clínica</h3>
-    <table id="historiaTable">
-      <thead>
-        <tr><th>Fecha</th><th>Tipo</th><th>Contenido</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-    <h3>Agregar Entrada</h3>
-    <select id="tipoEntrada">
-      <option value="diagnostico">Diagnóstico</option>
-      <option value="texto">Texto</option>
-      <option value="estudio">Estudio</option>
-    </select>
-    <textarea id="contenidoEntrada" placeholder="Escribir contenido..."></textarea>
-    <button onclick="agregarEntrada()">Agregar</button>
-
-    <h3>Subir Documento</h3>
-    <input type="file" id="archivoDoc">
-    <button onclick="subirDocumento()">Subir Documento</button>
-  </main>
+  <main id="pacientesContainer"></main>
 
   <script>
+    let tiposRegistro = [];
+
+    async function cargarTiposRegistro() {
+      const res = await fetch('/tipos-registro');
+      tiposRegistro = await res.json();
+    }
+
     async function cargarPacientes() {
       const res = await fetch('/pacientes');
       const pacientes = await res.json();
-      const sel = document.getElementById('pacienteSelect');
-      sel.innerHTML = '<option value="">Seleccionar...</option>';
+      const container = document.getElementById('pacientesContainer');
+      container.innerHTML = '';
+
       pacientes.forEach(p => {
-        sel.innerHTML += `<option value="${p.id}">${p.numero_paciente} - ${p.nombre} ${p.apellido}</option>`;
+        const div = document.createElement('div');
+        div.className = 'paciente';
+        div.innerHTML = `
+          <strong>${p.nombre} ${p.apellido}</strong> (DNI: ${p.dni})<br>
+          <button class="small" onclick="toggleHistoria(${p.id})">Ver/ocultar historia</button>
+          <div id="historia-${p.id}" class="historia"></div>
+        `;
+        container.appendChild(div);
       });
     }
 
-    async function cargarHistoria() {
-      const id = document.getElementById('pacienteSelect').value;
-      if (!id) return;
-      const res = await fetch(`/historia/${id}`);
-      const historia = await res.json();
-      const tbody = document.getElementById('historiaTable').querySelector('tbody');
-      tbody.innerHTML = '';
-      historia.forEach(h => {
-        const content = h.tipo === 'documento' ? `<a href="${h.contenido}" target="_blank">Ver documento</a>` : h.contenido;
-        tbody.innerHTML += `<tr><td>${new Date(h.fecha).toLocaleString()}</td><td>${h.tipo}</td><td>${content}</td></tr>`;
+    async function toggleHistoria(pacienteId) {
+      const div = document.getElementById(`historia-${pacienteId}`);
+      if (div.style.display === 'block') {
+        div.style.display = 'none';
+        return;
+      }
+
+      div.style.display = 'block';
+      const res = await fetch(`/historia/${pacienteId}`);
+      const registros = await res.json();
+
+      let html = `<table><thead><tr><th>Fecha</th><th>Tipo</th><th>Contenido</th></tr></thead><tbody>`;
+      registros.forEach(r => {
+        html += `<tr><td>${new Date(r.fecha).toLocaleString()}</td><td>${r.tipo}</td><td>${r.contenido}</td></tr>`;
       });
+      html += `</tbody></table>`;
+
+      html += `
+        <h4>Nuevo registro</h4>
+        <select id="tipo-${pacienteId}">
+          ${tiposRegistro.map(t => `<option value="${t.nombre}">${t.nombre}</option>`).join('')}
+        </select>
+        <textarea id="contenido-${pacienteId}" placeholder="Escribir texto..."></textarea>
+        <button onclick="guardarRegistro(${pacienteId})">Guardar</button>
+      `;
+
+      div.innerHTML = html;
     }
 
-    async function agregarEntrada() {
-      const pacienteId = document.getElementById('pacienteSelect').value;
-      const tipo = document.getElementById('tipoEntrada').value;
-      const contenido = document.getElementById('contenidoEntrada').value;
-      if (!pacienteId || !contenido) return alert('Completar paciente y contenido');
+    async function guardarRegistro(pacienteId) {
+      const tipo = document.getElementById(`tipo-${pacienteId}`).value;
+      const contenido = document.getElementById(`contenido-${pacienteId}`).value;
+
+      if (!contenido) {
+        alert('El contenido no puede estar vacío.');
+        return;
+      }
+
       await fetch('/historia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ paciente_id: pacienteId, tipo, contenido })
       });
-      cargarHistoria();
-      document.getElementById('contenidoEntrada').value = '';
-    }
 
-    async function subirDocumento() {
-      const pacienteId = document.getElementById('pacienteSelect').value;
-      const archivo = document.getElementById('archivoDoc').files[0];
-      if (!pacienteId || !archivo) return alert('Seleccionar paciente y archivo');
-      const fd = new FormData();
-      fd.append('paciente_id', pacienteId);
-      fd.append('archivo', archivo);
-      await fetch('/historia/documento', { method: 'POST', body: fd });
-      cargarHistoria();
-      document.getElementById('archivoDoc').value = '';
+      toggleHistoria(pacienteId);
+      toggleHistoria(pacienteId); // recargar visualización
     }
 
     function logout() {
@@ -112,7 +115,12 @@
       window.location.href = 'login.html';
     }
 
-    cargarPacientes();
+    async function init() {
+      await cargarTiposRegistro();
+      await cargarPacientes();
+    }
+
+    init();
   </script>
 
 </body>

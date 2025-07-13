@@ -14,6 +14,9 @@ app.use('/pacientes', pacientesRoutes);
 const personasRoutes = require('./routes/personasRoutes');
 app.use('/personas', personasRoutes);
 
+const tiposRegistroRoutes = require('./routes/tiposRegistro'); // 👈 agregar esta línea
+app.use('/tipos-registro', tiposRegistroRoutes);              // 👈 y esta línea
+
 // ✅ Servir archivos estáticos desde /public/admin-panel como raíz web
 app.use(express.static(path.join(__dirname, 'public/admin-panel')));
 
@@ -26,4 +29,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en puerto ${PORT}`);
 });
-
