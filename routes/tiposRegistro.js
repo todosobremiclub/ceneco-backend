@@ -1,3 +1,17 @@
+const express = require('express');
+const router = express.Router();
+const pool = require('../db');
+
+router.get('/', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM tipos_registro ORDER BY nombre');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error al obtener tipos de registro');
+  }
+});
+
 router.post('/', async (req, res) => {
   const { nombre } = req.body;
   try {
@@ -19,3 +33,5 @@ router.delete('/:id', async (req, res) => {
     res.status(500).send('Error al eliminar tipo');
   }
 });
+
+module.exports = router;
