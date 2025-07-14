@@ -11,14 +11,13 @@ router.get('/:numero_paciente', async (req, res) => {
   const { numero_paciente } = req.params;
   try {
     const result = await pool.query(
-      `SELECT fecha, tipo, contenido, archivo
+      `SELECT id, fecha, tipo, contenido, archivo
        FROM historia_clinica
        WHERE paciente_id = $1
        ORDER BY fecha ASC`,
       [numero_paciente]
     );
 
-    // 🔔 Generar signed URLs dinámicamente
     const registros = await Promise.all(result.rows.map(async r => {
       let adjunto = null;
       if (r.archivo) {
@@ -26,7 +25,7 @@ router.get('/:numero_paciente', async (req, res) => {
           const file = admin.storage().bucket().file(r.archivo);
           const [signedUrl] = await file.getSignedUrl({
             action: 'read',
-            expires: Date.now() + 60 * 60 * 1000 // 1 hora
+            expires: Date.now() + 60 * 60 * 1000
           });
           adjunto = signedUrl;
         } catch (err) {
@@ -34,6 +33,7 @@ router.get('/:numero_paciente', async (req, res) => {
         }
       }
       return {
+        id: r.id,
         fecha: r.fecha,
         tipo: r.tipo,
         contenido: r.contenido,
@@ -88,7 +88,6 @@ router.post('/documento', upload.single('archivo'), async (req, res) => {
 
     stream.on('finish', async () => {
       try {
-        // Guardamos solo el `filename` (path relativo) en la DB
         await pool.query(
           `INSERT INTO historia_clinica (paciente_id, tipo, contenido, archivo, fecha)
            VALUES ($1, $2, $3, $4, NOW())`,
@@ -109,5 +108,45 @@ router.post('/documento', upload.single('archivo'), async (req, res) => {
   }
 });
 
-module.exports = router;
+// NUEVO: Eliminar registro
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM historia_clinica WHERE id = $1', [id]);
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error al eliminar registro');
+  }
+});
 
+// NUEVO: Editar registro
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { tipo, contenido } = req.body;
+  try {
+    await pool.query(
+      `UPDATE historia_clinica
+       SET tipo = $1, contenido = $2
+       WHERE id = $3`,
+      [tipo, contenido, id]
+    );
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error al actualizar registro');
+  }
+});
+
+// NUEVO: Limpiar tabla historia_clinica
+router.post('/limpiar', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM historia_clinica');
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error al limpiar historia clínica');
+  }
+});
+
+module.exports = router;
