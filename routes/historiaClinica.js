@@ -2,23 +2,10 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const admin = require('../firebase');
 
-// Configuración multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = path.join(__dirname, '../uploads');
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
-});
-const upload = multer({ storage });
+// ✅ Cambiar multer a memoryStorage
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Obtener historia clínica por numero_paciente
 router.get('/:numero_paciente', async (req, res) => {
@@ -31,7 +18,15 @@ router.get('/:numero_paciente', async (req, res) => {
        ORDER BY fecha ASC`,
       [numero_paciente]
     );
-    res.json(result.rows);
+
+    const registros = result.rows.map(r => ({
+      fecha: r.fecha,
+      tipo: r.tipo,
+      contenido: r.contenido,
+      adjunto: r.archivo || null
+    }));
+
+    res.json(registros);
   } catch (err) {
     console.error(err);
     res.status(500).send('Error al obtener historia clínica');
@@ -54,21 +49,50 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Guardar con archivo
+// Guardar con archivo (subir a Firebase Storage)
 router.post('/documento', upload.single('archivo'), async (req, res) => {
   const { paciente_id, tipo, contenido } = req.body;
-  const archivo = req.file ? req.file.filename : null;
+
+  if (!req.file) {
+    return res.status(400).send('Archivo no recibido');
+  }
+
   try {
-    await pool.query(
-      `INSERT INTO historia_clinica (paciente_id, tipo, contenido, archivo, fecha)
-       VALUES ($1, $2, $3, $4, NOW())`,
-      [paciente_id, tipo, contenido, archivo]
-    );
-    res.sendStatus(200);
+    const bucket = admin.storage().bucket();
+    const filename = `historia/${Date.now()}-${req.file.originalname}`;
+    const file = bucket.file(filename);
+
+    const stream = file.createWriteStream({
+      metadata: { contentType: req.file.mimetype }
+    });
+
+    stream.on('error', err => {
+      console.error('Error al subir a Firebase:', err);
+      res.status(500).send('Error al subir archivo');
+    });
+
+    stream.on('finish', async () => {
+      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filename}`;
+      try {
+        await pool.query(
+          `INSERT INTO historia_clinica (paciente_id, tipo, contenido, archivo, fecha)
+           VALUES ($1, $2, $3, $4, NOW())`,
+          [paciente_id, tipo, contenido, publicUrl]
+        );
+        res.sendStatus(200);
+      } catch (err) {
+        console.error('Error al guardar en DB:', err);
+        res.status(500).send('Error al guardar registro en historia clínica');
+      }
+    });
+
+    stream.end(req.file.buffer);
+
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error al guardar registro con archivo');
+    res.status(500).send('Error inesperado al procesar archivo');
   }
 });
 
 module.exports = router;
+
