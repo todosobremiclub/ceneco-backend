@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcryptjs'); // Necesario para hashear password
 const pool = require('../db'); // Ajustar según tu conexión
 
 // Obtener todas las personas
@@ -36,6 +37,28 @@ router.post('/', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   await pool.query('DELETE FROM personas WHERE id = $1', [req.params.id]);
   res.sendStatus(204);
+});
+
+// 🔒 Actualizar contraseña
+router.post('/:id/password', async (req, res) => {
+  const { id } = req.params;
+  const { password } = req.body;
+
+  if (!password) {
+    return res.status(400).json({ error: 'Contraseña requerida.' });
+  }
+
+  try {
+    const hash = await bcrypt.hash(password, 10);
+    await pool.query(
+      'UPDATE personas SET password = $1 WHERE id = $2',
+      [hash, id]
+    );
+    res.json({ message: 'Contraseña actualizada correctamente.' });
+  } catch (err) {
+    console.error('Error al actualizar contraseña:', err);
+    res.status(500).json({ error: 'Error en servidor.' });
+  }
 });
 
 module.exports = router;

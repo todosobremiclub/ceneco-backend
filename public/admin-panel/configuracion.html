@@ -253,13 +253,17 @@
       personas.forEach(p => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${p.nombre}</td>
-          <td>${p.apellido}</td>
-          <td>${p.dni}</td>
-          <td>${p.telefono || ''}</td>
-          <td>${p.mail || ''}</td>
-          <td><button class="delete" onclick="eliminarPersona(${p.id})">Eliminar</button></td>
-        `;
+  <td>${p.nombre}</td>
+  <td>${p.apellido}</td>
+  <td>${p.dni}</td>
+  <td>${p.telefono || ''}</td>
+  <td>${p.mail || ''}</td>
+  <td>
+    <button class="delete" onclick="eliminarPersona(${p.id})">Eliminar</button>
+    <button onclick="editarPassword(${p.id}, '${p.nombre} ${p.apellido}')">Editar contraseña</button>
+  </td>
+`;
+
         if (p.tipo === 'psicopedagoga') {
           tbodyPsico.appendChild(tr);
         } else if (p.tipo === 'supervisora') {
@@ -356,6 +360,29 @@
 
     cargarPersonas();
     cargarTipos();
+
+async function editarPassword(id, nombre) {
+  const nuevaPassword = prompt(`Nueva contraseña para ${nombre}:`);
+  if (!nuevaPassword) return;
+
+  try {
+    const res = await fetch(`/personas/${id}/password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: nuevaPassword })
+    });
+
+    if (res.ok) {
+      alert('Contraseña actualizada correctamente.');
+    } else {
+      alert('Error al actualizar contraseña.');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Error de red al actualizar contraseña.');
+  }
+}
+
   </script>
 
 </body>
