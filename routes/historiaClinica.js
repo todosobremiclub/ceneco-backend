@@ -4,6 +4,7 @@ const pool = require('../db');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const admin = require('../firebase');
 
 // Configuración multer
 const storage = multer.diskStorage({
