@@ -490,9 +490,11 @@ async function cargarSelectPersonasSuper() {
     }
 
     function logout() {
-      localStorage.removeItem('auth');
-      window.location.href = 'login.html';
-    }
+  localStorage.removeItem('token');
+  localStorage.removeItem('perfil'); // si guardaste también el perfil
+  window.location.href = 'login.html';
+}
+
 
     cargarPacientes();
   </script>

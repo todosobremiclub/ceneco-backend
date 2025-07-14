@@ -38,7 +38,7 @@
       font-size: 18px;
     }
 
-    input[type="text"], input[type="password"] {
+    input[type="text"], input[type="password"], select {
       width: 100%;
       padding: 8px;
       margin: 8px 0;
@@ -86,6 +86,10 @@
   <div class="login-box">
     <img src="logo.png" alt="Logo Ceneco">
     <h2>Acceso a Ceneco</h2>
+    <select id="perfil">
+      <option value="admin">Supervisora</option>
+      <option value="usuario">Psicopedagoga</option>
+    </select>
     <input type="text" id="dni" placeholder="DNI">
     <input type="password" id="password" placeholder="Contraseña">
     <div class="error" id="error-msg">Usuario o contraseña incorrectos</div>
@@ -96,6 +100,7 @@
     async function login() {
       const dni = document.getElementById('dni').value.trim();
       const password = document.getElementById('password').value.trim();
+      const perfil = document.getElementById('perfil').value;
 
       if (!dni || !password) {
         document.getElementById('error-msg').innerText = 'DNI y contraseña son obligatorios';
@@ -103,8 +108,8 @@
         return;
       }
 
-      // 🔔 Detectar si es admin (por ejemplo un checkbox podría servir, acá asumimos todo admin)
-      let urlLogin = '/api/login/admin'; // cambiar dinámicamente si querés distinguir admin/user
+      // 🔔 URL según perfil seleccionado
+      const urlLogin = perfil === 'admin' ? '/api/login/admin' : '/api/login/usuario';
 
       try {
         const res = await fetch(urlLogin, {
@@ -116,6 +121,7 @@
         if (res.ok) {
           const data = await res.json();
           localStorage.setItem('token', data.token);
+          localStorage.setItem('perfil', perfil); // opcional: guardar perfil
           window.location.href = 'index.html';
         } else {
           document.getElementById('error-msg').innerText = 'Usuario o contraseña incorrectos';
@@ -136,4 +142,3 @@
 
 </body>
 </html>
-
