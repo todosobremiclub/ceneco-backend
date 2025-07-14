@@ -4,7 +4,6 @@ const pool = require('../db');
 const multer = require('multer');
 const admin = require('../firebase');
 
-// ✅ Cambiar multer a memoryStorage
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Obtener historia clínica por numero_paciente
@@ -19,11 +18,27 @@ router.get('/:numero_paciente', async (req, res) => {
       [numero_paciente]
     );
 
-    const registros = result.rows.map(r => ({
-      fecha: r.fecha,
-      tipo: r.tipo,
-      contenido: r.contenido,
-      adjunto: r.archivo || null
+    // 🔔 Generar signed URLs dinámicamente
+    const registros = await Promise.all(result.rows.map(async r => {
+      let adjunto = null;
+      if (r.archivo) {
+        try {
+          const file = admin.storage().bucket().file(r.archivo);
+          const [signedUrl] = await file.getSignedUrl({
+            action: 'read',
+            expires: Date.now() + 60 * 60 * 1000 // 1 hora
+          });
+          adjunto = signedUrl;
+        } catch (err) {
+          console.error('Error generando signed URL:', err);
+        }
+      }
+      return {
+        fecha: r.fecha,
+        tipo: r.tipo,
+        contenido: r.contenido,
+        adjunto
+      };
     }));
 
     res.json(registros);
@@ -72,12 +87,12 @@ router.post('/documento', upload.single('archivo'), async (req, res) => {
     });
 
     stream.on('finish', async () => {
-      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filename}`;
       try {
+        // Guardamos solo el `filename` (path relativo) en la DB
         await pool.query(
           `INSERT INTO historia_clinica (paciente_id, tipo, contenido, archivo, fecha)
            VALUES ($1, $2, $3, $4, NOW())`,
-          [paciente_id, tipo, contenido, publicUrl]
+          [paciente_id, tipo, contenido, filename]
         );
         res.sendStatus(200);
       } catch (err) {
