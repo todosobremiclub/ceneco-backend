@@ -320,6 +320,18 @@
   const perfil = localStorage.getItem('perfil');
   const token = localStorage.getItem('token');
 
+  // 🔔 Función logout declarada antes de usarla:
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('perfil');
+    window.location.href = 'login.html';
+  }
+
+  // 🔔 Validación estricta al inicio:
+  if (!token || (!perfil || (perfil !== 'admin' && perfil !== 'usuario'))) {
+    logout();
+  }
+
   async function cargarPacientes() {
     let url = API_URL;
     if (perfil === 'usuario') {
@@ -329,6 +341,12 @@
     const response = await fetch(url, {
       headers: { 'Authorization': token }
     });
+
+    if (!response.ok) {
+      logout(); // Si token inválido, logout inmediato
+      return;
+    }
+
     const pacientes = await response.json();
     const tbody = document.querySelector('#pacientesTable tbody');
     tbody.innerHTML = '';
@@ -354,14 +372,13 @@
       tbody.appendChild(tr);
     });
 
-    // Si es psicopedagoga, ocultar botón "Agregar"
     if (perfil === 'usuario') {
       document.querySelector('.nuevo-btn')?.style.display = 'none';
     }
   }
 
   async function eliminarPaciente(id) {
-    if (perfil !== 'admin') return; // Bloqueo adicional
+    if (perfil !== 'admin') return;
     if (confirm('¿Seguro que querés eliminar este paciente?')) {
       await fetch(`${API_URL}/${id}`, {
         method: 'DELETE',
@@ -520,14 +537,9 @@
     sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
   }
 
-  function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('perfil');
-    window.location.href = 'login.html';
-  }
-
   cargarPacientes();
 </script>
+
 
 
 </body>
