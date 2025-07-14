@@ -1,12 +1,13 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const router = express.Router();
 const pool = require('../db');
 const SECRET_KEY = process.env.SECRET_KEY || 'secreto';
 
 // LOGIN ADMIN (supervisora)
 router.post('/login/admin', async (req, res) => {
-  const { dni } = req.body;
+  const { dni, password } = req.body;
 
   try {
     const result = await pool.query(
@@ -19,6 +20,11 @@ router.post('/login/admin', async (req, res) => {
     }
 
     const admin = result.rows[0];
+
+    const match = await bcrypt.compare(password, admin.password || '');
+    if (!match) {
+      return res.status(401).json({ message: 'Contraseña incorrecta' });
+    }
 
     const token = jwt.sign(
       { tipo: 'admin', id: admin.id, nombre: admin.nombre, apellido: admin.apellido },
@@ -35,7 +41,7 @@ router.post('/login/admin', async (req, res) => {
 
 // LOGIN USUARIO (psicopedagoga)
 router.post('/login/usuario', async (req, res) => {
-  const { dni } = req.body;
+  const { dni, password } = req.body;
 
   try {
     const result = await pool.query(
@@ -48,6 +54,11 @@ router.post('/login/usuario', async (req, res) => {
     }
 
     const user = result.rows[0];
+
+    const match = await bcrypt.compare(password, user.password || '');
+    if (!match) {
+      return res.status(401).json({ message: 'Contraseña incorrecta' });
+    }
 
     const token = jwt.sign(
       { tipo: 'user', id: user.id, nombre: user.nombre, apellido: user.apellido },
@@ -62,4 +73,5 @@ router.post('/login/usuario', async (req, res) => {
   }
 });
 
-module.exports = router
+module.exports = router;
+

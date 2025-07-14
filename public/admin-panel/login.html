@@ -65,7 +65,6 @@
       display: none;
     }
 
-    /* 🔔 Responsividad */
     @media (max-width: 500px) {
       .login-box {
         width: 90%;
@@ -87,25 +86,50 @@
   <div class="login-box">
     <img src="logo.png" alt="Logo Ceneco">
     <h2>Acceso a Ceneco</h2>
-    <input type="text" id="usuario" placeholder="Usuario">
-    <input type="password" id="clave" placeholder="Contraseña">
+    <input type="text" id="dni" placeholder="DNI">
+    <input type="password" id="password" placeholder="Contraseña">
     <div class="error" id="error-msg">Usuario o contraseña incorrectos</div>
     <button onclick="login()">Ingresar</button>
   </div>
 
   <script>
-    function login() {
-      const user = document.getElementById('usuario').value;
-      const pass = document.getElementById('clave').value;
-      if (user === 'ceneco' && pass === 'Gualeguaych1982*') {
-        localStorage.setItem('auth', 'ok');
-        window.location.href = 'index.html';
-      } else {
+    async function login() {
+      const dni = document.getElementById('dni').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!dni || !password) {
+        document.getElementById('error-msg').innerText = 'DNI y contraseña son obligatorios';
+        document.getElementById('error-msg').style.display = 'block';
+        return;
+      }
+
+      // 🔔 Detectar si es admin (por ejemplo un checkbox podría servir, acá asumimos todo admin)
+      let urlLogin = '/api/login/admin'; // cambiar dinámicamente si querés distinguir admin/user
+
+      try {
+        const res = await fetch(urlLogin, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dni, password })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem('token', data.token);
+          window.location.href = 'index.html';
+        } else {
+          document.getElementById('error-msg').innerText = 'Usuario o contraseña incorrectos';
+          document.getElementById('error-msg').style.display = 'block';
+        }
+      } catch (err) {
+        console.error('Error al loguear:', err);
+        document.getElementById('error-msg').innerText = 'Error en servidor';
         document.getElementById('error-msg').style.display = 'block';
       }
     }
 
-    if (localStorage.getItem('auth') === 'ok') {
+    // Si ya está logueado podría redirigir automáticamente
+    if (localStorage.getItem('token')) {
       window.location.href = 'index.html';
     }
   </script>
