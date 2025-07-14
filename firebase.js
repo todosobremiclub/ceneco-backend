@@ -13,7 +13,7 @@ if (serviceAccount.private_key) {
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: 'ceneco-7aa23.appspot.com'  // 🔔 Cambiar por tu bucket real
+  storageBucket: 'ceneco-7aa23.firebasestorage.app'  // 🔔 Cambiar por tu bucket real
 });
 
 module.exports = admin;
