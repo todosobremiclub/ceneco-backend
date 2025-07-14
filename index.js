@@ -23,9 +23,14 @@ app.use('/tipos-registro', tiposRegistroRoutes);
 const historiaClinicaRoutes = require('./routes/historiaClinica');
 app.use('/historia', historiaClinicaRoutes);
 
+// 🔐 Login routes
+const authRoutes = require('./routes/authRoutes'); // <<-- Agregá esta línea
+app.use('/api', authRoutes); // <<-- Prefijo para las rutas de login: /api/login/admin, etc.
+
 // Static files para admin-panel
 app.use(express.static(path.join(__dirname, 'public/admin-panel')));
 
+// Fallback SPA
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/admin-panel/index.html'));
 });
