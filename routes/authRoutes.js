@@ -1,16 +1,16 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-const pool = require('../db'); // Ajustar según tu configuración de pool
-const SECRET_KEY = process.env.SECRET_KEY || 'secreto'; // Usar tu key real en producción
+const pool = require('../db');
+const SECRET_KEY = process.env.SECRET_KEY || 'secreto';
 
-// LOGIN ADMIN (Supervisoras)
+// LOGIN ADMIN (supervisora)
 router.post('/login/admin', async (req, res) => {
   const { dni } = req.body;
 
   try {
     const result = await pool.query(
-      'SELECT * FROM supervisoras WHERE dni = $1',
+      "SELECT * FROM personas WHERE dni = $1 AND tipo = 'supervisora'",
       [dni]
     );
 
@@ -33,13 +33,13 @@ router.post('/login/admin', async (req, res) => {
   }
 });
 
-// LOGIN USUARIO (Psicopedagogas)
+// LOGIN USUARIO (psicopedagoga)
 router.post('/login/usuario', async (req, res) => {
   const { dni } = req.body;
 
   try {
     const result = await pool.query(
-      'SELECT * FROM psicopedagogas WHERE dni = $1',
+      "SELECT * FROM personas WHERE dni = $1 AND tipo = 'psicopedagoga'",
       [dni]
     );
 
@@ -62,4 +62,4 @@ router.post('/login/usuario', async (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = router
