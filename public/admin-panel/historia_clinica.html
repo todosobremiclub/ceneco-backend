@@ -15,6 +15,10 @@
     table { width: 100%; border-collapse: collapse; background: #fff; }
     th, td { border: 1px solid #ddd; padding: 6px; font-size: 13px; }
     th { background: #f0f0f0; }
+    th.fecha { width: 15%; }
+    th.tipo { width: 10%; }
+    th.contenido { width: 55%; }
+    th.adjunto { width: 20%; }
     select, textarea, input[type="file"] { width: 100%; margin-top: 6px; }
     button { padding: 6px 10px; background-color: #2196F3; border: none; color: white; border-radius: 4px; cursor: pointer; font-size: 13px; }
     button.small { padding: 4px 8px; font-size: 12px; }
@@ -24,11 +28,10 @@
 
   <div class="sidebar">
     <a href="index.html">👤 Pacientes</a>
-<a href="historia_clinica.html">📄 Historia Clínica</a>
+    <a href="historia_clinica.html">📄 Historia Clínica</a>
     <a href="configuracion.html">⚙️ Configuración</a>
     <button onclick="logout()">Cerrar sesión</button>
   </div>
-
 
   <header>
     <h1>Historia Clínica - Ceneco</h1>
@@ -45,31 +48,27 @@
       tiposRegistro = await res.json();
     }
 
-   async function cargarPacientes() {
-  const res = await fetch('/pacientes');
-  const pacientes = await res.json();
-  const container = document.getElementById('pacientesContainer');
-  container.innerHTML = '';
+    async function cargarPacientes() {
+      const res = await fetch('/pacientes');
+      const pacientes = await res.json();
+      const container = document.getElementById('pacientesContainer');
+      container.innerHTML = '';
 
-  pacientes.forEach(p => {
-    const pacienteKey = p.id;  // 🔧 usamos id real
-
-    const div = document.createElement('div');
-    div.className = 'paciente';
-    div.innerHTML = `
-      <strong>${p.nombre} ${p.apellido}</strong> (DNI: ${p.dni})<br>
-      Edad: ${p.edad} | Psicopedagoga: ${p.psicopedagoga || '-'} | Supervisora: ${p.supervisora || '-'}<br>
-      <button class="small" onclick="toggleHistoria('${pacienteKey}')">Ver/ocultar historia</button>
-      <button class="small" onclick="mostrarFormulario('${pacienteKey}')">Agregar actividad</button>
-      <div id="historia-${pacienteKey}" class="historia"></div>
-      <div id="formulario-${pacienteKey}" class="formulario"></div>
-    `;
-    container.appendChild(div);
-  });
-}
-
-
-   
+      pacientes.forEach(p => {
+        const pacienteKey = p.id;
+        const div = document.createElement('div');
+        div.className = 'paciente';
+        div.innerHTML = `
+          <strong>${p.nombre} ${p.apellido}</strong> (DNI: ${p.dni})<br>
+          Edad: ${p.edad} | Psicopedagoga: ${p.psicopedagoga || '-'} | Supervisora: ${p.supervisora || '-'}<br>
+          <button class="small" onclick="toggleHistoria('${pacienteKey}')">Ver/ocultar historia</button>
+          <button class="small" onclick="mostrarFormulario('${pacienteKey}')">Agregar actividad</button>
+          <div id="historia-${pacienteKey}" class="historia"></div>
+          <div id="formulario-${pacienteKey}" class="formulario"></div>
+        `;
+        container.appendChild(div);
+      });
+    }
 
     async function toggleHistoria(pacienteId) {
       const div = document.getElementById(`historia-${pacienteId}`);
@@ -81,10 +80,30 @@
       const res = await fetch(`/historia/${pacienteId}`);
       const registros = await res.json();
 
-      let html = `<table><thead><tr><th>Fecha</th><th>Tipo</th><th>Contenido</th></tr></thead><tbody>`;
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th class="fecha">Fecha</th>
+              <th class="tipo">Tipo</th>
+              <th class="contenido">Contenido</th>
+              <th class="adjunto">Adjunto</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
       registros.forEach(r => {
-        html += `<tr><td>${new Date(r.fecha).toLocaleString()}</td><td>${r.tipo}</td><td>${r.contenido}</td></tr>`;
+        html += `
+          <tr>
+            <td>${new Date(r.fecha).toLocaleString()}</td>
+            <td>${r.tipo}</td>
+            <td>${r.contenido || ''}</td>
+            <td>${r.adjunto ? `<a href="${r.adjunto}" target="_blank">Ver adjunto</a>` : ''}</td>
+          </tr>
+        `;
       });
+
       html += `</tbody></table>`;
       div.innerHTML = html;
     }
@@ -101,7 +120,7 @@
         <button onclick="guardarActividad(${pacienteId})">Guardar</button>
       `;
       div.innerHTML = html;
-      toggleArchivo(pacienteId); // asegúrate que si el primer valor ya es documento/estudio lo muestre inmediatamente
+      toggleArchivo(pacienteId);
     }
 
     function toggleArchivo(pacienteId) {
