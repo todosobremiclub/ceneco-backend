@@ -314,190 +314,221 @@
     </div>
   </div>
 
-  <script>
-    const API_URL = '/pacientes';
-    let pacienteEditandoId = null;
+ <script>
+  const API_URL = '/pacientes';
+  let pacienteEditandoId = null;
+  const perfil = localStorage.getItem('perfil');
+  const token = localStorage.getItem('token');
 
-    async function cargarPacientes() {
-      const response = await fetch(API_URL);
-      const pacientes = await response.json();
-      const tbody = document.querySelector('#pacientesTable tbody');
-      tbody.innerHTML = '';
+  async function cargarPacientes() {
+    let url = API_URL;
+    if (perfil === 'usuario') {
+      url = '/pacientes/mis-pacientes';
+    }
 
-      pacientes.forEach(p => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${p.numero_paciente}</td>
-          <td>${p.nombre}</td>
-          <td>${p.apellido}</td>
-          <td>${p.dni}</td>
-          <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
-          <td>${p.edad}</td>
-          <td>${p.psicopedagoga || ''}</td>
-          <td>${p.supervisora || ''}</td>
-          <td>
+    const response = await fetch(url, {
+      headers: { 'Authorization': token }
+    });
+    const pacientes = await response.json();
+    const tbody = document.querySelector('#pacientesTable tbody');
+    tbody.innerHTML = '';
+
+    pacientes.forEach(p => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${p.numero_paciente}</td>
+        <td>${p.nombre}</td>
+        <td>${p.apellido}</td>
+        <td>${p.dni}</td>
+        <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
+        <td>${p.edad}</td>
+        <td>${p.psicopedagoga || ''}</td>
+        <td>${p.supervisora || ''}</td>
+        <td>
+          ${perfil === 'admin' ? `
             <button onclick="editarPaciente(${p.id})">Editar</button>
             <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
+          ` : ''}
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Si es psicopedagoga, ocultar botón "Agregar"
+    if (perfil === 'usuario') {
+      document.querySelector('.nuevo-btn')?.style.display = 'none';
+    }
+  }
+
+  async function eliminarPaciente(id) {
+    if (perfil !== 'admin') return; // Bloqueo adicional
+    if (confirm('¿Seguro que querés eliminar este paciente?')) {
+      await fetch(`${API_URL}/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': token }
+      });
+      cargarPacientes();
+    }
+  }
+
+  async function editarPaciente(id) {
+    if (perfil !== 'admin') return;
+    const paciente = await fetch(`${API_URL}/${id}`, {
+      headers: { 'Authorization': token }
+    }).then(res => res.json());
+    abrirModal(paciente);
+  }
+
+  async function abrirModal(paciente = null) {
+    if (perfil !== 'admin') return;
+    document.getElementById('modal').style.display = 'flex';
+    await cargarSelectPersonasPsico();
+    await cargarSelectPersonasSuper();
+
+    if (paciente) {
+      pacienteEditandoId = paciente.id;
+      document.getElementById('modal-title').innerText = 'Editar Paciente';
+      document.getElementById('nuevo_numero_paciente').value = paciente.numero_paciente;
+      document.getElementById('nuevo_nombre').value = paciente.nombre;
+      document.getElementById('nuevo_apellido').value = paciente.apellido;
+      document.getElementById('nuevo_dni').value = paciente.dni;
+      document.getElementById('nuevo_fecha_nacimiento').value = paciente.fecha_nacimiento.split('T')[0];
+      document.getElementById('nuevo_psicopedagoga').value = paciente.psicopedagoga || '';
+      document.getElementById('nuevo_supervisora').value = paciente.supervisora || '';
+    } else {
+      pacienteEditandoId = null;
+      document.getElementById('modal-title').innerText = 'Nuevo Paciente';
+      const pacientes = await fetch(API_URL, {
+        headers: { 'Authorization': token }
+      }).then(res => res.json());
+      let maxNumero = Math.max(0, ...pacientes.map(p => parseInt(p.numero_paciente)));
+      const siguienteNumero = String(maxNumero + 1).padStart(4, '0');
+      document.getElementById('nuevo_numero_paciente').value = siguienteNumero;
+
+      document.getElementById('nuevo_nombre').value = '';
+      document.getElementById('nuevo_apellido').value = '';
+      document.getElementById('nuevo_dni').value = '';
+      document.getElementById('nuevo_fecha_nacimiento').value = '';
+      document.getElementById('nuevo_psicopedagoga').value = '';
+      document.getElementById('nuevo_supervisora').value = '';
+    }
+  }
+
+  function cerrarModal() {
+    document.getElementById('modal').style.display = 'none';
+  }
+
+  async function guardarPaciente() {
+    if (perfil !== 'admin') return;
+    const numero_paciente = document.getElementById('nuevo_numero_paciente').value;
+    const nombre = document.getElementById('nuevo_nombre').value;
+    const apellido = document.getElementById('nuevo_apellido').value;
+    const dni = document.getElementById('nuevo_dni').value;
+    const fecha_nacimiento = document.getElementById('nuevo_fecha_nacimiento').value;
+    const psicopedagoga = document.getElementById('nuevo_psicopedagoga').value;
+    const supervisora = document.getElementById('nuevo_supervisora').value;
+
+    if (!nombre || !apellido || !dni || !fecha_nacimiento) {
+      alert('Por favor completá todos los campos obligatorios.');
+      return;
+    }
+
+    const pacientes = await fetch(API_URL, {
+      headers: { 'Authorization': token }
+    }).then(res => res.json());
+    if (pacienteEditandoId === null && pacientes.find(p => p.dni == dni)) {
+      alert('El DNI ya está registrado.');
+      return;
+    }
+    if (pacienteEditandoId !== null && pacientes.find(p => p.dni == dni && p.id != pacienteEditandoId)) {
+      alert('El DNI ya está registrado en otro paciente.');
+      return;
+    }
+
+    const edad = calcularEdad(fecha_nacimiento);
+
+    const datos = {
+      numero_paciente,
+      nombre,
+      apellido,
+      dni,
+      fecha_nacimiento,
+      edad,
+      psicopedagoga,
+      supervisora
+    };
+
+    if (pacienteEditandoId === null) {
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': token },
+        body: JSON.stringify(datos)
+      });
+    } else {
+      await fetch(`${API_URL}/${pacienteEditandoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': token },
+        body: JSON.stringify(datos)
       });
     }
 
-    async function eliminarPaciente(id) {
-      if (confirm('¿Seguro que querés eliminar este paciente?')) {
-        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-        cargarPacientes();
-      }
-    }
-
-    async function editarPaciente(id) {
-      const paciente = await fetch(`${API_URL}/${id}`).then(res => res.json());
-      abrirModal(paciente);
-    }
-
-    async function abrirModal(paciente = null) {
-      document.getElementById('modal').style.display = 'flex';
-      await cargarSelectPersonasPsico();
-await cargarSelectPersonasSuper();
-
-
-      if (paciente) {
-        pacienteEditandoId = paciente.id;
-        document.getElementById('modal-title').innerText = 'Editar Paciente';
-        document.getElementById('nuevo_numero_paciente').value = paciente.numero_paciente;
-        document.getElementById('nuevo_nombre').value = paciente.nombre;
-        document.getElementById('nuevo_apellido').value = paciente.apellido;
-        document.getElementById('nuevo_dni').value = paciente.dni;
-        document.getElementById('nuevo_fecha_nacimiento').value = paciente.fecha_nacimiento.split('T')[0];
-        document.getElementById('nuevo_psicopedagoga').value = paciente.psicopedagoga || '';
-        document.getElementById('nuevo_supervisora').value = paciente.supervisora || '';
-      } else {
-        pacienteEditandoId = null;
-        document.getElementById('modal-title').innerText = 'Nuevo Paciente';
-        const pacientes = await fetch(API_URL).then(res => res.json());
-        let maxNumero = Math.max(0, ...pacientes.map(p => parseInt(p.numero_paciente)));
-        const siguienteNumero = String(maxNumero + 1).padStart(4, '0');
-        document.getElementById('nuevo_numero_paciente').value = siguienteNumero;
-
-        document.getElementById('nuevo_nombre').value = '';
-        document.getElementById('nuevo_apellido').value = '';
-        document.getElementById('nuevo_dni').value = '';
-        document.getElementById('nuevo_fecha_nacimiento').value = '';
-        document.getElementById('nuevo_psicopedagoga').value = '';
-        document.getElementById('nuevo_supervisora').value = '';
-      }
-    }
-
-    function cerrarModal() {
-      document.getElementById('modal').style.display = 'none';
-    }
-
-    async function guardarPaciente() {
-      const numero_paciente = document.getElementById('nuevo_numero_paciente').value;
-      const nombre = document.getElementById('nuevo_nombre').value;
-      const apellido = document.getElementById('nuevo_apellido').value;
-      const dni = document.getElementById('nuevo_dni').value;
-      const fecha_nacimiento = document.getElementById('nuevo_fecha_nacimiento').value;
-      const psicopedagoga = document.getElementById('nuevo_psicopedagoga').value;
-      const supervisora = document.getElementById('nuevo_supervisora').value;
-
-      if (!nombre || !apellido || !dni || !fecha_nacimiento) {
-        alert('Por favor completá todos los campos obligatorios.');
-        return;
-      }
-
-      const pacientes = await fetch(API_URL).then(res => res.json());
-      if (pacienteEditandoId === null && pacientes.find(p => p.dni == dni)) {
-        alert('El DNI ya está registrado.');
-        return;
-      }
-      if (pacienteEditandoId !== null && pacientes.find(p => p.dni == dni && p.id != pacienteEditandoId)) {
-        alert('El DNI ya está registrado en otro paciente.');
-        return;
-      }
-
-      const edad = calcularEdad(fecha_nacimiento);
-
-      const datos = {
-        numero_paciente,
-        nombre,
-        apellido,
-        dni,
-        fecha_nacimiento,
-        edad,
-        psicopedagoga,
-        supervisora
-      };
-
-      if (pacienteEditandoId === null) {
-        await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(datos)
-        });
-      } else {
-        await fetch(`${API_URL}/${pacienteEditandoId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(datos)
-        });
-      }
-
-      cerrarModal();
-      cargarPacientes();
-    }
-
-    function calcularEdad(fecha) {
-      const nacimiento = new Date(fecha);
-      const hoy = new Date();
-      let edad = hoy.getFullYear() - nacimiento.getFullYear();
-      const m = hoy.getMonth() - nacimiento.getMonth();
-      if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
-        edad--;
-      }
-      return edad;
-    }
-
-    async function cargarSelectPersonasPsico() {
-  const response = await fetch('/personas');
-  const personas = await response.json();
-  const select = document.getElementById('nuevo_psicopedagoga');
-  select.innerHTML = '<option value="">Seleccionar...</option>';
-  personas
-    .filter(p => p.tipo === 'psicopedagoga')
-    .forEach(p => {
-      select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-    });
-}
-
-async function cargarSelectPersonasSuper() {
-  const response = await fetch('/personas');
-  const personas = await response.json();
-  const select = document.getElementById('nuevo_supervisora');
-  select.innerHTML = '<option value="">Seleccionar...</option>';
-  personas
-    .filter(p => p.tipo === 'supervisora')
-    .forEach(p => {
-      select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-    });
-}
-
-
-    function toggleSidebar() {
-      const sidebar = document.querySelector('.sidebar');
-      sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
-    }
-
-    function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('perfil'); // si guardaste también el perfil
-  window.location.href = 'login.html';
-}
-
-
+    cerrarModal();
     cargarPacientes();
-  </script>
+  }
+
+  function calcularEdad(fecha) {
+    const nacimiento = new Date(fecha);
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
+    }
+    return edad;
+  }
+
+  async function cargarSelectPersonasPsico() {
+    const response = await fetch('/personas', {
+      headers: { 'Authorization': token }
+    });
+    const personas = await response.json();
+    const select = document.getElementById('nuevo_psicopedagoga');
+    select.innerHTML = '<option value="">Seleccionar...</option>';
+    personas
+      .filter(p => p.tipo === 'psicopedagoga')
+      .forEach(p => {
+        select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
+      });
+  }
+
+  async function cargarSelectPersonasSuper() {
+    const response = await fetch('/personas', {
+      headers: { 'Authorization': token }
+    });
+    const personas = await response.json();
+    const select = document.getElementById('nuevo_supervisora');
+    select.innerHTML = '<option value="">Seleccionar...</option>';
+    personas
+      .filter(p => p.tipo === 'supervisora')
+      .forEach(p => {
+        select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
+      });
+  }
+
+  function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
+  }
+
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('perfil');
+    window.location.href = 'login.html';
+  }
+
+  cargarPacientes();
+</script>
+
 
 </body>
 </html>

@@ -1,6 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const verificarToken = require('../middleware/verificarToken'); // ✅ middleware que ya deberías tener
+
+// Middleware soloUser (para psicopedagogas)
+function soloUser(req, res, next) {
+  if (req.user.tipo !== 'user') {
+    return res.status(403).send('Acceso permitido solo a psicopedagogas');
+  }
+  next();
+}
 
 // Obtener un paciente por ID (necesario para editar)
 router.get('/:id', async (req, res) => {
@@ -29,6 +38,34 @@ router.get('/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Error al obtener paciente por ID');
+  }
+});
+
+// ✅ NUEVO: Obtener solo pacientes asignados a la psicopedagoga logueada
+router.get('/mis-pacientes', verificarToken, soloUser, async (req, res) => {
+  const nombrePsicopedagoga = req.user.nombre;  // 🔔 El nombre viene desde el JWT
+
+  try {
+    const result = await pool.query(`
+      SELECT 
+        id,
+        numero_paciente,
+        nombre,
+        apellido,
+        dni,
+        fecha_nacimiento,
+        EXTRACT(YEAR FROM AGE(CURRENT_DATE, fecha_nacimiento)) AS edad,
+        psicopedagoga,
+        supervisora
+      FROM pacientes
+      WHERE psicopedagoga = $1
+      ORDER BY numero_paciente
+    `, [nombrePsicopedagoga]);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error en /mis-pacientes:', err);
+    res.status(500).send('Error al obtener mis pacientes');
   }
 });
 
