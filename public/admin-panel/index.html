@@ -329,8 +329,9 @@
 
   // 🔔 Validación estricta al inicio:
   if (!token || (!perfil || (perfil !== 'admin' && perfil !== 'usuario'))) {
-    logout();
-  }
+  logout();
+}
+
 
   async function cargarPacientes() {
     let url = API_URL;
@@ -375,7 +376,7 @@
     if (perfil === 'usuario') {
       document.querySelector('.nuevo-btn')?.style.display = 'none';
     }
-  }
+ 
 
   async function eliminarPaciente(id) {
     if (perfil !== 'admin') return;
