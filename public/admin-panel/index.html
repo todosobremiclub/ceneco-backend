@@ -328,6 +328,9 @@
 <script>
   const API_URL = '/pacientes';
   let pacienteEditandoId = null;
+let allPacientes = [];
+let ordenAscendente = true;
+
   const perfil = localStorage.getItem('perfil');
   const token = localStorage.getItem('token');
 
@@ -347,15 +350,18 @@
     window.location.href = 'historia_clinica.html';
   }
 
-  async function cargarPacientes() {
-    const response = await fetch(API_URL, {
-      headers: { 'Authorization': token }
-    });
+ async function cargarPacientes() {
+  const response = await fetch(API_URL, { headers: { 'Authorization': token } });
+  if (!response.ok) {
+    logout();
+    return;
+  }
 
-    if (!response.ok) {
-      logout();
-      return;
-    }
+  allPacientes = await response.json();
+  renderizarPacientes(allPacientes);
+  cargarFiltros(allPacientes);
+}
+
 
     const pacientes = await response.json();
     const tbody = document.querySelector('#pacientesTable tbody');
@@ -454,6 +460,8 @@
 
     const edad = calcularEdad(fecha_nacimiento);
 
+
+
     const datos = {
       numero_paciente, nombre, apellido, dni,
       fecha_nacimiento, edad, psicopedagoga, supervisora
@@ -510,6 +518,88 @@
     const sidebar = document.querySelector('.sidebar');
     sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
   }
+
+function renderizarPacientes(pacientes) {
+  const tbody = document.querySelector('#pacientesTable tbody');
+  tbody.innerHTML = '';
+
+  pacientes.forEach(p => {
+    const acciones = `
+      <button onclick="editarPaciente(${p.id})">Editar</button>
+      <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>
+    `;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${p.numero_paciente}</td>
+      <td>${p.nombre}</td>
+      <td>${p.apellido}</td>
+      <td>${p.dni}</td>
+      <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
+      <td>${p.edad}</td>
+      <td>${p.psicopedagoga || ''}</td>
+      <td>${p.supervisora || ''}</td>
+      <td>${acciones}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function cargarFiltros(pacientes) {
+  const filtroPsico = document.getElementById('filterPsico');
+  const filtroSuper = document.getElementById('filterSuper');
+
+  const psicos = [...new Set(pacientes.map(p => p.psicopedagoga).filter(Boolean))];
+  const supers = [...new Set(pacientes.map(p => p.supervisora).filter(Boolean))];
+
+  filtroPsico.innerHTML = '<option value="">Filtrar por Psicopedagoga</option>';
+  filtroSuper.innerHTML = '<option value="">Filtrar por Supervisora</option>';
+
+  psicos.forEach(p => {
+    const option = document.createElement('option');
+    option.value = p;
+    option.textContent = p;
+    filtroPsico.appendChild(option);
+  });
+
+  supers.forEach(s => {
+    const option = document.createElement('option');
+    option.value = s;
+    option.textContent = s;
+    filtroSuper.appendChild(option);
+  });
+}
+
+function aplicarFiltros() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const filtroPsico = document.getElementById('filterPsico').value;
+  const filtroSuper = document.getElementById('filterSuper').value;
+
+  let filtrados = allPacientes.filter(p => {
+    const matchSearch = p.apellido.toLowerCase().includes(search) || String(p.dni).includes(search);
+    const matchPsico = filtroPsico ? p.psicopedagoga === filtroPsico : true;
+    const matchSuper = filtroSuper ? p.supervisora === filtroSuper : true;
+    return matchSearch && matchPsico && matchSuper;
+  });
+
+  renderizarPacientes(filtrados);
+}
+
+document.getElementById('searchInput').addEventListener('input', aplicarFiltros);
+document.getElementById('filterPsico').addEventListener('change', aplicarFiltros);
+document.getElementById('filterSuper').addEventListener('change', aplicarFiltros);
+
+document.getElementById('sortApellido').addEventListener('click', () => {
+  ordenAscendente = !ordenAscendente;
+  allPacientes.sort((a, b) => {
+    if (ordenAscendente) {
+      return a.apellido.localeCompare(b.apellido);
+    } else {
+      return b.apellido.localeCompare(a.apellido);
+    }
+  });
+  renderizarPacientes(allPacientes);
+});
 
   cargarPacientes();
 </script>
