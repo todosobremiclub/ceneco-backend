@@ -5,7 +5,7 @@ const verificarToken = require('../middleware/verificarToken'); // ✅ middlewar
 
 // Middleware soloUser (para psicopedagogas)
 function soloUser(req, res, next) {
-  if (req.user.tipo !== 'user') {
+  if (req.user.perfil !== 'usuario') {
     return res.status(403).send('Acceso permitido solo a psicopedagogas');
   }
   next();
