@@ -14,37 +14,7 @@ function soloUser(req, res, next) {
   next();
 }
 
-// Obtener un paciente por ID (necesario para editar)
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const result = await pool.query(`
-      SELECT 
-        id,
-        numero_paciente,
-        nombre,
-        apellido,
-        dni,
-        fecha_nacimiento,
-        EXTRACT(YEAR FROM AGE(CURRENT_DATE, fecha_nacimiento)) AS edad,
-        psicopedagoga,
-        supervisora
-      FROM pacientes
-      WHERE id = $1
-    `, [id]);
-
-    if (result.rowCount === 0) {
-      return res.status(404).send('Paciente no encontrado');
-    }
-
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error("❌ [GET /:id] Error:", err);
-    res.status(500).send('Error al obtener paciente por ID');
-  }
-});
-
-// Obtener solo pacientes asignados a la psicopedagoga logueada
+// ✅ Obtener solo pacientes asignados a la psicopedagoga logueada (primero!)
 router.get('/mis-pacientes', verificarToken, soloUser, async (req, res) => {
   console.log("📥 [GET /mis-pacientes] Iniciando para usuario:", req.user);
 
@@ -73,6 +43,36 @@ router.get('/mis-pacientes', verificarToken, soloUser, async (req, res) => {
   } catch (err) {
     console.error("❌ [GET /mis-pacientes] Error:", err);
     res.status(500).send('Error al obtener mis pacientes');
+  }
+});
+
+// Obtener un paciente por ID (después!)
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(`
+      SELECT 
+        id,
+        numero_paciente,
+        nombre,
+        apellido,
+        dni,
+        fecha_nacimiento,
+        EXTRACT(YEAR FROM AGE(CURRENT_DATE, fecha_nacimiento)) AS edad,
+        psicopedagoga,
+        supervisora
+      FROM pacientes
+      WHERE id = $1
+    `, [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).send('Paciente no encontrado');
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("❌ [GET /:id] Error:", err);
+    res.status(500).send('Error al obtener paciente por ID');
   }
 });
 
