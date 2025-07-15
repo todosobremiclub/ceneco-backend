@@ -105,52 +105,67 @@
       });
     }
 
-    async function toggleHistoria(pacienteId) {
-      const div = document.getElementById(`historia-${pacienteId}`);
-      if (div.style.display === 'block') {
-        div.style.display = 'none';
-        return;
-      }
-      div.style.display = 'block';
-      const res = await fetch(`/historia/${pacienteId}`, { headers: { 'Authorization': token } });
-      const registros = await res.json();
+async function toggleHistoria(pacienteId) {
+  const div = document.getElementById(`historia-${pacienteId}`);
+  if (div.style.display === 'block') {
+    div.style.display = 'none';
+    return;
+  }
+  div.style.display = 'block';
+  const res = await fetch(`/historia/${pacienteId}`, { headers: { 'Authorization': token } });
+  const registros = await res.json();
 
-      let html = `
-        <table>
-          <thead>
-            <tr>
-              <th class="fecha">Fecha</th>
-              <th class="tipo">Tipo</th>
-              <th class="contenido">Contenido</th>
-              <th class="adjunto">Adjunto</th>
-              <th class="acciones">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th class="fecha">Fecha</th>
+          <th class="tipo">Tipo</th>
+          <th class="contenido">Contenido</th>
+          <th class="adjunto">Adjunto</th>
+          <th class="acciones">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
 
-      registros.forEach(r => {
-        const acciones = perfil === 'admin'
-          ? `
-            <button onclick="editarRegistro(${r.id}, '${r.tipo}', '${r.contenido}', ${pacienteId})">Editar</button>
-            <button onclick="eliminarRegistro(${r.id}, ${pacienteId})">Eliminar</button>
-          `
-          : '';
-
-        html += `
-          <tr>
-            <td>${new Date(r.fecha).toLocaleString()}</td>
-            <td>${r.tipo}</td>
-            <td>${r.contenido || ''}</td>
-            <td>${r.adjunto ? `<a href="${r.adjunto}" target="_blank">Ver adjunto</a>` : ''}</td>
-            <td>${acciones}</td>
-          </tr>
-        `;
-      });
-
-      html += `</tbody></table>`;
-      div.innerHTML = html;
+  registros.forEach(r => {
+    // Color de fondo según autor
+    let colorFondo = '';
+    if (r.autor === 'usuario') {
+      colorFondo = 'background-color: aquamarine;';
+    } else if (r.autor === 'admin') {
+      colorFondo = 'background-color: lightpink;';
     }
+
+    // Contenido con autor_nombre
+    const contenidoConAutor = `
+      ${r.contenido || ''}
+      <br><small style="font-style: italic;">cargado por ${r.autor_nombre || 'Desconocido'}</small>
+    `;
+
+    const acciones = perfil === 'admin'
+      ? `
+        <button onclick="editarRegistro(${r.id}, '${r.tipo}', '${r.contenido}', ${pacienteId})">Editar</button>
+        <button onclick="eliminarRegistro(${r.id}, ${pacienteId})">Eliminar</button>
+      `
+      : '';
+
+    html += `
+      <tr style="${colorFondo}">
+        <td>${new Date(r.fecha).toLocaleString()}</td>
+        <td>${r.tipo}</td>
+        <td>${contenidoConAutor}</td>
+        <td>${r.adjunto ? `<a href="${r.adjunto}" target="_blank">Ver adjunto</a>` : ''}</td>
+        <td>${acciones}</td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+  div.innerHTML = html;
+}
+
 
     async function eliminarRegistro(id, pacienteId) {
       if (perfil !== 'admin') return;
