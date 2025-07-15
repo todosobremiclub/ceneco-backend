@@ -14,7 +14,7 @@ function soloUser(req, res, next) {
   next();
 }
 
-// ✅ Obtener solo pacientes asignados a la psicopedagoga logueada (primero!)
+// Obtener solo pacientes asignados a la psicopedagoga logueada
 router.get('/mis-pacientes', verificarToken, soloUser, async (req, res) => {
   console.log("📥 [GET /mis-pacientes] Iniciando para usuario:", req.user);
 
@@ -24,18 +24,20 @@ router.get('/mis-pacientes', verificarToken, soloUser, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
-        id,
-        numero_paciente,
-        nombre,
-        apellido,
-        dni,
-        fecha_nacimiento,
-        EXTRACT(YEAR FROM AGE(CURRENT_DATE, fecha_nacimiento)) AS edad,
-        psicopedagoga,
-        supervisora
-      FROM pacientes
-      WHERE psicopedagoga = $1
-      ORDER BY numero_paciente
+        p.id,
+        p.numero_paciente,
+        p.nombre,
+        p.apellido,
+        p.dni,
+        p.fecha_nacimiento,
+        EXTRACT(YEAR FROM AGE(CURRENT_DATE, p.fecha_nacimiento)) AS edad,
+        COALESCE(psico.nombre || ' ' || psico.apellido, p.psicopedagoga) AS psicopedagoga,
+        COALESCE(sup.nombre || ' ' || sup.apellido, p.supervisora) AS supervisora
+      FROM pacientes p
+      LEFT JOIN personas psico ON psico.nombre = p.psicopedagoga
+      LEFT JOIN personas sup ON sup.nombre = p.supervisora
+      WHERE p.psicopedagoga = $1
+      ORDER BY p.numero_paciente
     `, [nombrePsicopedagoga]);
 
     console.log(`✅ [GET /mis-pacientes] Pacientes encontrados: ${result.rowCount}`);
@@ -46,23 +48,51 @@ router.get('/mis-pacientes', verificarToken, soloUser, async (req, res) => {
   }
 });
 
-// Obtener un paciente por ID (después!)
+// Obtener todos los pacientes
+router.get('/', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        p.id,
+        p.numero_paciente,
+        p.nombre,
+        p.apellido,
+        p.dni,
+        p.fecha_nacimiento,
+        EXTRACT(YEAR FROM AGE(CURRENT_DATE, p.fecha_nacimiento)) AS edad,
+        COALESCE(psico.nombre || ' ' || psico.apellido, p.psicopedagoga) AS psicopedagoga,
+        COALESCE(sup.nombre || ' ' || sup.apellido, p.supervisora) AS supervisora
+      FROM pacientes p
+      LEFT JOIN personas psico ON psico.nombre = p.psicopedagoga
+      LEFT JOIN personas sup ON sup.nombre = p.supervisora
+      ORDER BY p.numero_paciente
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("❌ [GET /] Error:", err);
+    res.status(500).send('Error al obtener pacientes');
+  }
+});
+
+// Obtener un paciente por ID
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(`
       SELECT 
-        id,
-        numero_paciente,
-        nombre,
-        apellido,
-        dni,
-        fecha_nacimiento,
-        EXTRACT(YEAR FROM AGE(CURRENT_DATE, fecha_nacimiento)) AS edad,
-        psicopedagoga,
-        supervisora
-      FROM pacientes
-      WHERE id = $1
+        p.id,
+        p.numero_paciente,
+        p.nombre,
+        p.apellido,
+        p.dni,
+        p.fecha_nacimiento,
+        EXTRACT(YEAR FROM AGE(CURRENT_DATE, p.fecha_nacimiento)) AS edad,
+        COALESCE(psico.nombre || ' ' || psico.apellido, p.psicopedagoga) AS psicopedagoga,
+        COALESCE(sup.nombre || ' ' || sup.apellido, p.supervisora) AS supervisora
+      FROM pacientes p
+      LEFT JOIN personas psico ON psico.nombre = p.psicopedagoga
+      LEFT JOIN personas sup ON sup.nombre = p.supervisora
+      WHERE p.id = $1
     `, [id]);
 
     if (result.rowCount === 0) {
@@ -73,30 +103,6 @@ router.get('/:id', async (req, res) => {
   } catch (err) {
     console.error("❌ [GET /:id] Error:", err);
     res.status(500).send('Error al obtener paciente por ID');
-  }
-});
-
-// Obtener todos los pacientes
-router.get('/', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT 
-        id,
-        numero_paciente,
-        nombre,
-        apellido,
-        dni,
-        fecha_nacimiento,
-        EXTRACT(YEAR FROM AGE(CURRENT_DATE, fecha_nacimiento)) AS edad,
-        psicopedagoga,
-        supervisora
-      FROM pacientes
-      ORDER BY numero_paciente
-    `);
-    res.json(result.rows);
-  } catch (err) {
-    console.error("❌ [GET /] Error:", err);
-    res.status(500).send('Error al obtener pacientes');
   }
 });
 
