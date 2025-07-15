@@ -1,13 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const verificarToken = require('../middleware/verificarToken'); // ✅ middleware que ya deberías tener
+const verificarToken = require('../middleware/verificarToken');
 
 // Middleware soloUser (para psicopedagogas)
 function soloUser(req, res, next) {
+  console.log("🔎 [soloUser] req.user recibido:", req.user);
   if (req.user.perfil !== 'usuario') {
+    console.log("❌ [soloUser] perfil no autorizado:", req.user.perfil);
     return res.status(403).send('Acceso permitido solo a psicopedagogas');
   }
+  console.log("✅ [soloUser] acceso permitido a psicopedagoga");
   next();
 }
 
@@ -36,14 +39,17 @@ router.get('/:id', async (req, res) => {
 
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error("❌ [GET /:id] Error:", err);
     res.status(500).send('Error al obtener paciente por ID');
   }
 });
 
-// ✅ NUEVO: Obtener solo pacientes asignados a la psicopedagoga logueada
+// Obtener solo pacientes asignados a la psicopedagoga logueada
 router.get('/mis-pacientes', verificarToken, soloUser, async (req, res) => {
-  const nombrePsicopedagoga = req.user.nombre;  // 🔔 El nombre viene desde el JWT
+  console.log("📥 [GET /mis-pacientes] Iniciando para usuario:", req.user);
+
+  const nombrePsicopedagoga = req.user.nombre;
+  console.log("🔔 [GET /mis-pacientes] nombrePsicopedagoga =", nombrePsicopedagoga);
 
   try {
     const result = await pool.query(`
@@ -62,14 +68,15 @@ router.get('/mis-pacientes', verificarToken, soloUser, async (req, res) => {
       ORDER BY numero_paciente
     `, [nombrePsicopedagoga]);
 
+    console.log(`✅ [GET /mis-pacientes] Pacientes encontrados: ${result.rowCount}`);
     res.json(result.rows);
   } catch (err) {
-    console.error('Error en /mis-pacientes:', err);
+    console.error("❌ [GET /mis-pacientes] Error:", err);
     res.status(500).send('Error al obtener mis pacientes');
   }
 });
 
-// Obtener todos los pacientes con edad calculada
+// Obtener todos los pacientes
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query(`
@@ -88,7 +95,7 @@ router.get('/', async (req, res) => {
     `);
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    console.error("❌ [GET /] Error:", err);
     res.status(500).send('Error al obtener pacientes');
   }
 });
@@ -104,12 +111,12 @@ router.post('/', async (req, res) => {
     `, [numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora]);
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error("❌ [POST /] Error:", err);
     res.status(500).send('Error al crear paciente');
   }
 });
 
-// Editar paciente con validación DNI único
+// Editar paciente
 router.put('/:id', async (req, res) => {
   const id = req.params.id;
   const { numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora } = req.body;
@@ -130,7 +137,7 @@ router.put('/:id', async (req, res) => {
 
     res.send('Paciente actualizado');
   } catch (err) {
-    console.error(err);
+    console.error("❌ [PUT /:id] Error:", err);
     res.status(500).send('Error al actualizar paciente');
   }
 });
@@ -142,10 +149,9 @@ router.delete('/:id', async (req, res) => {
     await pool.query('DELETE FROM pacientes WHERE id=$1', [id]);
     res.send('Paciente eliminado');
   } catch (err) {
-    console.error(err);
+    console.error("❌ [DELETE /:id] Error:", err);
     res.status(500).send('Error al eliminar paciente');
   }
 });
 
 module.exports = router;
-
