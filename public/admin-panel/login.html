@@ -15,7 +15,6 @@
       align-items: center;
       height: 100vh;
     }
-
     .login-box {
       background-color: rgba(255, 255, 255, 0.9);
       padding: 30px 20px;
@@ -24,28 +23,23 @@
       width: 300px;
       text-align: center;
     }
-
     .login-box img {
       width: 120px;
       margin-bottom: 15px;
     }
-
     h2 {
-      margin-top: 0;
-      margin-bottom: 20px;
+      margin: 0 0 20px;
       font-weight: normal;
       color: #333;
       font-size: 18px;
     }
-
-    input[type="text"], input[type="password"], select {
+    input, select {
       width: 100%;
       padding: 8px;
       margin: 8px 0;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-
     button {
       width: 100%;
       padding: 10px;
@@ -57,27 +51,16 @@
       margin-top: 10px;
       font-size: 14px;
     }
-
     .error {
       color: #f44336;
       font-size: 13px;
       margin-top: 5px;
       display: none;
     }
-
     @media (max-width: 500px) {
-      .login-box {
-        width: 90%;
-        padding: 20px;
-      }
-
-      .login-box img {
-        width: 100px;
-      }
-
-      h2 {
-        font-size: 16px;
-      }
+      .login-box { width: 90%; padding: 20px; }
+      .login-box img { width: 100px; }
+      h2 { font-size: 16px; }
     }
   </style>
 </head>
@@ -97,11 +80,14 @@
   </div>
 
   <script>
-    // 🔔 Si venís desde logout, limpiar todo de forma explícita
+    // 🔔 Limpiar localStorage al llegar desde logout
     if (sessionStorage.getItem('justLoggedOut')) {
       localStorage.clear();
       sessionStorage.removeItem('justLoggedOut');
-    } else if (localStorage.getItem('token')) {
+    }
+
+    // 🔔 Redirigir si ya hay token válido guardado
+    if (localStorage.getItem('token') && localStorage.getItem('perfil')) {
       window.location.href = 'index.html';
     }
 
@@ -111,8 +97,7 @@
       const perfil = document.getElementById('perfil').value;
 
       if (!dni || !password) {
-        document.getElementById('error-msg').innerText = 'DNI y contraseña son obligatorios';
-        document.getElementById('error-msg').style.display = 'block';
+        mostrarError('DNI y contraseña son obligatorios');
         return;
       }
 
@@ -131,16 +116,21 @@
           localStorage.setItem('perfil', perfil);
           window.location.href = 'index.html';
         } else {
-          document.getElementById('error-msg').innerText = 'Usuario o contraseña incorrectos';
-          document.getElementById('error-msg').style.display = 'block';
+          mostrarError('Usuario o contraseña incorrectos');
         }
       } catch (err) {
         console.error('Error al loguear:', err);
-        document.getElementById('error-msg').innerText = 'Error en servidor';
-        document.getElementById('error-msg').style.display = 'block';
+        mostrarError('Error en servidor');
       }
+    }
+
+    function mostrarError(msg) {
+      const err = document.getElementById('error-msg');
+      err.innerText = msg;
+      err.style.display = 'block';
     }
   </script>
 
 </body>
 </html>
+
