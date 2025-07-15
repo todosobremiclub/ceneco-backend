@@ -263,35 +263,38 @@
 
   <main>
     <div class="content-box">
-      <button class="nuevo-btn" onclick="abrirModal()">➕ Nuevo Paciente</button>
-      <table id="pacientesTable">
-        <thead>
-          <tr>
-            <th>N° Paciente</th>
-            <th>Nombre</th>
-            <th id="sortApellido">Apellido 🔽</th>
-            <th>DNI</th>
-            <th>Fecha Nacimiento</th>
-            <th>Edad</th>
-            <th>Psicopedagoga</th>
-            <th>Supervisora</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </main>
+  <button class="nuevo-btn" onclick="abrirModal()">➕ Nuevo Paciente</button>
 
-<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px;">
-  <input type="text" id="searchInput" placeholder="Buscar Apellido o DNI" style="padding: 5px; width: 200px;">
-  <select id="filterPsico" style="padding: 5px;">
-    <option value="">Filtrar por Psicopedagoga</option>
-  </select>
-  <select id="filterSuper" style="padding: 5px;">
-    <option value="">Filtrar por Supervisora</option>
-  </select>
+  <!-- 🔥 Bloque de filtros movido aquí -->
+  <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0;">
+    <input type="text" id="searchInput" placeholder="Buscar Apellido o DNI" style="padding: 5px; width: 200px;">
+    <select id="filterPsico" style="padding: 5px;">
+      <option value="">Filtrar por Psicopedagoga</option>
+    </select>
+    <select id="filterSuper" style="padding: 5px;">
+      <option value="">Filtrar por Supervisora</option>
+    </select>
+  </div>
+
+  <table id="pacientesTable">
+    <thead>
+      <tr>
+        <th>N° Paciente</th>
+        <th>Nombre</th>
+        <th id="sortApellido">Apellido 🔽</th>
+        <th>DNI</th>
+        <th>Fecha Nacimiento</th>
+        <th>Edad</th>
+        <th>Psicopedagoga</th>
+        <th>Supervisora</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 </div>
+
+  </main>
 
 
   <div id="modal" class="modal">
