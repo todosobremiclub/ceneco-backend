@@ -41,171 +41,184 @@
 
   <main id="pacientesContainer"></main>
 
-  <script>
-    let tiposRegistro = [];
+ <script>
+  let tiposRegistro = [];
+  const perfil = localStorage.getItem('perfil');
+  const token = localStorage.getItem('token');
 
-    async function cargarTiposRegistro() {
-      const res = await fetch('/tipos-registro');
-      tiposRegistro = await res.json();
+  function logout() {
+    localStorage.clear();
+    window.location.href = 'login.html';
+  }
+
+  // 🔒 Validación al inicio:
+  if (!token || !perfil) {
+    logout();
+  }
+
+  async function cargarTiposRegistro() {
+    const res = await fetch('/tipos-registro', { headers: { 'Authorization': token } });
+    tiposRegistro = await res.json();
+  }
+
+  async function cargarPacientes() {
+    let url = perfil === 'usuario' ? '/pacientes/mis-pacientes' : '/pacientes';
+    const res = await fetch(url, { headers: { 'Authorization': token } });
+    if (!res.ok) {
+      logout();
+      return;
     }
+    const pacientes = await res.json();
+    const container = document.getElementById('pacientesContainer');
+    container.innerHTML = '';
 
-    async function cargarPacientes() {
-      const res = await fetch('/pacientes');
-      const pacientes = await res.json();
-      const container = document.getElementById('pacientesContainer');
-      container.innerHTML = '';
-
-      pacientes.forEach(p => {
-        const pacienteKey = p.id;
-        const div = document.createElement('div');
-        div.className = 'paciente';
-        div.innerHTML = `
-          <strong>${p.nombre} ${p.apellido}</strong> (DNI: ${p.dni})<br>
-          Edad: ${p.edad} | Psicopedagoga: ${p.psicopedagoga || '-'} | Supervisora: ${p.supervisora || '-'}<br>
-          <button class="small" onclick="toggleHistoria('${pacienteKey}')">Ver/ocultar historia</button>
-          <button class="small" onclick="mostrarFormulario('${pacienteKey}')">Agregar actividad</button>
-          <div id="historia-${pacienteKey}" class="historia"></div>
-          <div id="formulario-${pacienteKey}" class="formulario"></div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    async function toggleHistoria(pacienteId) {
-      const div = document.getElementById(`historia-${pacienteId}`);
-      if (div.style.display === 'block') {
-        div.style.display = 'none';
-        return;
-      }
-      div.style.display = 'block';
-      const res = await fetch(`/historia/${pacienteId}`);
-      const registros = await res.json();
-
-      let html = `
-        <table>
-          <thead>
-            <tr>
-              <th class="fecha">Fecha</th>
-              <th class="tipo">Tipo</th>
-              <th class="contenido">Contenido</th>
-              <th class="adjunto">Adjunto</th>
-              <th class="acciones">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
+    pacientes.forEach(p => {
+      const pacienteKey = p.id;
+      const div = document.createElement('div');
+      div.className = 'paciente';
+      div.innerHTML = `
+        <strong>${p.nombre} ${p.apellido}</strong> (DNI: ${p.dni})<br>
+        Edad: ${p.edad} | Psicopedagoga: ${p.psicopedagoga || '-'} | Supervisora: ${p.supervisora || '-'}<br>
+        <button class="small" onclick="toggleHistoria('${pacienteKey}')">Ver/ocultar historia</button>
+        <button class="small" onclick="mostrarFormulario('${pacienteKey}')">Agregar actividad</button>
+        <div id="historia-${pacienteKey}" class="historia"></div>
+        <div id="formulario-${pacienteKey}" class="formulario"></div>
       `;
+      container.appendChild(div);
+    });
+  }
 
-      registros.forEach(r => {
-        html += `
+  async function toggleHistoria(pacienteId) {
+    const div = document.getElementById(`historia-${pacienteId}`);
+    if (div.style.display === 'block') {
+      div.style.display = 'none';
+      return;
+    }
+    div.style.display = 'block';
+    const res = await fetch(`/historia/${pacienteId}`, { headers: { 'Authorization': token } });
+    const registros = await res.json();
+
+    let html = `
+      <table>
+        <thead>
           <tr>
-            <td>${new Date(r.fecha).toLocaleString()}</td>
-            <td>${r.tipo}</td>
-            <td>${r.contenido || ''}</td>
-            <td>${r.adjunto ? `<a href="${r.adjunto}" target="_blank">Ver adjunto</a>` : ''}</td>
-            <td>
-              <button onclick="editarRegistro(${r.id}, '${r.tipo}', '${r.contenido}', ${pacienteId})">Editar</button>
-              <button onclick="eliminarRegistro(${r.id}, ${pacienteId})">Eliminar</button>
-            </td>
+            <th class="fecha">Fecha</th>
+            <th class="tipo">Tipo</th>
+            <th class="contenido">Contenido</th>
+            <th class="adjunto">Adjunto</th>
+            <th class="acciones">Acciones</th>
           </tr>
-        `;
-      });
+        </thead>
+        <tbody>
+    `;
 
-      html += `</tbody></table>`;
-      div.innerHTML = html;
-    }
+    registros.forEach(r => {
+      const acciones = perfil === 'admin'
+        ? `
+          <button onclick="editarRegistro(${r.id}, '${r.tipo}', '${r.contenido}', ${pacienteId})">Editar</button>
+          <button onclick="eliminarRegistro(${r.id}, ${pacienteId})">Eliminar</button>
+        `
+        : '';
 
-    async function eliminarRegistro(id, pacienteId) {
-      if (confirm('¿Seguro que deseas eliminar este registro?')) {
-        await fetch(`/historia/${id}`, { method: 'DELETE' });
-        toggleHistoria(pacienteId);
-        toggleHistoria(pacienteId);
-      }
-    }
-
-    function editarRegistro(id, tipo, contenido, pacienteId) {
-      const nuevoTipo = prompt('Editar tipo:', tipo);
-      const nuevoContenido = prompt('Editar contenido:', contenido);
-      if (nuevoTipo !== null && nuevoContenido !== null) {
-        fetch(`/historia/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tipo: nuevoTipo, contenido: nuevoContenido })
-        }).then(() => {
-          toggleHistoria(pacienteId);
-          toggleHistoria(pacienteId);
-        });
-      }
-    }
-
-    function mostrarFormulario(pacienteId) {
-      const div = document.getElementById(`formulario-${pacienteId}`);
-      div.style.display = 'block';
-      let html = `
-        <select id="tipo-${pacienteId}" onchange="toggleArchivo(${pacienteId})">
-          ${tiposRegistro.map(t => `<option value="${t.nombre}">${t.nombre}</option>`).join('')}
-        </select>
-        <textarea id="contenido-${pacienteId}" placeholder="Escribir texto..."></textarea>
-        <input type="file" id="archivo-${pacienteId}" style="display:none">
-        <button onclick="guardarActividad(${pacienteId})">Guardar</button>
+      html += `
+        <tr>
+          <td>${new Date(r.fecha).toLocaleString()}</td>
+          <td>${r.tipo}</td>
+          <td>${r.contenido || ''}</td>
+          <td>${r.adjunto ? `<a href="${r.adjunto}" target="_blank">Ver adjunto</a>` : ''}</td>
+          <td>${acciones}</td>
+        </tr>
       `;
-      div.innerHTML = html;
-      toggleArchivo(pacienteId);
-    }
+    });
 
-    function toggleArchivo(pacienteId) {
-      const tipo = document.getElementById(`tipo-${pacienteId}`).value.toLowerCase();
-      const inputFile = document.getElementById(`archivo-${pacienteId}`);
-      if (tipo === 'documento' || tipo === 'estudio') {
-        inputFile.style.display = 'block';
-      } else {
-        inputFile.style.display = 'none';
-      }
-    }
+    html += `</tbody></table>`;
+    div.innerHTML = html;
+  }
 
-    async function guardarActividad(pacienteId) {
-      const tipo = document.getElementById(`tipo-${pacienteId}`).value;
-      const contenido = document.getElementById(`contenido-${pacienteId}`).value;
-      const archivo = document.getElementById(`archivo-${pacienteId}`).files[0];
-
-      if (!contenido && (tipo.toLowerCase() !== 'documento' && tipo.toLowerCase() !== 'estudio')) {
-        alert('El contenido no puede estar vacío.');
-        return;
-      }
-
-      if (tipo.toLowerCase() === 'documento' || tipo.toLowerCase() === 'estudio') {
-        const fd = new FormData();
-        fd.append('paciente_id', pacienteId);
-        fd.append('tipo', tipo);
-        fd.append('contenido', contenido);
-        if (archivo) fd.append('archivo', archivo);
-        await fetch('/historia/documento', { method: 'POST', body: fd });
-      } else {
-        await fetch('/historia', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ paciente_id: pacienteId, tipo, contenido })
-        });
-      }
-
+  async function eliminarRegistro(id, pacienteId) {
+    if (perfil !== 'admin') return;
+    if (confirm('¿Seguro que deseas eliminar este registro?')) {
+      await fetch(`/historia/${id}`, { method: 'DELETE', headers: { 'Authorization': token } });
       toggleHistoria(pacienteId);
       toggleHistoria(pacienteId);
-      document.getElementById(`formulario-${pacienteId}`).style.display = 'none';
+    }
+  }
+
+  function editarRegistro(id, tipo, contenido, pacienteId) {
+    if (perfil !== 'admin') return;
+    const nuevoTipo = prompt('Editar tipo:', tipo);
+    const nuevoContenido = prompt('Editar contenido:', contenido);
+    if (nuevoTipo !== null && nuevoContenido !== null) {
+      fetch(`/historia/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': token },
+        body: JSON.stringify({ tipo: nuevoTipo, contenido: nuevoContenido })
+      }).then(() => {
+        toggleHistoria(pacienteId);
+        toggleHistoria(pacienteId);
+      });
+    }
+  }
+
+  function mostrarFormulario(pacienteId) {
+    const div = document.getElementById(`formulario-${pacienteId}`);
+    div.style.display = 'block';
+    let html = `
+      <select id="tipo-${pacienteId}" onchange="toggleArchivo(${pacienteId})">
+        ${tiposRegistro.map(t => `<option value="${t.nombre}">${t.nombre}</option>`).join('')}
+      </select>
+      <textarea id="contenido-${pacienteId}" placeholder="Escribir texto..."></textarea>
+      <input type="file" id="archivo-${pacienteId}" style="display:none">
+      <button onclick="guardarActividad(${pacienteId})">Guardar</button>
+    `;
+    div.innerHTML = html;
+    toggleArchivo(pacienteId);
+  }
+
+  function toggleArchivo(pacienteId) {
+    const tipo = document.getElementById(`tipo-${pacienteId}`).value.toLowerCase();
+    const inputFile = document.getElementById(`archivo-${pacienteId}`);
+    inputFile.style.display = (tipo === 'documento' || tipo === 'estudio') ? 'block' : 'none';
+  }
+
+  async function guardarActividad(pacienteId) {
+    const tipo = document.getElementById(`tipo-${pacienteId}`).value;
+    const contenido = document.getElementById(`contenido-${pacienteId}`).value;
+    const archivo = document.getElementById(`archivo-${pacienteId}`).files[0];
+
+    if (!contenido && (tipo.toLowerCase() !== 'documento' && tipo.toLowerCase() !== 'estudio')) {
+      alert('El contenido no puede estar vacío.');
+      return;
     }
 
-    function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('perfil');
-  window.location.href = 'login.html';
-}
-
-
-    async function init() {
-      await cargarTiposRegistro();
-      await cargarPacientes();
+    if (tipo.toLowerCase() === 'documento' || tipo.toLowerCase() === 'estudio') {
+      const fd = new FormData();
+      fd.append('paciente_id', pacienteId);
+      fd.append('tipo', tipo);
+      fd.append('contenido', contenido);
+      if (archivo) fd.append('archivo', archivo);
+      await fetch('/historia/documento', { method: 'POST', body: fd, headers: { 'Authorization': token } });
+    } else {
+      await fetch('/historia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': token },
+        body: JSON.stringify({ paciente_id: pacienteId, tipo, contenido })
+      });
     }
 
-    init();
-  </script>
+    toggleHistoria(pacienteId);
+    toggleHistoria(pacienteId);
+    document.getElementById(`formulario-${pacienteId}`).style.display = 'none';
+  }
+
+  async function init() {
+    await cargarTiposRegistro();
+    await cargarPacientes();
+  }
+
+  init();
+</script>
+
 
 </body>
 </html>

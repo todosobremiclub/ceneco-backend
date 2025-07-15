@@ -236,141 +236,153 @@
     </section>
   </main>
 
-  <script>
-    const API_PERSONAS = '/personas';
-    const API_TIPOS = '/tipos-registro';
+ <script>
+  const API_PERSONAS = '/personas';
+  const API_TIPOS = '/tipos-registro';
+  const perfil = localStorage.getItem('perfil');
+  const token = localStorage.getItem('token');
 
-    async function cargarPersonas() {
-      const res = await fetch(API_PERSONAS);
-      const personas = await res.json();
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('perfil');
+    window.location.href = 'login.html';
+  }
 
-      const tbodyPsico = document.querySelector('#tabla_psicopedagogas tbody');
-      const tbodySup = document.querySelector('#tabla_supervisoras tbody');
+  // 🔒 Validación estricta al inicio:
+  if (!token || perfil !== 'admin') {
+    logout();
+  }
 
-      tbodyPsico.innerHTML = '';
-      tbodySup.innerHTML = '';
-
-      personas.forEach(p => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-  <td>${p.nombre}</td>
-  <td>${p.apellido}</td>
-  <td>${p.dni}</td>
-  <td>${p.telefono || ''}</td>
-  <td>${p.mail || ''}</td>
-  <td>
-    <button class="delete" onclick="eliminarPersona(${p.id})">Eliminar</button>
-    <button onclick="editarPassword(${p.id}, '${p.nombre} ${p.apellido}')">Editar contraseña</button>
-  </td>
-`;
-
-        if (p.tipo === 'psicopedagoga') {
-          tbodyPsico.appendChild(tr);
-        } else if (p.tipo === 'supervisora') {
-          tbodySup.appendChild(tr);
-        }
-      });
+  async function cargarPersonas() {
+    const res = await fetch(API_PERSONAS, { headers: { 'Authorization': token } });
+    if (!res.ok) {
+      logout();
+      return;
     }
+    const personas = await res.json();
 
-    async function cargarTipos() {
-      const res = await fetch(API_TIPOS);
-      const tipos = await res.json();
-      const tbody = document.querySelector('#tabla_tipos tbody');
-      tbody.innerHTML = '';
-      tipos.forEach(t => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${t.nombre}</td>
-          <td><button class="delete" onclick="eliminarTipo(${t.id})">Eliminar</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
+    const tbodyPsico = document.querySelector('#tabla_psicopedagogas tbody');
+    const tbodySup = document.querySelector('#tabla_supervisoras tbody');
 
-    async function agregarPersona(tipo) {
-      const nombre = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_nombre`).value;
-      const apellido = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_apellido`).value;
-      const dni = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_dni`).value;
-      const telefono = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_telefono`).value;
-      const mail = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_mail`).value;
+    tbodyPsico.innerHTML = '';
+    tbodySup.innerHTML = '';
 
-      if (!nombre || !apellido || !dni) {
-        alert('Nombre, Apellido y DNI son obligatorios.');
-        return;
+    personas.forEach(p => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${p.nombre}</td>
+        <td>${p.apellido}</td>
+        <td>${p.dni}</td>
+        <td>${p.telefono || ''}</td>
+        <td>${p.mail || ''}</td>
+        <td>
+          <button class="delete" onclick="eliminarPersona(${p.id})">Eliminar</button>
+          <button onclick="editarPassword(${p.id}, '${p.nombre} ${p.apellido}')">Editar contraseña</button>
+        </td>
+      `;
+
+      if (p.tipo === 'psicopedagoga') {
+        tbodyPsico.appendChild(tr);
+      } else if (p.tipo === 'supervisora') {
+        tbodySup.appendChild(tr);
       }
+    });
+  }
 
-      const res = await fetch(API_PERSONAS);
-      const personas = await res.json();
-      if (personas.find(p => p.dni == dni)) {
-        alert('El DNI ya existe.');
-        return;
-      }
+  async function cargarTipos() {
+    const res = await fetch(API_TIPOS, { headers: { 'Authorization': token } });
+    if (!res.ok) {
+      logout();
+      return;
+    }
+    const tipos = await res.json();
+    const tbody = document.querySelector('#tabla_tipos tbody');
+    tbody.innerHTML = '';
 
-      const nuevaPersona = { nombre, apellido, dni, telefono, mail, tipo };
+    tipos.forEach(t => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${t.nombre}</td>
+        <td><button class="delete" onclick="eliminarTipo(${t.id})">Eliminar</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
 
-      await fetch(API_PERSONAS, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(nuevaPersona)
-      });
+  async function agregarPersona(tipo) {
+    const nombre = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_nombre`).value;
+    const apellido = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_apellido`).value;
+    const dni = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_dni`).value;
+    const telefono = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_telefono`).value;
+    const mail = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_mail`).value;
 
-      cargarPersonas();
+    if (!nombre || !apellido || !dni) {
+      alert('Nombre, Apellido y DNI son obligatorios.');
+      return;
     }
 
-    async function agregarTipo() {
-      const nombre = document.getElementById('nuevo_tipo').value.trim();
-      if (!nombre) {
-        alert('Ingresá un nombre de tipo.');
-        return;
-      }
-
-      await fetch(API_TIPOS, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre })
-      });
-
-      document.getElementById('nuevo_tipo').value = '';
-      cargarTipos();
+    const res = await fetch(API_PERSONAS, { headers: { 'Authorization': token } });
+    const personas = await res.json();
+    if (personas.find(p => p.dni == dni)) {
+      alert('El DNI ya existe.');
+      return;
     }
 
-    async function eliminarPersona(id) {
-      if (confirm('¿Eliminar esta persona?')) {
-        await fetch(`${API_PERSONAS}/${id}`, { method: 'DELETE' });
-        cargarPersonas();
-      }
-    }
+    const nuevaPersona = { nombre, apellido, dni, telefono, mail, tipo };
 
-    async function eliminarTipo(id) {
-      if (confirm('¿Eliminar este tipo?')) {
-        await fetch(`${API_TIPOS}/${id}`, { method: 'DELETE' });
-        cargarTipos();
-      }
-    }
-
-    function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('perfil');
-  window.location.href = 'login.html';
-}
-
-
-    function toggleSidebar() {
-      const sidebar = document.querySelector('.sidebar');
-      sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
-    }
+    await fetch(API_PERSONAS, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': token },
+      body: JSON.stringify(nuevaPersona)
+    });
 
     cargarPersonas();
+  }
+
+  async function agregarTipo() {
+    const nombre = document.getElementById('nuevo_tipo').value.trim();
+    if (!nombre) {
+      alert('Ingresá un nombre de tipo.');
+      return;
+    }
+
+    await fetch(API_TIPOS, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': token },
+      body: JSON.stringify({ nombre })
+    });
+
+    document.getElementById('nuevo_tipo').value = '';
     cargarTipos();
+  }
 
-async function editarPassword(id, nombre) {
-  const nuevaPassword = prompt(`Nueva contraseña para ${nombre}:`);
-  if (!nuevaPassword) return;
+  async function eliminarPersona(id) {
+    if (confirm('¿Eliminar esta persona?')) {
+      await fetch(`${API_PERSONAS}/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': token }
+      });
+      cargarPersonas();
+    }
+  }
 
-  try {
+  async function eliminarTipo(id) {
+    if (confirm('¿Eliminar este tipo?')) {
+      await fetch(`${API_TIPOS}/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': token }
+      });
+      cargarTipos();
+    }
+  }
+
+  async function editarPassword(id, nombre) {
+    const nuevaPassword = prompt(`Nueva contraseña para ${nombre}:`);
+    if (!nuevaPassword) return;
+
     const res = await fetch(`/personas/${id}/password`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': token },
       body: JSON.stringify({ password: nuevaPassword })
     });
 
@@ -379,13 +391,17 @@ async function editarPassword(id, nombre) {
     } else {
       alert('Error al actualizar contraseña.');
     }
-  } catch (err) {
-    console.error(err);
-    alert('Error de red al actualizar contraseña.');
   }
-}
 
-  </script>
+  function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
+  }
+
+  cargarPersonas();
+  cargarTipos();
+</script>
+
 
 </body>
 </html>

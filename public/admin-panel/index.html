@@ -314,77 +314,65 @@
     </div>
   </div>
 
- <script>
+<script>
   const API_URL = '/pacientes';
   let pacienteEditandoId = null;
   const perfil = localStorage.getItem('perfil');
   const token = localStorage.getItem('token');
 
-  // 🔔 Función logout declarada antes de usarla:
+  // 🔒 Función logout
   function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('perfil');
-  window.location.href = 'login.html';
-}
+    localStorage.clear();
+    window.location.href = 'login.html';
+  }
 
+  // 🔒 Validación estricta al inicio:
+  if (!token || !perfil) {
+    logout();
+  }
 
-  // 🔔 Validación estricta al inicio:
-  if (!token || (!perfil || (perfil !== 'admin' && perfil !== 'usuario'))) {
-  logout();
-}
-
+  if (perfil === 'usuario') {
+    // 🚫 Si perfil usuario, NO puede estar en index.html
+    window.location.href = 'historia_clinica.html';
+  }
 
   async function cargarPacientes() {
-  let url = API_URL;
-  if (perfil === 'usuario') {
-    url = '/pacientes/mis-pacientes';
+    const response = await fetch(API_URL, {
+      headers: { 'Authorization': token }
+    });
+
+    if (!response.ok) {
+      logout();
+      return;
+    }
+
+    const pacientes = await response.json();
+    const tbody = document.querySelector('#pacientesTable tbody');
+    tbody.innerHTML = '';
+
+    pacientes.forEach(p => {
+      const acciones = `
+        <button onclick="editarPaciente(${p.id})">Editar</button>
+        <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>
+      `;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${p.numero_paciente}</td>
+        <td>${p.nombre}</td>
+        <td>${p.apellido}</td>
+        <td>${p.dni}</td>
+        <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
+        <td>${p.edad}</td>
+        <td>${p.psicopedagoga || ''}</td>
+        <td>${p.supervisora || ''}</td>
+        <td>${acciones}</td>
+      `;
+      tbody.appendChild(tr);
+    });
   }
 
-  const response = await fetch(url, {
-    headers: { 'Authorization': token }
-  });
-
-  if (!response.ok) {
-    logout();
-    return;
-  }
-
-  const pacientes = await response.json();
-  const tbody = document.querySelector('#pacientesTable tbody');
-  tbody.innerHTML = '';
-
-  pacientes.forEach(p => {
-    const acciones = perfil === 'admin'
-      ? `<button onclick="editarPaciente(${p.id})">Editar</button>
-         <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>`
-      : '';
-
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${p.numero_paciente}</td>
-      <td>${p.nombre}</td>
-      <td>${p.apellido}</td>
-      <td>${p.dni}</td>
-      <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
-      <td>${p.edad}</td>
-      <td>${p.psicopedagoga || ''}</td>
-      <td>${p.supervisora || ''}</td>
-      <td>${acciones}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  if (perfil === 'usuario') {
-    const nuevoBtn = document.querySelector('.nuevo-btn');
-    if (nuevoBtn) nuevoBtn.style.display = 'none';
-  }
-}  // 👈 Esta llave cierra correctamente la función async cargarPacientes
-
-
-
-async function eliminarPaciente(id) {
-
-    if (perfil !== 'admin') return;
+  async function eliminarPaciente(id) {
     if (confirm('¿Seguro que querés eliminar este paciente?')) {
       await fetch(`${API_URL}/${id}`, {
         method: 'DELETE',
@@ -395,7 +383,6 @@ async function eliminarPaciente(id) {
   }
 
   async function editarPaciente(id) {
-    if (perfil !== 'admin') return;
     const paciente = await fetch(`${API_URL}/${id}`, {
       headers: { 'Authorization': token }
     }).then(res => res.json());
@@ -403,7 +390,6 @@ async function eliminarPaciente(id) {
   }
 
   async function abrirModal(paciente = null) {
-    if (perfil !== 'admin') return;
     document.getElementById('modal').style.display = 'flex';
     await cargarSelectPersonasPsico();
     await cargarSelectPersonasSuper();
@@ -442,7 +428,6 @@ async function eliminarPaciente(id) {
   }
 
   async function guardarPaciente() {
-    if (perfil !== 'admin') return;
     const numero_paciente = document.getElementById('nuevo_numero_paciente').value;
     const nombre = document.getElementById('nuevo_nombre').value;
     const apellido = document.getElementById('nuevo_apellido').value;
@@ -456,29 +441,11 @@ async function eliminarPaciente(id) {
       return;
     }
 
-    const pacientes = await fetch(API_URL, {
-      headers: { 'Authorization': token }
-    }).then(res => res.json());
-    if (pacienteEditandoId === null && pacientes.find(p => p.dni == dni)) {
-      alert('El DNI ya está registrado.');
-      return;
-    }
-    if (pacienteEditandoId !== null && pacientes.find(p => p.dni == dni && p.id != pacienteEditandoId)) {
-      alert('El DNI ya está registrado en otro paciente.');
-      return;
-    }
-
     const edad = calcularEdad(fecha_nacimiento);
 
     const datos = {
-      numero_paciente,
-      nombre,
-      apellido,
-      dni,
-      fecha_nacimiento,
-      edad,
-      psicopedagoga,
-      supervisora
+      numero_paciente, nombre, apellido, dni,
+      fecha_nacimiento, edad, psicopedagoga, supervisora
     };
 
     if (pacienteEditandoId === null) {
@@ -504,38 +471,28 @@ async function eliminarPaciente(id) {
     const hoy = new Date();
     let edad = hoy.getFullYear() - nacimiento.getFullYear();
     const m = hoy.getMonth() - nacimiento.getMonth();
-    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
-      edad--;
-    }
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
     return edad;
   }
 
   async function cargarSelectPersonasPsico() {
-    const response = await fetch('/personas', {
-      headers: { 'Authorization': token }
-    });
-    const personas = await response.json();
+    const res = await fetch('/personas', { headers: { 'Authorization': token } });
+    const personas = await res.json();
     const select = document.getElementById('nuevo_psicopedagoga');
     select.innerHTML = '<option value="">Seleccionar...</option>';
-    personas
-      .filter(p => p.tipo === 'psicopedagoga')
-      .forEach(p => {
-        select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-      });
+    personas.filter(p => p.tipo === 'psicopedagoga').forEach(p => {
+      select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
+    });
   }
 
   async function cargarSelectPersonasSuper() {
-    const response = await fetch('/personas', {
-      headers: { 'Authorization': token }
-    });
-    const personas = await response.json();
+    const res = await fetch('/personas', { headers: { 'Authorization': token } });
+    const personas = await res.json();
     const select = document.getElementById('nuevo_supervisora');
     select.innerHTML = '<option value="">Seleccionar...</option>';
-    personas
-      .filter(p => p.tipo === 'supervisora')
-      .forEach(p => {
-        select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-      });
+    personas.filter(p => p.tipo === 'supervisora').forEach(p => {
+      select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
+    });
   }
 
   function toggleSidebar() {
@@ -545,6 +502,7 @@ async function eliminarPaciente(id) {
 
   cargarPacientes();
 </script>
+
 
 
 
