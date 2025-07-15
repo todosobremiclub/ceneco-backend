@@ -349,9 +349,11 @@
     }
 
     function logout() {
-      localStorage.removeItem('auth');
-      window.location.href = 'login.html';
-    }
+  localStorage.removeItem('token');
+  localStorage.removeItem('perfil');
+  window.location.href = 'login.html';
+}
+
 
     function toggleSidebar() {
       const sidebar = document.querySelector('.sidebar');
