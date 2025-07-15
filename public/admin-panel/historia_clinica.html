@@ -144,12 +144,20 @@ async function toggleHistoria(pacienteId) {
       <br><small style="font-style: italic;">cargado por ${r.autor_nombre || 'Desconocido'}</small>
     `;
 
-    const acciones = perfil === 'admin'
-      ? `
-        <button onclick="editarRegistro(${r.id}, '${r.tipo}', '${r.contenido}', ${pacienteId})">Editar</button>
-        <button onclick="eliminarRegistro(${r.id}, ${pacienteId})">Eliminar</button>
-      `
-      : '';
+   let acciones = '';
+
+if (perfil === 'admin') {
+  acciones = `
+    <button onclick="editarRegistro(${r.id}, '${r.tipo}', '${r.contenido}', ${pacienteId})">Editar</button>
+    <button onclick="eliminarRegistro(${r.id}, ${pacienteId})">Eliminar</button>
+  `;
+} else if (perfil === 'usuario') {
+  if (r.autor === 'usuario') {
+    acciones = `
+      <button onclick="editarRegistro(${r.id}, '${r.tipo}', '${r.contenido}', ${pacienteId})">Editar</button>
+    `;
+  }
+}
 
     html += `
       <tr style="${colorFondo}">
