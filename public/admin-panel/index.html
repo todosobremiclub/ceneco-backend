@@ -353,25 +353,26 @@
     tbody.innerHTML = '';
 
     pacientes.forEach(p => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${p.numero_paciente}</td>
-        <td>${p.nombre}</td>
-        <td>${p.apellido}</td>
-        <td>${p.dni}</td>
-        <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
-        <td>${p.edad}</td>
-        <td>${p.psicopedagoga || ''}</td>
-        <td>${p.supervisora || ''}</td>
-        <td>
-          ${perfil === 'admin' ? `
-            <button onclick="editarPaciente(${p.id})">Editar</button>
-            <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>
-          ` : ''}
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
+  const acciones = perfil === 'admin'
+    ? `<button onclick="editarPaciente(${p.id})">Editar</button>
+       <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>`
+    : '';
+
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>${p.numero_paciente}</td>
+    <td>${p.nombre}</td>
+    <td>${p.apellido}</td>
+    <td>${p.dni}</td>
+    <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
+    <td>${p.edad}</td>
+    <td>${p.psicopedagoga || ''}</td>
+    <td>${p.supervisora || ''}</td>
+    <td>${acciones}</td>
+  `;
+  tbody.appendChild(tr);
+});
+
 
     if (perfil === 'usuario') {
       document.querySelector('.nuevo-btn')?.style.display = 'none';
