@@ -27,11 +27,8 @@
 </head>
 <body>
 
-  <div class="sidebar">
-    <a href="index.html">👤 Pacientes</a>
-    <a href="historia_clinica.html">📄 Historia Clínica</a>
-    <a href="configuracion.html">⚙️ Configuración</a>
-    <button onclick="logout()">Cerrar sesión</button>
+  <div class="sidebar" id="sidebar">
+    <!-- El menú se va a construir dinámicamente abajo -->
   </div>
 
   <header>
@@ -41,7 +38,25 @@
 
   <main id="pacientesContainer"></main>
 
- <script>
+  <script>
+    const perfil = localStorage.getItem('perfil');
+    const sidebar = document.getElementById('sidebar');
+    sidebar.innerHTML = '';  // Limpiamos primero
+
+    if (perfil === 'admin') {
+      sidebar.innerHTML = `
+        <a href="index.html">👤 Pacientes</a>
+        <a href="historia_clinica.html">📄 Historia Clínica</a>
+        <a href="configuracion.html">⚙️ Configuración</a>
+        <button onclick="logout()">Cerrar sesión</button>
+      `;
+    } else if (perfil === 'usuario') {
+      sidebar.innerHTML = `
+        <a href="historia_clinica.html">📄 Historia Clínica</a>
+        <button onclick="logout()">Cerrar sesión</button>
+      `;
+    }
+  </script>
   let tiposRegistro = [];
   const perfil = localStorage.getItem('perfil');
   const token = localStorage.getItem('token');
