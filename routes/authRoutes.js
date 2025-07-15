@@ -27,10 +27,11 @@ router.post('/login/admin', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { tipo: 'admin', id: admin.id, nombre: admin.nombre, apellido: admin.apellido },
-      SECRET_KEY,
-      { expiresIn: '7d' }
-    );
+  { perfil: 'usuario', id: user.id, nombre: user.nombre, apellido: user.apellido, dni: user.dni },
+  SECRET_KEY,
+  { expiresIn: '7d' }
+);
+
 
     res.json({ token });
   } catch (err) {
