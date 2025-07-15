@@ -363,30 +363,7 @@ let ordenAscendente = true;
 }
 
 
-    const pacientes = await response.json();
-    const tbody = document.querySelector('#pacientesTable tbody');
-    tbody.innerHTML = '';
-
-    pacientes.forEach(p => {
-      const acciones = `
-        <button onclick="editarPaciente(${p.id})">Editar</button>
-        <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>
-      `;
-
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${p.numero_paciente}</td>
-        <td>${p.nombre}</td>
-        <td>${p.apellido}</td>
-        <td>${p.dni}</td>
-        <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
-        <td>${p.edad}</td>
-        <td>${p.psicopedagoga || ''}</td>
-        <td>${p.supervisora || ''}</td>
-        <td>${acciones}</td>
-      `;
-      tbody.appendChild(tr);
-    });
+   
   }
 
   async function eliminarPaciente(id) {
