@@ -3,6 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const multer = require('multer');
 const admin = require('../firebase');
+const verificarToken = require('../middleware/verificarToken');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -11,7 +12,7 @@ router.get('/:numero_paciente', async (req, res) => {
   const { numero_paciente } = req.params;
   try {
     const result = await pool.query(
-      `SELECT id, fecha, tipo, contenido, archivo
+      `SELECT id, fecha, tipo, contenido, archivo, autor
        FROM historia_clinica
        WHERE paciente_id = $1
        ORDER BY fecha ASC`,
@@ -37,7 +38,8 @@ router.get('/:numero_paciente', async (req, res) => {
         fecha: r.fecha,
         tipo: r.tipo,
         contenido: r.contenido,
-        adjunto
+        adjunto,
+        autor: r.autor  // ✅ devolvemos autor para frontend
       };
     }));
 
@@ -49,13 +51,15 @@ router.get('/:numero_paciente', async (req, res) => {
 });
 
 // Guardar texto simple
-router.post('/', async (req, res) => {
+router.post('/', verificarToken, async (req, res) => {
   const { paciente_id, tipo, contenido } = req.body;
+  const autor = req.user.perfil;  // ✅ capturamos quién guarda el registro
+
   try {
     await pool.query(
-      `INSERT INTO historia_clinica (paciente_id, tipo, contenido, fecha)
-       VALUES ($1, $2, $3, NOW())`,
-      [paciente_id, tipo, contenido]
+      `INSERT INTO historia_clinica (paciente_id, tipo, contenido, fecha, autor)
+       VALUES ($1, $2, $3, NOW(), $4)`,
+      [paciente_id, tipo, contenido, autor]
     );
     res.sendStatus(200);
   } catch (err) {
@@ -65,8 +69,9 @@ router.post('/', async (req, res) => {
 });
 
 // Guardar con archivo (subir a Firebase Storage)
-router.post('/documento', upload.single('archivo'), async (req, res) => {
+router.post('/documento', verificarToken, upload.single('archivo'), async (req, res) => {
   const { paciente_id, tipo, contenido } = req.body;
+  const autor = req.user.perfil;
 
   if (!req.file) {
     return res.status(400).send('Archivo no recibido');
@@ -89,9 +94,9 @@ router.post('/documento', upload.single('archivo'), async (req, res) => {
     stream.on('finish', async () => {
       try {
         await pool.query(
-          `INSERT INTO historia_clinica (paciente_id, tipo, contenido, archivo, fecha)
-           VALUES ($1, $2, $3, $4, NOW())`,
-          [paciente_id, tipo, contenido, filename]
+          `INSERT INTO historia_clinica (paciente_id, tipo, contenido, archivo, fecha, autor)
+           VALUES ($1, $2, $3, $4, NOW(), $5)`,
+          [paciente_id, tipo, contenido, filename, autor]
         );
         res.sendStatus(200);
       } catch (err) {
