@@ -111,17 +111,15 @@
         });
 
         if (res.ok) {
-  const data = await res.json();
-  localStorage.setItem('token', data.token);
-  localStorage.setItem('perfil', perfil);
+          const data = await res.json();
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('perfil', perfil);
 
-  if (perfil === 'admin') {
-    window.location.href = 'index.html';
-  } else if (perfil === 'usuario') {
-    window.location.href = 'historia_clinica.html';
-  }
-}
-
+          if (perfil === 'admin') {
+            window.location.href = 'index.html';
+          } else if (perfil === 'usuario') {
+            window.location.href = 'historia_clinica.html';
+          }
         } else {
           mostrarError('Usuario o contraseña incorrectos');
         }
@@ -140,4 +138,3 @@
 
 </body>
 </html>
-
