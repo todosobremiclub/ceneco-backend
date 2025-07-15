@@ -5,25 +5,132 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Historia Clínica - Ceneco</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: url('/fondo.png') no-repeat center center fixed; background-size: cover; color: #333; }
-    .sidebar { position: fixed; top: 0; left: 0; width: 200px; height: 100vh; background-color: rgba(0, 47, 108, 0.95); padding-top: 60px; box-sizing: border-box; }
-    .sidebar a, .sidebar button { display: block; width: 100%; padding: 10px 15px; background: none; border: none; color: #fff; text-align: left; font-weight: bold; text-decoration: none; cursor: pointer; font-size: 14px; }
-    header { position: fixed; top: 0; left: 200px; right: 0; height: 60px; background-color: rgba(255, 255, 255, 0.9); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); box-sizing: border-box; }
-    main { margin-left: 200px; padding: 80px 20px 20px 20px; box-sizing: border-box; }
-    .paciente { background: rgba(255,255,255,0.9); border-radius: 8px; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
-    .historia, .formulario { display: none; margin-top: 10px; }
-    table { width: 100%; border-collapse: collapse; background: #fff; }
-    th, td { border: 1px solid #ddd; padding: 6px; font-size: 13px; }
-    th { background: #f0f0f0; }
-    th.fecha { width: 15%; }
-    th.tipo { width: 10%; }
-    th.contenido { width: 35%; }
-    th.adjunto { width: 20%; }
-    th.acciones { width: 20%; }
-    select, textarea, input[type="file"] { width: 100%; margin-top: 6px; }
-    button { padding: 4px 6px; background-color: #2196F3; border: none; color: white; border-radius: 4px; cursor: pointer; font-size: 12px; }
-    button.small { padding: 4px 8px; font-size: 12px; }
-  </style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('/fondo.png') no-repeat center center fixed;
+    background-size: cover;
+    color: #333;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100vh;
+    background-color: rgba(0, 47, 108, 0.95);
+    padding-top: 60px;
+    box-sizing: border-box;
+  }
+
+  .sidebar a, .sidebar button {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    background: none;
+    border: none;
+    color: #fff;
+    text-align: left;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  header {
+    position: fixed;
+    top: 0;
+    left: 200px;
+    right: 0;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    box-sizing: border-box;
+  }
+
+  main {
+    margin-left: 200px;
+    padding: 100px 20px 20px 20px;
+    box-sizing: border-box;
+  }
+
+  .paciente {
+    background: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .historia, .formulario {
+    display: none;
+    margin-top: 10px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  th {
+    background: #f5f5f5;
+  }
+
+  input[type="text"], select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus, select:focus {
+    border-color: #007BFF;
+  }
+
+  button {
+    padding: 6px 10px;
+    background-color: #007BFF;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.2s;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  button.small {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+</style>
+
 </head>
 <body>
 
@@ -39,15 +146,16 @@
   
 
 <main>
-  <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px;">
-    <input type="text" id="searchInput" placeholder="Buscar Apellido o DNI" style="padding: 5px; width: 200px;">
-    <select id="filterPsico" style="padding: 5px;">
-      <option value="">Filtrar por Psicopedagoga</option>
-    </select>
-    <select id="filterSuper" style="padding: 5px;">
-      <option value="">Filtrar por Supervisora</option>
-    </select>
-  </div>
+  <div class="filtros">
+  <input type="text" id="searchInput" placeholder="Buscar Apellido o DNI">
+  <select id="filterPsico">
+    <option value="">Filtrar por Psicopedagoga</option>
+  </select>
+  <select id="filterSuper">
+    <option value="">Filtrar por Supervisora</option>
+  </select>
+</div>
+
 
   <div id="pacientesContainer"></div>
 </main>
