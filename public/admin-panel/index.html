@@ -375,11 +375,12 @@
 
 
     if (perfil === 'usuario') {
-      document.querySelector('.nuevo-btn')?.style.display = 'none';
-    }
- 
+  document.querySelector('.nuevo-btn')?.style.display = 'none';
 }
-  async function eliminarPaciente(id) {
+}  // ⬅️ ¡Este cierre es el que faltaba!
+
+async function eliminarPaciente(id) {
+
     if (perfil !== 'admin') return;
     if (confirm('¿Seguro que querés eliminar este paciente?')) {
       await fetch(`${API_URL}/${id}`, {
