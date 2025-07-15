@@ -27,11 +27,10 @@ router.post('/login/admin', async (req, res) => {
     }
 
     const token = jwt.sign(
-  { perfil: 'usuario', id: user.id, nombre: user.nombre, apellido: user.apellido, dni: user.dni },
-  SECRET_KEY,
-  { expiresIn: '7d' }
-);
-
+      { perfil: 'admin', id: admin.id, nombre: admin.nombre, apellido: admin.apellido, dni: admin.dni },
+      SECRET_KEY,
+      { expiresIn: '7d' }
+    );
 
     res.json({ token });
   } catch (err) {
@@ -62,7 +61,7 @@ router.post('/login/usuario', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { tipo: 'user', id: user.id, nombre: user.nombre, apellido: user.apellido },
+      { perfil: 'usuario', id: user.id, nombre: user.nombre, apellido: user.apellido, dni: user.dni },
       SECRET_KEY,
       { expiresIn: '7d' }
     );
@@ -75,4 +74,3 @@ router.post('/login/usuario', async (req, res) => {
 });
 
 module.exports = router;
-
