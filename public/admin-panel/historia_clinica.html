@@ -36,17 +36,21 @@
     <button onclick="logout()">Cerrar sesión</button>
   </header>
 
-  <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 20px;">
-  <input type="text" id="searchInput" placeholder="Buscar Apellido o DNI" style="padding: 5px; width: 200px;">
-  <select id="filterPsico" style="padding: 5px;">
-    <option value="">Filtrar por Psicopedagoga</option>
-  </select>
-  <select id="filterSuper" style="padding: 5px;">
-    <option value="">Filtrar por Supervisora</option>
-  </select>
-</div>
+  
 
-<main id="pacientesContainer"></main>
+<main>
+  <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px;">
+    <input type="text" id="searchInput" placeholder="Buscar Apellido o DNI" style="padding: 5px; width: 200px;">
+    <select id="filterPsico" style="padding: 5px;">
+      <option value="">Filtrar por Psicopedagoga</option>
+    </select>
+    <select id="filterSuper" style="padding: 5px;">
+      <option value="">Filtrar por Supervisora</option>
+    </select>
+  </div>
+
+  <div id="pacientesContainer"></div>
+</main>
 
 
   <!-- Script 1: construir el sidebar dinámico -->
