@@ -97,6 +97,14 @@
   </div>
 
   <script>
+    // 🔔 Si venís desde logout, limpiar todo de forma explícita
+    if (sessionStorage.getItem('justLoggedOut')) {
+      localStorage.clear();
+      sessionStorage.removeItem('justLoggedOut');
+    } else if (localStorage.getItem('token')) {
+      window.location.href = 'index.html';
+    }
+
     async function login() {
       const dni = document.getElementById('dni').value.trim();
       const password = document.getElementById('password').value.trim();
@@ -108,7 +116,6 @@
         return;
       }
 
-      // 🔔 URL según perfil seleccionado
       const urlLogin = perfil === 'admin' ? '/api/login/admin' : '/api/login/usuario';
 
       try {
@@ -121,7 +128,7 @@
         if (res.ok) {
           const data = await res.json();
           localStorage.setItem('token', data.token);
-          localStorage.setItem('perfil', perfil); // opcional: guardar perfil
+          localStorage.setItem('perfil', perfil);
           window.location.href = 'index.html';
         } else {
           document.getElementById('error-msg').innerText = 'Usuario o contraseña incorrectos';
@@ -132,11 +139,6 @@
         document.getElementById('error-msg').innerText = 'Error en servidor';
         document.getElementById('error-msg').style.display = 'block';
       }
-    }
-
-    // Si ya está logueado podría redirigir automáticamente
-    if (localStorage.getItem('token')) {
-      window.location.href = 'index.html';
     }
   </script>
 
