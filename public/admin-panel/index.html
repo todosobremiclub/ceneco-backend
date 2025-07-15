@@ -363,9 +363,6 @@ let ordenAscendente = true;
 }
 
 
-   
-  }
-
   async function eliminarPaciente(id) {
     if (confirm('¿Seguro que querés eliminar este paciente?')) {
       await fetch(`${API_URL}/${id}`, {
