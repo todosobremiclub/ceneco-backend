@@ -269,7 +269,7 @@
           <tr>
             <th>N° Paciente</th>
             <th>Nombre</th>
-            <th>Apellido</th>
+            <th id="sortApellido">Apellido 🔽</th>
             <th>DNI</th>
             <th>Fecha Nacimiento</th>
             <th>Edad</th>
@@ -282,6 +282,17 @@
       </table>
     </div>
   </main>
+
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px;">
+  <input type="text" id="searchInput" placeholder="Buscar Apellido o DNI" style="padding: 5px; width: 200px;">
+  <select id="filterPsico" style="padding: 5px;">
+    <option value="">Filtrar por Psicopedagoga</option>
+  </select>
+  <select id="filterSuper" style="padding: 5px;">
+    <option value="">Filtrar por Supervisora</option>
+  </select>
+</div>
+
 
   <div id="modal" class="modal">
     <div class="modal-content">
