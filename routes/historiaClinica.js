@@ -12,7 +12,7 @@ router.get('/:numero_paciente', async (req, res) => {
   const { numero_paciente } = req.params;
   try {
     const result = await pool.query(
-      `SELECT id, fecha, tipo, contenido, archivo, autor
+      `SELECT id, fecha, tipo, contenido, archivo, autor, autor_nombre
        FROM historia_clinica
        WHERE paciente_id = $1
        ORDER BY fecha ASC`,
@@ -39,7 +39,8 @@ router.get('/:numero_paciente', async (req, res) => {
         tipo: r.tipo,
         contenido: r.contenido,
         adjunto,
-        autor: r.autor  // ✅ devolvemos autor para frontend
+        autor: r.autor,
+        autor_nombre: r.autor_nombre  // ✅ devolvemos también autor_nombre
       };
     }));
 
@@ -53,13 +54,14 @@ router.get('/:numero_paciente', async (req, res) => {
 // Guardar texto simple
 router.post('/', verificarToken, async (req, res) => {
   const { paciente_id, tipo, contenido } = req.body;
-  const autor = req.user.perfil;  // ✅ capturamos quién guarda el registro
+  const autor = req.user.perfil;
+  const autor_nombre = req.user.nombre;
 
   try {
     await pool.query(
-      `INSERT INTO historia_clinica (paciente_id, tipo, contenido, fecha, autor)
-       VALUES ($1, $2, $3, NOW(), $4)`,
-      [paciente_id, tipo, contenido, autor]
+      `INSERT INTO historia_clinica (paciente_id, tipo, contenido, fecha, autor, autor_nombre)
+       VALUES ($1, $2, $3, NOW(), $4, $5)`,
+      [paciente_id, tipo, contenido, autor, autor_nombre]
     );
     res.sendStatus(200);
   } catch (err) {
@@ -72,6 +74,7 @@ router.post('/', verificarToken, async (req, res) => {
 router.post('/documento', verificarToken, upload.single('archivo'), async (req, res) => {
   const { paciente_id, tipo, contenido } = req.body;
   const autor = req.user.perfil;
+  const autor_nombre = req.user.nombre;
 
   if (!req.file) {
     return res.status(400).send('Archivo no recibido');
@@ -94,9 +97,9 @@ router.post('/documento', verificarToken, upload.single('archivo'), async (req, 
     stream.on('finish', async () => {
       try {
         await pool.query(
-          `INSERT INTO historia_clinica (paciente_id, tipo, contenido, archivo, fecha, autor)
-           VALUES ($1, $2, $3, $4, NOW(), $5)`,
-          [paciente_id, tipo, contenido, filename, autor]
+          `INSERT INTO historia_clinica (paciente_id, tipo, contenido, archivo, fecha, autor, autor_nombre)
+           VALUES ($1, $2, $3, $4, NOW(), $5, $6)`,
+          [paciente_id, tipo, contenido, filename, autor, autor_nombre]
         );
         res.sendStatus(200);
       } catch (err) {
@@ -113,7 +116,7 @@ router.post('/documento', verificarToken, upload.single('archivo'), async (req, 
   }
 });
 
-// NUEVO: Eliminar registro
+// Eliminar registro
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -125,7 +128,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// NUEVO: Editar registro
+// Editar registro
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { tipo, contenido } = req.body;
@@ -143,7 +146,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// NUEVO: Limpiar tabla historia_clinica
+// Limpiar tabla historia_clinica
 router.post('/limpiar', async (req, res) => {
   try {
     await pool.query('DELETE FROM historia_clinica');
