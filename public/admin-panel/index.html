@@ -335,50 +335,51 @@
 
 
   async function cargarPacientes() {
-    let url = API_URL;
-    if (perfil === 'usuario') {
-      url = '/pacientes/mis-pacientes';
-    }
+  let url = API_URL;
+  if (perfil === 'usuario') {
+    url = '/pacientes/mis-pacientes';
+  }
 
-    const response = await fetch(url, {
-      headers: { 'Authorization': token }
-    });
+  const response = await fetch(url, {
+    headers: { 'Authorization': token }
+  });
 
-    if (!response.ok) {
-      logout(); // Si token inválido, logout inmediato
-      return;
-    }
+  if (!response.ok) {
+    logout();
+    return;
+  }
 
-    const pacientes = await response.json();
-    const tbody = document.querySelector('#pacientesTable tbody');
-    tbody.innerHTML = '';
+  const pacientes = await response.json();
+  const tbody = document.querySelector('#pacientesTable tbody');
+  tbody.innerHTML = '';
 
-    pacientes.forEach(p => {
-  const acciones = perfil === 'admin'
-    ? `<button onclick="editarPaciente(${p.id})">Editar</button>
-       <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>`
-    : '';
+  pacientes.forEach(p => {
+    const acciones = perfil === 'admin'
+      ? `<button onclick="editarPaciente(${p.id})">Editar</button>
+         <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>`
+      : '';
 
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td>${p.numero_paciente}</td>
-    <td>${p.nombre}</td>
-    <td>${p.apellido}</td>
-    <td>${p.dni}</td>
-    <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
-    <td>${p.edad}</td>
-    <td>${p.psicopedagoga || ''}</td>
-    <td>${p.supervisora || ''}</td>
-    <td>${acciones}</td>
-  `;
-  tbody.appendChild(tr);
-});
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${p.numero_paciente}</td>
+      <td>${p.nombre}</td>
+      <td>${p.apellido}</td>
+      <td>${p.dni}</td>
+      <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
+      <td>${p.edad}</td>
+      <td>${p.psicopedagoga || ''}</td>
+      <td>${p.supervisora || ''}</td>
+      <td>${acciones}</td>
+    `;
+    tbody.appendChild(tr);
+  });
 
+  if (perfil === 'usuario') {
+    const nuevoBtn = document.querySelector('.nuevo-btn');
+    if (nuevoBtn) nuevoBtn.style.display = 'none';
+  }
+}  // 👈 Esta llave cierra correctamente la función async cargarPacientes
 
-    if (perfil === 'usuario') {
-  document.querySelector('.nuevo-btn')?.style.display = 'none';
-}
-}
 
 
 async function eliminarPaciente(id) {
