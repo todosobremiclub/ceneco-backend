@@ -6,228 +6,190 @@
   <title>Configuración - Ceneco</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-  body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: url('/fondo.png') no-repeat center center fixed;
-    background-size: cover;
-    color: #1a1a1a;
-  }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: url('/fondo.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #1a1a1a;
+    }
 
-  h1 {
-    font-size: 20px; /* 🔹 Más pequeño */
-    color: #153E75;  /* 🔹 Azul oscuro */
-    font-weight: 600;
-  }
+    h1 {
+      font-size: 20px;
+      color: #153E75;
+      font-weight: 600;
+    }
 
-  h2, strong {
-    font-size: 16px;
-    color: #153E75;
-    font-weight: 600;
-  }
+    h2, strong {
+      font-size: 16px;
+      color: #153E75;
+      font-weight: 600;
+    }
 
-  th, td {
-    font-family: 'Inter', sans-serif;
-    color: #0D1B2A;
-  }
+    th, td {
+      font-family: 'Inter', sans-serif;
+      color: #0D1B2A;
+    }
 
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 220px;
-    height: 100vh;
-    background-color: #0b3d91;
-    padding-top: 60px;
-    box-sizing: border-box;
-    z-index: 1000;
-  }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 220px;
+      height: 100vh;
+      background-color: #0b3d91;
+      padding-top: 60px;
+      box-sizing: border-box;
+      z-index: 1000;
+    }
 
-  .sidebar a, .sidebar button {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 20px;
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 15px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease, padding-left 0.2s ease;
-  }
+    .sidebar a, .sidebar button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 15px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease, padding-left 0.2s ease;
+    }
 
-  .sidebar a:hover, .sidebar button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding-left: 30px;
-  }
+    .sidebar a:hover, .sidebar button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding-left: 30px;
+    }
 
-  .sidebar-title {
-    padding: 10px 20px;
-    color: #ccc;
-    text-transform: uppercase;
-    font-size: 12px;
-    letter-spacing: 1px;
-  }
+    header {
+      position: fixed;
+      top: 0;
+      left: 220px;
+      right: 0;
+      height: 60px;
+      background-color: rgba(255, 255, 255, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 500;
+      font-weight: 600;
+      font-size: 17px;
+      color: #153E75;
+    }
 
-  header {
-    position: fixed;
-    top: 0;
-    left: 220px;
-    right: 0;
-    height: 60px;
-    background-color: rgba(255, 255, 255, 0.95);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    box-sizing: border-box;
-    z-index: 500;
-    font-weight: 600;
-    font-size: 17px; /* 🔹 Más chico */
-    color: #153E75;
-  }
+    main {
+      margin-left: 220px;
+      padding: 80px 30px 20px 30px;
+    }
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
 
-  .logo-header {
-    height: 40px;
-    width: auto;
-  }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      font-size: 14px;
+    }
 
-  .logout-btn {
-    padding: 6px 12px;
-    border: none;
-    background-color: #f44336;
-    color: #fff;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 500;
-  }
+    th {
+      background-color: #f5f7fa;
+      font-weight: 600;
+      color: #0D1B2A;
+    }
 
-  main {
-    margin-left: 220px;
-    padding: 80px 30px 20px 30px;
-    box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
-    color: #0D1B2A;
-  }
+    button {
+      padding: 6px 10px;
+      margin: 0 2px;
+      border: none;
+      background-color: #2196F3;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 13px;
+    }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    margin-bottom: 30px;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    font-family: 'Inter', sans-serif;
-  }
+    button.delete {
+      background-color: #f44336;
+    }
 
-  th, td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-    font-size: 14px;
-  }
+    .nuevo-btn {
+      margin-bottom: 10px;
+      padding: 8px 14px;
+      background-color: #4CAF50;
+      border-radius: 4px;
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+    }
 
-  th {
-    background-color: #f5f7fa;
-    font-weight: 600;
-    color: #0D1B2A;
-  }
+    .form-inline input {
+      margin-right: 10px;
+      margin-bottom: 5px;
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
 
-  td {
-    color: #0D1B2A;
-    font-weight: 400;
-  }
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
 
-  button {
-    padding: 6px 10px;
-    margin: 0 2px;
-    border: none;
-    background-color: #2196F3;
-    color: #fff;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 13px;
-    font-family: 'Inter', sans-serif;
-  }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
 
-  button.delete {
-    background-color: #f44336;
-  }
+    .modal-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
 
-  .nuevo-btn {
-    margin-bottom: 10px;
-    padding: 8px 14px;
-    background-color: #4CAF50;
-    border: none;
-    border-radius: 4px;
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  .form-inline input {
-    margin-right: 10px;
-    margin-bottom: 5px;
-    padding: 6px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-  }
-
-  .toggle-btn {
-    display: none;
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    background-color: #0b3d91;
-    color: white;
-    border: none;
-    padding: 10px 12px;
-    font-size: 18px;
-    border-radius: 4px;
-    z-index: 3000;
-  }
-
-  @media (max-width: 768px) {
-    .toggle-btn { display: block; }
-    .sidebar { display: none; position: absolute; width: 100%; height: auto; padding-top: 0; }
-    header { left: 0; width: 100%; }
-    main { margin-left: 0; padding-top: 120px; }
-    table, th, td { font-size: 12px; }
-    .form-inline input { width: 100%; margin-right: 0; }
-  }
-</style>
-
+    .modal-actions button {
+      flex: 1;
+      padding: 8px 0;
+      font-size: 14px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+  </style>
 </head>
-
-
 <body>
 
   <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
 
   <div class="sidebar">
-  <div class="sidebar-title">Menú</div>
-  <a href="index.html"><span>👥</span> Pacientes</a>
-  <a href="historia_clinica.html"><span>📄</span> Historia Clínica</a>
-  <a href="configuracion.html"><span>⚙️</span> Configuración</a>
-  <button onclick="logout()"><span>🚪</span> Cerrar sesión</button>
-</div>
-
-
-
+    <a href="index.html">👥 Pacientes</a>
+    <a href="historia_clinica.html">📄 Historia Clínica</a>
+    <a href="configuracion.html">⚙️ Configuración</a>
+    <button onclick="logout()">🚪 Cerrar sesión</button>
+  </div>
 
   <header>
     <div class="header-left">
@@ -238,6 +200,7 @@
   </header>
 
   <main>
+    <!-- Psicopedagogas -->
     <section>
       <h2>Psicopedagogas</h2>
       <div class="form-inline">
@@ -251,18 +214,14 @@
       <table id="tabla_psicopedagogas">
         <thead>
           <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>DNI</th>
-            <th>Teléfono</th>
-            <th>Mail</th>
-            <th>Acciones</th>
+            <th>Nombre</th><th>Apellido</th><th>DNI</th><th>Teléfono</th><th>Mail</th><th>Acciones</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
     </section>
 
+    <!-- Supervisoras -->
     <section>
       <h2>Supervisoras</h2>
       <div class="form-inline">
@@ -276,29 +235,7 @@
       <table id="tabla_supervisoras">
         <thead>
           <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>DNI</th>
-            <th>Teléfono</th>
-            <th>Mail</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-
-    <section>
-      <h2>Tipos de Actividad (Historia Clínica)</h2>
-      <div class="form-inline">
-        <input type="text" id="nuevo_tipo" placeholder="Nuevo tipo">
-        <button onclick="agregarTipo()">Agregar</button>
-      </div>
-      <table id="tabla_tipos">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Acciones</th>
+            <th>Nombre</th><th>Apellido</th><th>DNI</th><th>Teléfono</th><th>Mail</th><th>Acciones</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -306,172 +243,148 @@
     </section>
   </main>
 
- <script>
-  const API_PERSONAS = '/personas';
-  const API_TIPOS = '/tipos-registro';
-  const perfil = localStorage.getItem('perfil');
-  const token = localStorage.getItem('token');
+  <!-- Modal para editar persona -->
+  <div id="modalPersona" class="modal">
+    <div class="modal-content">
+      <h3>Editar Persona</h3>
+      <input type="hidden" id="edit_id">
+      <label>Nombre</label><input type="text" id="edit_nombre">
+      <label>Apellido</label><input type="text" id="edit_apellido">
+      <label>DNI</label><input type="number" id="edit_dni">
+      <label>Teléfono</label><input type="text" id="edit_telefono">
+      <label>Mail</label><input type="email" id="edit_mail">
+      <div class="modal-actions">
+        <button onclick="guardarEdicionPersona()">Guardar</button>
+        <button onclick="cerrarModalPersona()">Cancelar</button>
+      </div>
+    </div>
+  </div>
 
-  function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('perfil');
-    window.location.href = 'login.html';
-  }
+  <script>
+    const API_PERSONAS = '/personas';
+    const perfil = localStorage.getItem('perfil');
+    const token = localStorage.getItem('token');
 
-  // 🔒 Validación estricta al inicio:
-  if (!token || perfil !== 'admin') {
-    logout();
-  }
-
-  async function cargarPersonas() {
-    const res = await fetch(API_PERSONAS, { headers: { 'Authorization': token } });
-    if (!res.ok) {
-      logout();
-      return;
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'login.html';
     }
-    const personas = await res.json();
 
-    const tbodyPsico = document.querySelector('#tabla_psicopedagogas tbody');
-    const tbodySup = document.querySelector('#tabla_supervisoras tbody');
+    if (!token || perfil !== 'admin') logout();
 
-    tbodyPsico.innerHTML = '';
-    tbodySup.innerHTML = '';
+    async function cargarPersonas() {
+      const res = await fetch(API_PERSONAS, { headers: { 'Authorization': token } });
+      const personas = await res.json();
 
-    personas.forEach(p => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${p.nombre}</td>
-        <td>${p.apellido}</td>
-        <td>${p.dni}</td>
-        <td>${p.telefono || ''}</td>
-        <td>${p.mail || ''}</td>
-        <td>
+      const tbodyPsico = document.querySelector('#tabla_psicopedagogas tbody');
+      const tbodySup = document.querySelector('#tabla_supervisoras tbody');
+
+      tbodyPsico.innerHTML = '';
+      tbodySup.innerHTML = '';
+
+      personas.forEach(p => {
+        const acciones = `
           <button class="delete" onclick="eliminarPersona(${p.id})">Eliminar</button>
           <button onclick="editarPassword(${p.id}, '${p.nombre} ${p.apellido}')">Editar contraseña</button>
-        </td>
-      `;
+          <button onclick="editarPersona(${p.id})">Editar</button>
+        `;
 
-      if (p.tipo === 'psicopedagoga') {
-        tbodyPsico.appendChild(tr);
-      } else if (p.tipo === 'supervisora') {
-        tbodySup.appendChild(tr);
-      }
-    });
-  }
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.nombre}</td><td>${p.apellido}</td><td>${p.dni}</td>
+          <td>${p.telefono || ''}</td><td>${p.mail || ''}</td><td>${acciones}</td>
+        `;
 
-  async function cargarTipos() {
-    const res = await fetch(API_TIPOS, { headers: { 'Authorization': token } });
-    if (!res.ok) {
-      logout();
-      return;
-    }
-    const tipos = await res.json();
-    const tbody = document.querySelector('#tabla_tipos tbody');
-    tbody.innerHTML = '';
-
-    tipos.forEach(t => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${t.nombre}</td>
-        <td><button class="delete" onclick="eliminarTipo(${t.id})">Eliminar</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  async function agregarPersona(tipo) {
-    const nombre = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_nombre`).value;
-    const apellido = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_apellido`).value;
-    const dni = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_dni`).value;
-    const telefono = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_telefono`).value;
-    const mail = document.getElementById(`${tipo === 'psicopedagoga' ? 'psico' : 'sup'}_mail`).value;
-
-    if (!nombre || !apellido || !dni) {
-      alert('Nombre, Apellido y DNI son obligatorios.');
-      return;
-    }
-
-    const res = await fetch(API_PERSONAS, { headers: { 'Authorization': token } });
-    const personas = await res.json();
-    if (personas.find(p => p.dni == dni)) {
-      alert('El DNI ya existe.');
-      return;
-    }
-
-    const nuevaPersona = { nombre, apellido, dni, telefono, mail, tipo };
-
-    await fetch(API_PERSONAS, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': token },
-      body: JSON.stringify(nuevaPersona)
-    });
-
-    cargarPersonas();
-  }
-
-  async function agregarTipo() {
-    const nombre = document.getElementById('nuevo_tipo').value.trim();
-    if (!nombre) {
-      alert('Ingresá un nombre de tipo.');
-      return;
-    }
-
-    await fetch(API_TIPOS, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': token },
-      body: JSON.stringify({ nombre })
-    });
-
-    document.getElementById('nuevo_tipo').value = '';
-    cargarTipos();
-  }
-
-  async function eliminarPersona(id) {
-    if (confirm('¿Eliminar esta persona?')) {
-      await fetch(`${API_PERSONAS}/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': token }
+        if (p.tipo === 'psicopedagoga') tbodyPsico.appendChild(tr);
+        else if (p.tipo === 'supervisora') tbodySup.appendChild(tr);
       });
+    }
+
+    async function agregarPersona(tipo) {
+      const prefix = tipo === 'psicopedagoga' ? 'psico' : 'sup';
+      const nombre = document.getElementById(`${prefix}_nombre`).value;
+      const apellido = document.getElementById(`${prefix}_apellido`).value;
+      const dni = document.getElementById(`${prefix}_dni`).value;
+      const telefono = document.getElementById(`${prefix}_telefono`).value;
+      const mail = document.getElementById(`${prefix}_mail`).value;
+
+      if (!nombre || !apellido || !dni) return alert('Nombre, Apellido y DNI son obligatorios.');
+
+      await fetch(API_PERSONAS, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': token },
+        body: JSON.stringify({ nombre, apellido, dni, telefono, mail, tipo })
+      });
+
       cargarPersonas();
     }
-  }
 
-  async function eliminarTipo(id) {
-    if (confirm('¿Eliminar este tipo?')) {
-      await fetch(`${API_TIPOS}/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': token }
+    async function eliminarPersona(id) {
+      if (confirm('¿Eliminar esta persona?')) {
+        await fetch(`${API_PERSONAS}/${id}`, { method: 'DELETE', headers: { 'Authorization': token } });
+        cargarPersonas();
+      }
+    }
+
+    async function editarPassword(id, nombre) {
+      const nuevaPassword = prompt(`Nueva contraseña para ${nombre}:`);
+      if (!nuevaPassword) return;
+
+      const res = await fetch(`/personas/${id}/password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': token },
+        body: JSON.stringify({ password: nuevaPassword })
       });
-      cargarTipos();
+
+      if (res.ok) alert('Contraseña actualizada correctamente.');
+      else alert('Error al actualizar contraseña.');
     }
-  }
 
-  async function editarPassword(id, nombre) {
-    const nuevaPassword = prompt(`Nueva contraseña para ${nombre}:`);
-    if (!nuevaPassword) return;
+    async function editarPersona(id) {
+      const res = await fetch(`${API_PERSONAS}/${id}`, { headers: { 'Authorization': token } });
+      const p = await res.json();
 
-    const res = await fetch(`/personas/${id}/password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': token },
-      body: JSON.stringify({ password: nuevaPassword })
-    });
+      document.getElementById('edit_id').value = p.id;
+      document.getElementById('edit_nombre').value = p.nombre;
+      document.getElementById('edit_apellido').value = p.apellido;
+      document.getElementById('edit_dni').value = p.dni;
+      document.getElementById('edit_telefono').value = p.telefono || '';
+      document.getElementById('edit_mail').value = p.mail || '';
 
-    if (res.ok) {
-      alert('Contraseña actualizada correctamente.');
-    } else {
-      alert('Error al actualizar contraseña.');
+      document.getElementById('modalPersona').style.display = 'flex';
     }
-  }
 
-  function toggleSidebar() {
-    const sidebar = document.querySelector('.sidebar');
-    sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
-  }
+    async function guardarEdicionPersona() {
+      const id = document.getElementById('edit_id').value;
+      const nombre = document.getElementById('edit_nombre').value;
+      const apellido = document.getElementById('edit_apellido').value;
+      const dni = document.getElementById('edit_dni').value;
+      const telefono = document.getElementById('edit_telefono').value;
+      const mail = document.getElementById('edit_mail').value;
 
-  cargarPersonas();
-  cargarTipos();
-</script>
+      if (!nombre || !apellido || !dni) return alert('Nombre, Apellido y DNI son obligatorios.');
 
+      await fetch(`${API_PERSONAS}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': token },
+        body: JSON.stringify({ nombre, apellido, dni, telefono, mail })
+      });
+
+      cerrarModalPersona();
+      cargarPersonas();
+    }
+
+    function cerrarModalPersona() {
+      document.getElementById('modalPersona').style.display = 'none';
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
+    }
+
+    cargarPersonas();
+  </script>
 
 </body>
 </html>
