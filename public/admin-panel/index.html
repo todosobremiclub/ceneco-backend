@@ -4,242 +4,212 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gestión de Pacientes - Ceneco</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: url('/fondo.png') no-repeat center center fixed;
-      background-size: cover;
-      color: #333;
-    }
+   <style>
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: url('/fondo.png') no-repeat center center fixed;
+    background-size: cover;
+    color: #1a1a1a;
+  }
 
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 200px;
-      height: 100vh;
-      background-color: rgba(0, 47, 108, 0.95);
-      padding-top: 60px;
-      box-sizing: border-box;
-      z-index: 1000;
-    }
+  h1 {
+    font-size: 20px; /* 🔹 Más pequeño */
+    color: #153E75;  /* 🔹 Azul oscuro */
+    font-weight: 600;
+  }
 
-    .sidebar a, .sidebar button {
-      display: block;
-      width: 100%;
-      padding: 10px 15px;
-      background: none;
-      border: none;
-      color: #fff;
-      text-align: left;
-      font-weight: bold;
-      text-decoration: none;
-      cursor: pointer;
-      font-size: 14px;
-    }
+  h2, strong {
+    font-size: 16px;
+    color: #153E75;
+    font-weight: 600;
+  }
 
-    .sidebar a:hover, .sidebar button:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
+  th, td {
+    font-family: 'Inter', sans-serif;
+    color: #0D1B2A;
+  }
 
-    header {
-      position: fixed;
-      top: 0;
-      left: 200px;
-      right: 0;
-      height: 60px;
-      background-color: rgba(255, 255, 255, 0.9);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      box-sizing: border-box;
-      z-index: 500;
-    }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 220px;
+    height: 100vh;
+    background-color: #0b3d91;
+    padding-top: 60px;
+    box-sizing: border-box;
+    z-index: 1000;
+  }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+  .sidebar a, .sidebar button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, padding-left 0.2s ease;
+  }
 
-    .logo-header {
-      height: 40px;
-      width: auto;
-    }
+  .sidebar a:hover, .sidebar button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding-left: 30px;
+  }
 
-    header h1 {
-      margin: 0;
-      font-size: 18px;
-      color: #333;
-    }
+  .sidebar-title {
+    padding: 10px 20px;
+    color: #ccc;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
 
-    .logout-btn {
-      padding: 6px 12px;
-      border: none;
-      background-color: #f44336;
-      color: #fff;
-      cursor: pointer;
-      border-radius: 4px;
-      font-size: 14px;
-    }
+  header {
+    position: fixed;
+    top: 0;
+    left: 220px;
+    right: 0;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    z-index: 500;
+    font-weight: 600;
+    font-size: 17px; /* 🔹 Más chico */
+    color: #153E75;
+  }
 
-    main {
-      margin-left: 200px;
-      padding: 80px 20px 20px 20px;
-      box-sizing: border-box;
-    }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-    .content-box {
-      background-color: rgba(255, 255, 255, 0.9);
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      overflow-x: auto;
-    }
+  .logo-header {
+    height: 40px;
+    width: auto;
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-    }
+  .logout-btn {
+    padding: 6px 12px;
+    border: none;
+    background-color: #f44336;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+  }
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-      font-size: 14px;
-    }
+  main {
+    margin-left: 220px;
+    padding: 80px 30px 20px 30px;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    color: #0D1B2A;
+  }
 
-    th {
-      background-color: #f0f0f0;
-    }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-family: 'Inter', sans-serif;
+  }
 
-    button {
-      padding: 4px 8px;
-      margin: 0 2px;
-      border: none;
-      background-color: #2196F3;
-      color: #fff;
-      cursor: pointer;
-      border-radius: 3px;
-      font-size: 12px;
-    }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    font-size: 14px;
+  }
 
-    button.delete {
-      background-color: #f44336;
-    }
+  th {
+    background-color: #f5f7fa;
+    font-weight: 600;
+    color: #0D1B2A;
+  }
 
-    .nuevo-btn {
-      margin-bottom: 10px;
-      padding: 8px 12px;
-      background-color: #4CAF50;
-      border: none;
-      border-radius: 4px;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
-    }
+  td {
+    color: #0D1B2A;
+    font-weight: 400;
+  }
 
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 2000;
-      left: 0; top: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-    }
+  button {
+    padding: 6px 10px;
+    margin: 0 2px;
+    border: none;
+    background-color: #2196F3;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+  }
 
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      width: 300px;
-    }
+  button.delete {
+    background-color: #f44336;
+  }
 
-    .modal-content h3 {
-      margin-top: 0;
-      font-size: 16px;
-    }
+  .nuevo-btn {
+    margin-bottom: 10px;
+    padding: 8px 14px;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+  }
 
-    .modal-content label {
-      font-size: 13px;
-      display: block;
-      margin-top: 10px;
-    }
+  .form-inline input {
+    margin-right: 10px;
+    margin-bottom: 5px;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+  }
 
-    .modal-content input, .modal-content select {
-      width: 100%;
-      padding: 6px;
-      margin-top: 4px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
+  .toggle-btn {
+    display: none;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background-color: #0b3d91;
+    color: white;
+    border: none;
+    padding: 10px 12px;
+    font-size: 18px;
+    border-radius: 4px;
+    z-index: 3000;
+  }
 
-    .modal-actions {
-      margin-top: 15px;
-      text-align: right;
-    }
+  @media (max-width: 768px) {
+    .toggle-btn { display: block; }
+    .sidebar { display: none; position: absolute; width: 100%; height: auto; padding-top: 0; }
+    header { left: 0; width: 100%; }
+    main { margin-left: 0; padding-top: 120px; }
+    table, th, td { font-size: 12px; }
+    .form-inline input { width: 100%; margin-right: 0; }
+  }
+</style>
 
-    .toggle-btn {
-      display: none;
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      background-color: rgba(0,47,108,0.95);
-      color: white;
-      border: none;
-      padding: 10px 12px;
-      font-size: 18px;
-      border-radius: 4px;
-      z-index: 3000;
-    }
-
-    @media (max-width: 768px) {
-      .toggle-btn {
-        display: block;
-      }
-
-      .sidebar {
-        display: none;
-        position: absolute;
-        width: 100%;
-        height: auto;
-        padding-top: 0;
-      }
-
-      header {
-        left: 0;
-        width: 100%;
-      }
-
-      main {
-        margin-left: 0;
-        padding-top: 120px;
-      }
-
-      .content-box {
-        padding: 10px;
-      }
-
-      table, th, td {
-        font-size: 12px;
-      }
-
-      .header-left h1 {
-        font-size: 16px;
-      }
-    }
-
-    @media (max-width: 500px) {
-      .modal-content {
-        width: 90%;
-      }
-    }
-  </style>
 </head>
 <body>
 
