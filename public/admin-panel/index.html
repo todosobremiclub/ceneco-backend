@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gestión de Pacientes - Ceneco</title>
-   <style>
+ <style>
   body {
     margin: 0;
     font-family: 'Inter', sans-serif;
@@ -209,7 +209,7 @@
     .form-inline input { width: 100%; margin-right: 0; }
   }
 
-  /* 🔧 Agregado para ocultar correctamente el modal por defecto */
+  /* 🔧 Modal mejorado y oculto por defecto */
   .modal {
     display: none;
     position: fixed;
@@ -227,10 +227,54 @@
     background: white;
     padding: 20px;
     border-radius: 8px;
-    width: 90%;
+    width: 100%;
     max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-family: 'Inter', sans-serif;
+  }
+
+  .modal-content h3 {
+    margin-top: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #153E75;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .modal-content label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+  }
+
+  .modal-content input,
+  .modal-content select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .modal-actions button {
+    flex: 1;
+    padding: 8px 0;
+    font-size: 14px;
+    border-radius: 4px;
+    font-weight: 500;
   }
 </style>
+
 
 
 </head>
