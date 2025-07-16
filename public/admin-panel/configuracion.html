@@ -82,9 +82,10 @@
     }
 
     main {
-      margin-left: 220px;
-      padding: 80px 30px 20px 30px;
-    }
+  margin-left: 220px;
+  padding: 100px 30px 20px 30px; /* antes decía 80px, aumentamos a 100px */
+}
+
 
     table {
       width: 100%;
@@ -202,7 +203,9 @@
   <main>
     <!-- Psicopedagogas -->
     <section>
-      <h2>Psicopedagogas</h2>
+      <h2 style="cursor: pointer;" onclick="toggleSection('section_psico')">▶️ Psicopedagogas</h2>
+<div id="section_psico">
+
       <div class="form-inline">
         <input type="text" id="psico_nombre" placeholder="Nombre">
         <input type="text" id="psico_apellido" placeholder="Apellido">
@@ -219,11 +222,14 @@
         </thead>
         <tbody></tbody>
       </table>
+</div> 
     </section>
 
     <!-- Supervisoras -->
     <section>
-      <h2>Supervisoras</h2>
+      <h2 style="cursor: pointer;" onclick="toggleSection('section_super')">▶️ Supervisoras</h2>
+<div id="section_super">
+
       <div class="form-inline">
         <input type="text" id="sup_nombre" placeholder="Nombre">
         <input type="text" id="sup_apellido" placeholder="Apellido">
@@ -240,6 +246,7 @@
         </thead>
         <tbody></tbody>
       </table>
+</div>
     </section>
   </main>
 
@@ -382,6 +389,16 @@
       const sidebar = document.querySelector('.sidebar');
       sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
     }
+
+function toggleSection(sectionId) {
+  const el = document.getElementById(sectionId);
+  if (el.style.display === 'none' || el.style.display === '') {
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
 
     cargarPersonas();
   </script>
