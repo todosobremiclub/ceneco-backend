@@ -4,44 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Historia Clínica - Ceneco</title>
-  <style>
+ <style>
   body {
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', sans-serif;
     background: url('/fondo.png') no-repeat center center fixed;
     background-size: cover;
-    color: #333;
+    color: #1a1a1a;
   }
 
   .sidebar {
     position: fixed;
     top: 0;
     left: 0;
-    width: 200px;
+    width: 220px;
     height: 100vh;
     background-color: rgba(0, 47, 108, 0.95);
     padding-top: 60px;
     box-sizing: border-box;
+    z-index: 1000;
   }
 
   .sidebar a, .sidebar button {
-    display: block;
-    width: 100%;
-    padding: 10px 15px;
-    background: none;
-    border: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
     color: #fff;
-    text-align: left;
-    font-weight: bold;
     text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    border: none;
+    background: none;
     cursor: pointer;
-    font-size: 14px;
+    transition: background-color 0.2s ease, padding-left 0.2s ease;
+  }
+
+  .sidebar a:hover, .sidebar button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding-left: 30px;
   }
 
   header {
     position: fixed;
     top: 0;
-    left: 200px;
+    left: 220px;
     right: 0;
     height: 60px;
     background-color: rgba(255, 255, 255, 0.95);
@@ -51,12 +58,22 @@
     padding: 0 20px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     box-sizing: border-box;
+    font-weight: 600;
+    font-size: 18px;
+    color: #153E75;
+    z-index: 500;
   }
 
   main {
-    margin-left: 200px;
-    padding: 100px 20px 20px 20px;
+    margin-left: 220px;
+    padding: 80px 20px 20px 20px;
     box-sizing: border-box;
+  }
+
+  h2, strong {
+    font-size: 16px;
+    color: #153E75;
+    font-weight: 600;
   }
 
   .paciente {
@@ -76,6 +93,9 @@
     width: 100%;
     border-collapse: collapse;
     background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
 
   th, td {
@@ -86,6 +106,13 @@
 
   th {
     background: #f5f5f5;
+    font-weight: 600;
+    color: #0D1B2A;
+  }
+
+  td {
+    color: #0D1B2A;
+    font-weight: 400;
   }
 
   input[type="text"], select {
@@ -129,7 +156,22 @@
     align-items: center;
     margin-bottom: 20px;
   }
+
+  @media (max-width: 768px) {
+    .sidebar {
+      display: none;
+    }
+    header {
+      left: 0;
+      width: 100%;
+    }
+    main {
+      margin-left: 0;
+      padding-top: 100px;
+    }
+  }
 </style>
+
 
 </head>
 <body>
