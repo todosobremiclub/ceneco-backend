@@ -1,12 +1,27 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs'); // Necesario para hashear password
-const pool = require('../db'); // Ajustar según tu conexión
+const bcrypt = require('bcryptjs');
+const pool = require('../db');
 
 // Obtener todas las personas
 router.get('/', async (req, res) => {
   const result = await pool.query('SELECT * FROM personas ORDER BY id');
   res.json(result.rows);
+});
+
+// 🔥 Obtener persona por ID (nuevo)
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM personas WHERE id = $1', [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Persona no encontrada' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error en servidor.' });
+  }
 });
 
 // Agregar persona
@@ -33,13 +48,34 @@ router.post('/', async (req, res) => {
   }
 });
 
+// 🔥 Actualizar persona por ID (nuevo)
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nombre, apellido, dni, telefono, mail } = req.body;
+
+  if (!nombre || !apellido || !dni) {
+    return res.status(400).json({ error: 'Datos obligatorios faltantes.' });
+  }
+
+  try {
+    await pool.query(
+      'UPDATE personas SET nombre = $1, apellido = $2, dni = $3, telefono = $4, mail = $5 WHERE id = $6',
+      [nombre, apellido, dni, telefono, mail, id]
+    );
+    res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error al actualizar persona.' });
+  }
+});
+
 // Eliminar persona
 router.delete('/:id', async (req, res) => {
   await pool.query('DELETE FROM personas WHERE id = $1', [req.params.id]);
   res.sendStatus(204);
 });
 
-// 🔒 Actualizar contraseña
+// Actualizar contraseña
 router.post('/:id/password', async (req, res) => {
   const { id } = req.params;
   const { password } = req.body;
@@ -62,3 +98,4 @@ router.post('/:id/password', async (req, res) => {
 });
 
 module.exports = router;
+
