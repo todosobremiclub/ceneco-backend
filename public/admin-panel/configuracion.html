@@ -257,6 +257,25 @@
   </div>
 </section>
 
+<section>
+  <h2 class="section-title" style="cursor: pointer;" onclick="toggleSection('section_obras')">▶️ Obras Sociales</h2>
+  <div id="section_obras" style="display: none;">
+    <div class="form-inline">
+      <input type="text" id="nueva_obra" placeholder="Nueva Obra Social">
+      <button onclick="agregarObraSocial()">Agregar</button>
+    </div>
+    <table id="tabla_obras">
+      <thead>
+        <tr>
+          <th>Nombre</th><th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+
 </main>
 
 <!-- Modal para editar persona -->
@@ -280,6 +299,7 @@
  <script>
   const API_PERSONAS = '/personas';
   const API_TIPOS = '/tipos-registro';
+  const API_OBRAS = '/obras-sociales';
   const perfil = localStorage.getItem('perfil');
   const token = localStorage.getItem('token');
 
@@ -420,9 +440,42 @@
     }
   }
 
+  async function cargarObras() {
+    const res = await fetch(API_OBRAS, { headers: { 'Authorization': token } });
+    const obras = await res.json();
+    const tbody = document.querySelector('#tabla_obras tbody');
+    tbody.innerHTML = '';
+    obras.forEach(o => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${o.nombre}</td><td><button class="delete" onclick="eliminarObra(${o.id})">Eliminar</button></td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function agregarObraSocial() {
+    const nombre = document.getElementById('nueva_obra').value.trim();
+    if (!nombre) return alert('Ingresá un nombre.');
+    await fetch(API_OBRAS, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': token },
+      body: JSON.stringify({ nombre })
+    });
+    document.getElementById('nueva_obra').value = '';
+    cargarObras();
+  }
+
+  async function eliminarObra(id) {
+    if (confirm('¿Eliminar esta obra social?')) {
+      await fetch(`${API_OBRAS}/${id}`, { method: 'DELETE', headers: { 'Authorization': token } });
+      cargarObras();
+    }
+  }
+
   cargarPersonas();
   cargarTipos();
+  cargarObras();
 </script>
+
 
 </body>
 </html>
