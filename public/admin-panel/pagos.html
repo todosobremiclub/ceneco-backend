@@ -2,74 +2,188 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de Pagos</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pagos - Ceneco</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { background-color: #f8f9fa; }
-    .container { max-width: 600px; margin-top: 2rem; }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: url('/fondo.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #1a1a1a;
+    }
+    h1 {
+      font-size: 20px;
+      color: #153E75;
+      font-weight: 600;
+      margin: 0 0 0 10px;
+    }
+    main {
+      margin-left: 220px;
+      padding: 120px 30px 20px 30px;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 220px;
+      height: 100vh;
+      background-color: #0b3d91;
+      padding-top: 60px;
+      box-sizing: border-box;
+      z-index: 1000;
+    }
+    .sidebar a, .sidebar button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 15px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease, padding-left 0.2s ease;
+    }
+    .sidebar a:hover, .sidebar button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding-left: 30px;
+    }
+    header {
+      position: fixed;
+      top: 0;
+      left: 220px;
+      right: 0;
+      height: 60px;
+      background-color: rgba(255, 255, 255, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 500;
+      font-weight: 600;
+      font-size: 17px;
+      color: #153E75;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+    .logo-header {
+      height: 40px;
+      width: auto;
+      margin-top: 8px;
+      margin-right: 10px;
+    }
+    .form-container {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .form-container h2 {
+      margin-bottom: 20px;
+      color: #153E75;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .form-container label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 5px;
+      color: #153E75;
+      font-size: 14px;
+    }
+    .form-container input, .form-container select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .form-container button {
+      padding: 10px 16px;
+      background-color: #2196F3;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .form-container button:hover {
+      background-color: #1976D2;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Registro de Evaluaciones</h2>
 
-    <form id="pagoForm">
-      <div class="mb-3">
-        <label for="paciente" class="form-label">Paciente</label>
-        <select id="paciente" class="form-select" required>
+  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
+  <div class="sidebar">
+    <a href="index.html">👥 Pacientes</a>
+    <a href="historia_clinica.html">📄 Historia Clínica</a>
+    <a href="pagos.html">💰 Pagos</a>
+    <a href="configuracion.html">⚙️ Configuración</a>
+    <button onclick="logout()">🚪 Cerrar sesión</button>
+  </div>
+
+  <header>
+    <div class="header-left">
+      <img src="logo.png" alt="Logo" class="logo-header">
+      <h1>Registro de Pagos - Ceneco</h1>
+    </div>
+  </header>
+
+  <main>
+    <div class="form-container">
+      <h2>Registro de Evaluaciones</h2>
+      <form id="pagoForm">
+        <label for="paciente">Paciente</label>
+        <select id="paciente" required>
           <option value="">Seleccione</option>
         </select>
-      </div>
 
-      <div class="mb-3">
-        <label for="dias" class="form-label">Días evaluados</label>
-        <input type="text" id="dias" class="form-control" placeholder="Ej: Lunes 17 y 24">
-      </div>
+        <label for="dias">Días evaluados</label>
+        <input type="text" id="dias" placeholder="Ej: Lunes 17 y 24">
 
-      <div class="mb-3">
-        <label for="obraSocial" class="form-label">Obra Social</label>
-        <input type="text" id="obraSocial" class="form-control" readonly>
-      </div>
+        <label for="obraSocial">Obra Social</label>
+        <input type="text" id="obraSocial" readonly>
 
-      <div class="mb-3">
-        <label for="tipoSesion" class="form-label">Tipo de sesión</label>
-        <input type="text" id="tipoSesion" class="form-control" readonly>
-      </div>
+        <label for="tipoSesion">Tipo de sesión</label>
+        <input type="text" id="tipoSesion" readonly>
 
-      <div class="mb-3">
-        <label for="montoSesion" class="form-label">Monto por sesión</label>
-        <input type="number" id="montoSesion" class="form-control" readonly>
-      </div>
+        <label for="montoSesion">Monto por sesión</label>
+        <input type="number" id="montoSesion" readonly>
 
-      <div class="mb-3">
-        <label for="cantidadSesiones" class="form-label">Cantidad de sesiones</label>
-        <input type="number" id="cantidadSesiones" class="form-control" min="1" value="1">
-      </div>
+        <label for="cantidadSesiones">Cantidad de sesiones</label>
+        <input type="number" id="cantidadSesiones" min="1" value="1">
 
-      <div class="mb-3">
-        <label for="supervisora" class="form-label">Supervisora</label>
-        <input type="text" id="supervisora" class="form-control" readonly>
-      </div>
+        <label for="supervisora">Supervisora</label>
+        <input type="text" id="supervisora" readonly>
 
-      <div class="mb-3">
-        <label class="form-label">Monto total</label>
-        <input type="text" id="montoTotal" class="form-control" readonly>
-      </div>
+        <label for="montoTotal">Monto total</label>
+        <input type="text" id="montoTotal" readonly>
 
-      <div class="mb-3">
-        <label class="form-label">% Supervisora (30%)</label>
-        <input type="text" id="montoSupervisora" class="form-control" readonly>
-      </div>
+        <label for="montoSupervisora">% Supervisora (30%)</label>
+        <input type="text" id="montoSupervisora" readonly>
 
-      <button type="submit" class="btn btn-primary">Registrar Pago</button>
-    </form>
-  </div>
+        <button type="submit">Registrar Pago</button>
+      </form>
+    </div>
+  </main>
 
   <script>
     const token = localStorage.getItem('token');
 
-    // 👉 Cargar pacientes asignados
     async function cargarPacientes() {
       const res = await fetch('/api/mis-pacientes', { headers: { Authorization: token } });
       const pacientes = await res.json();
@@ -82,19 +196,15 @@
       });
     }
 
-    // 👉 Al seleccionar paciente, completar datos automáticamente
     document.getElementById('paciente').addEventListener('change', async (e) => {
       const id = e.target.value;
       if (!id) return;
-
       const res = await fetch(`/api/pacientes/${id}`, { headers: { Authorization: token } });
       const p = await res.json();
-
       document.getElementById('obraSocial').value = p.obra_social || '';
       document.getElementById('tipoSesion').value = p.tipo_sesion || '';
       document.getElementById('montoSesion').value = p.monto_sesion || 0;
       document.getElementById('supervisora').value = p.supervisora || '';
-
       calcularMontos();
     });
 
@@ -105,18 +215,53 @@
       const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
       const total = monto * sesiones;
       const supervisora = total * 0.3;
-
       document.getElementById('montoTotal').value = `$${total.toLocaleString()}`;
       document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString()}`;
     }
 
     document.getElementById('pagoForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      // Aquí iría el fetch POST al backend para guardar el pago
-      alert('Pago registrado');
+      const pacienteId = document.getElementById('paciente').value;
+      const dias = document.getElementById('dias').value;
+      const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
+      const total = parseFloat(document.getElementById('montoSesion').value) * sesiones;
+      const montoSup = total * 0.3;
+      const payload = {
+        paciente_id: pacienteId,
+        dias_evaluados: dias,
+        cantidad_sesiones: sesiones,
+        monto_total: total,
+        monto_supervisora: montoSup
+      };
+      const res = await fetch('/api/pagos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        alert('Pago registrado correctamente');
+        document.getElementById('pagoForm').reset();
+      } else {
+        alert('Error al registrar el pago');
+      }
     });
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
+    }
 
     cargarPacientes();
   </script>
+
 </body>
 </html>
+
