@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db'); // asegúrate que `pool` apunta a tu conexión Postgres
-const verificarToken = require('../middlewares/verificarToken'); // si tenés middleware
+const verificarToken = require('../middleware/verificarToken');
+
 
 // Endpoint POST para registrar pagos
 router.post('/', verificarToken, async (req, res) => {
