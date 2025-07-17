@@ -10,7 +10,7 @@ app.use(express.json());
 // ✅ Servir archivos adjuntos desde la carpeta uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// API routes
+// API routes existentes
 const pacientesRoutes = require('./routes/pacientes');
 app.use('/pacientes', pacientesRoutes);
 
@@ -24,8 +24,12 @@ const historiaClinicaRoutes = require('./routes/historiaClinica');
 app.use('/historia', historiaClinicaRoutes);
 
 // 🔐 Login routes
-const authRoutes = require('./routes/authRoutes'); // <<-- Agregá esta línea
-app.use('/api', authRoutes); // <<-- Prefijo para las rutas de login: /api/login/admin, etc.
+const authRoutes = require('./routes/authRoutes');
+app.use('/api', authRoutes);
+
+// 🚨 Nuevo: pagos routes
+const pagosRoutes = require('./routes/pagosRoutes');
+app.use('/api/pagos', pagosRoutes); // Prefijo /api/pagos para las operaciones de pagos
 
 // Static files para admin-panel
 app.use(express.static(path.join(__dirname, 'public/admin-panel')));
