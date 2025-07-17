@@ -5,9 +5,9 @@ const verificarToken = require('../middleware/verificarToken');
 
 // Middleware soloUser (para psicopedagogas)
 function soloUser(req, res, next) {
-  console.log("🔎 [soloUser] req.user recibido:", req.user);
-  if (req.user.perfil !== 'usuario') {
-    console.log("❌ [soloUser] perfil no autorizado:", req.user.perfil);
+  console.log("🔎 [soloUser] req.usuario recibido:", req.usuario);
+  if (req.usuario.perfil !== 'usuario') {
+    console.log("❌ [soloUser] perfil no autorizado:", req.usuario.perfil);
     return res.status(403).send('Acceso permitido solo a psicopedagogas');
   }
   console.log("✅ [soloUser] acceso permitido a psicopedagoga");
@@ -16,9 +16,9 @@ function soloUser(req, res, next) {
 
 // Obtener solo pacientes asignados a la psicopedagoga logueada
 router.get('/mis-pacientes', verificarToken, soloUser, async (req, res) => {
-  console.log("📥 [GET /mis-pacientes] Iniciando para usuario:", req.user);
+  console.log("📥 [GET /mis-pacientes] Iniciando para usuario:", req.usuario);
 
-  const nombrePsicopedagoga = req.user.nombre;
+  const nombrePsicopedagoga = req.usuario.nombre;
   console.log("🔔 [GET /mis-pacientes] nombrePsicopedagoga =", nombrePsicopedagoga);
 
   try {
@@ -161,3 +161,4 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
+
