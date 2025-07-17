@@ -10,7 +10,7 @@ function verificarToken(req, res, next) {
     return res.status(401).send('Token no proporcionado');
   }
 
-  const token = authHeader;  // Si estás enviando solo el token sin el prefijo "Bearer"
+  const token = authHeader;  // Si estás enviando solo el token sin "Bearer"
   console.log("🔔 [verificarToken] Token a verificar:", token);
 
   jwt.verify(token, SECRET_KEY, (err, decoded) => {
@@ -21,8 +21,8 @@ function verificarToken(req, res, next) {
 
     console.log("✅ [verificarToken] Token válido, payload decodificado:", decoded);
 
-    // Guardamos el payload decodificado en req.user
-    req.user = decoded;
+    // ✅ Guardamos en req.usuario (en vez de req.user) para que funcione como espera pagosRoutes.js
+    req.usuario = decoded;
 
     next();
   });

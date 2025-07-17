@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Pagos</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <style>
+    body { background-color: #f8f9fa; }
+    .container { max-width: 600px; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Registro de Evaluaciones</h2>
+
+    <form id="pagoForm">
+      <div class="mb-3">
+        <label for="paciente" class="form-label">Paciente</label>
+        <select id="paciente" class="form-select" required>
+          <option value="">Seleccione</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="dias" class="form-label">Días evaluados</label>
+        <input type="text" id="dias" class="form-control" placeholder="Ej: Lunes 17 y 24">
+      </div>
+
+      <div class="mb-3">
+        <label for="obraSocial" class="form-label">Obra Social</label>
+        <input type="text" id="obraSocial" class="form-control" readonly>
+      </div>
+
+      <div class="mb-3">
+        <label for="tipoSesion" class="form-label">Tipo de sesión</label>
+        <input type="text" id="tipoSesion" class="form-control" readonly>
+      </div>
+
+      <div class="mb-3">
+        <label for="montoSesion" class="form-label">Monto por sesión</label>
+        <input type="number" id="montoSesion" class="form-control" readonly>
+      </div>
+
+      <div class="mb-3">
+        <label for="cantidadSesiones" class="form-label">Cantidad de sesiones</label>
+        <input type="number" id="cantidadSesiones" class="form-control" min="1" value="1">
+      </div>
+
+      <div class="mb-3">
+        <label for="supervisora" class="form-label">Supervisora</label>
+        <input type="text" id="supervisora" class="form-control" readonly>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Monto total</label>
+        <input type="text" id="montoTotal" class="form-control" readonly>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">% Supervisora (30%)</label>
+        <input type="text" id="montoSupervisora" class="form-control" readonly>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Registrar Pago</button>
+    </form>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+
+    // 👉 Cargar pacientes asignados
+    async function cargarPacientes() {
+      const res = await fetch('/api/mis-pacientes', { headers: { Authorization: token } });
+      const pacientes = await res.json();
+      const select = document.getElementById('paciente');
+      pacientes.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `${p.nombre} (${p.turno})`;
+        select.appendChild(opt);
+      });
+    }
+
+    // 👉 Al seleccionar paciente, completar datos automáticamente
+    document.getElementById('paciente').addEventListener('change', async (e) => {
+      const id = e.target.value;
+      if (!id) return;
+
+      const res = await fetch(`/api/pacientes/${id}`, { headers: { Authorization: token } });
+      const p = await res.json();
+
+      document.getElementById('obraSocial').value = p.obra_social || '';
+      document.getElementById('tipoSesion').value = p.tipo_sesion || '';
+      document.getElementById('montoSesion').value = p.monto_sesion || 0;
+      document.getElementById('supervisora').value = p.supervisora || '';
+
+      calcularMontos();
+    });
+
+    document.getElementById('cantidadSesiones').addEventListener('input', calcularMontos);
+
+    function calcularMontos() {
+      const monto = parseFloat(document.getElementById('montoSesion').value) || 0;
+      const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
+      const total = monto * sesiones;
+      const supervisora = total * 0.3;
+
+      document.getElementById('montoTotal').value = `$${total.toLocaleString()}`;
+      document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString()}`;
+    }
+
+    document.getElementById('pagoForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      // Aquí iría el fetch POST al backend para guardar el pago
+      alert('Pago registrado');
+    });
+
+    cargarPacientes();
+  </script>
+</body>
+</html>
