@@ -209,19 +209,22 @@
     const sidebar = document.getElementById('sidebar');
     sidebar.innerHTML = '';
 
-    if (perfil === 'admin') {
-      sidebar.innerHTML = `
-        <a href="index.html">👤 Pacientes</a>
-        <a href="historia_clinica.html">📄 Historia Clínica</a>
-        <a href="configuracion.html">⚙️ Configuración</a>
-        <button onclick="logout()">Cerrar sesión</button>
-      `;
-    } else if (perfil === 'usuario') {
-      sidebar.innerHTML = `
-        <a href="historia_clinica.html">📄 Historia Clínica</a>
-        <button onclick="logout()">Cerrar sesión</button>
-      `;
-    }
+    if (perfil === 'admin' || perfil === 'supervisora') {
+  sidebar.innerHTML = `
+    <a href="index.html">👤 Pacientes</a>
+    <a href="historia_clinica.html">📄 Historia Clínica</a>
+    <a href="pagos.html">💰 Pagos</a>
+    <a href="configuracion.html">⚙️ Configuración</a>
+    <button onclick="logout()">Cerrar sesión</button>
+  `;
+} else if (perfil === 'usuario') {
+  sidebar.innerHTML = `
+    <a href="historia_clinica.html">📄 Historia Clínica</a>
+    <a href="pagos.html">💰 Pagos</a>
+    <button onclick="logout()">Cerrar sesión</button>
+  `;
+}
+
   </script>
 
   <!-- Script 2: resto de la lógica de historia_clinica.html -->
@@ -235,9 +238,10 @@ function logout() {
   window.location.href = 'login.html';
 }
 
-if (!token || !perfil) {
+if (!token || !['admin', 'usuario', 'supervisora'].includes(perfil)) {
   logout();
 }
+
 
 async function cargarTiposRegistro() {
   const res = await fetch('/tipos-registro', { headers: { 'Authorization': token } });
