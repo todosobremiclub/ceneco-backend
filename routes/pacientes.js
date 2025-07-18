@@ -87,11 +87,11 @@ router.get('/:id', async (req, res) => {
         p.dni,
         p.fecha_nacimiento,
         EXTRACT(YEAR FROM AGE(CURRENT_DATE, p.fecha_nacimiento)) AS edad,
-        COALESCE(CONCAT(sup.nombre, ' ', sup.apellido), p.supervisora) AS supervisora,
-        p.tipo_sesion,
-        p.monto_sesion,
+        COALESCE(psico.nombre || ' ' || psico.apellido, p.psicopedagoga) AS psicopedagoga,
+        COALESCE(sup.nombre || ' ' || sup.apellido, p.supervisora) AS supervisora,
         p.obra_social
       FROM pacientes p
+      LEFT JOIN personas psico ON psico.nombre = p.psicopedagoga
       LEFT JOIN personas sup ON sup.nombre = p.supervisora
       WHERE p.id = $1
     `, [id]);
@@ -105,7 +105,9 @@ router.get('/:id', async (req, res) => {
     console.error("❌ [GET /:id] Error:", err);
     res.status(500).send('Error al obtener paciente por ID');
   }
-});router.get('/:id', async (req, res) => {
+});
+
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(`
