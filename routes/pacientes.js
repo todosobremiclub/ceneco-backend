@@ -138,12 +138,15 @@ router.get('/:id', async (req, res) => {
 
 // Crear paciente
 router.post('/', async (req, res) => {
-  const { numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora } = req.body;
+  const { numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora, obra_social } = req.body;
   try {
     const result = await pool.query(`
-      INSERT INTO pacientes (numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-      RETURNING *
+      INSERT INTO pacientes 
+  (numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora, obra_social)
+VALUES 
+  ($1, $2, $3, $4, $5, $6, $7, $8)
+RETURNING *
+
     `, [numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora]);
     res.json(result.rows[0]);
   } catch (err) {
@@ -167,8 +170,17 @@ router.put('/:id', async (req, res) => {
 
     await pool.query(`
       UPDATE pacientes
-      SET numero_paciente=$1, nombre=$2, apellido=$3, dni=$4, fecha_nacimiento=$5, psicopedagoga=$6, supervisora=$7
-      WHERE id=$8
+SET 
+  numero_paciente=$1, 
+  nombre=$2, 
+  apellido=$3, 
+  dni=$4, 
+  fecha_nacimiento=$5, 
+  psicopedagoga=$6, 
+  supervisora=$7,
+  obra_social=$8
+WHERE id=$9
+
     `, [numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora, id]);
 
     res.send('Paciente actualizado');

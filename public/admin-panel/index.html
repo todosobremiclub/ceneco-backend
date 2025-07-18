@@ -358,6 +358,10 @@
       <label>Supervisora</label>
       <select id="nuevo_supervisora"></select>
 
+<label>Obra Social</label>
+<select id="nuevo_obra_social"></select>
+
+
       <div class="modal-actions">
         <button onclick="guardarPaciente()">Guardar</button>
         <button onclick="cerrarModal()">Cancelar</button>
@@ -368,40 +372,35 @@
 <script>
   const API_URL = '/pacientes';
   let pacienteEditandoId = null;
-let allPacientes = [];
-let ordenAscendente = true;
+  let allPacientes = [];
+  let ordenAscendente = true;
 
   const perfil = localStorage.getItem('perfil');
   const token = localStorage.getItem('token');
 
-  // 🔒 Función logout
   function logout() {
     localStorage.clear();
     window.location.href = 'login.html';
   }
 
-  // 🔒 Validación estricta al inicio:
   if (!token || !perfil) {
     logout();
   }
 
   if (perfil === 'usuario') {
-    // 🚫 Si perfil usuario, NO puede estar en index.html
     window.location.href = 'historia_clinica.html';
   }
 
- async function cargarPacientes() {
-  const response = await fetch(API_URL, { headers: { 'Authorization': token } });
-  if (!response.ok) {
-    logout();
-    return;
+  async function cargarPacientes() {
+    const response = await fetch(API_URL, { headers: { 'Authorization': token } });
+    if (!response.ok) {
+      logout();
+      return;
+    }
+    allPacientes = await response.json();
+    renderizarPacientes(allPacientes);
+    cargarFiltros(allPacientes);
   }
-
-  allPacientes = await response.json();
-  renderizarPacientes(allPacientes);
-  cargarFiltros(allPacientes);
-}
-
 
   async function eliminarPaciente(id) {
     if (confirm('¿Seguro que querés eliminar este paciente?')) {
@@ -424,6 +423,7 @@ let ordenAscendente = true;
     document.getElementById('modal').style.display = 'flex';
     await cargarSelectPersonasPsico();
     await cargarSelectPersonasSuper();
+    await cargarSelectObrasSociales();
 
     if (paciente) {
       pacienteEditandoId = paciente.id;
@@ -435,6 +435,7 @@ let ordenAscendente = true;
       document.getElementById('nuevo_fecha_nacimiento').value = paciente.fecha_nacimiento.split('T')[0];
       document.getElementById('nuevo_psicopedagoga').value = paciente.psicopedagoga || '';
       document.getElementById('nuevo_supervisora').value = paciente.supervisora || '';
+      document.getElementById('nuevo_obra_social').value = paciente.obra_social || '';
     } else {
       pacienteEditandoId = null;
       document.getElementById('modal-title').innerText = 'Nuevo Paciente';
@@ -451,6 +452,7 @@ let ordenAscendente = true;
       document.getElementById('nuevo_fecha_nacimiento').value = '';
       document.getElementById('nuevo_psicopedagoga').value = '';
       document.getElementById('nuevo_supervisora').value = '';
+      document.getElementById('nuevo_obra_social').value = '';
     }
   }
 
@@ -466,6 +468,7 @@ let ordenAscendente = true;
     const fecha_nacimiento = document.getElementById('nuevo_fecha_nacimiento').value;
     const psicopedagoga = document.getElementById('nuevo_psicopedagoga').value;
     const supervisora = document.getElementById('nuevo_supervisora').value;
+    const obra_social = document.getElementById('nuevo_obra_social').value;
 
     if (!nombre || !apellido || !dni || !fecha_nacimiento) {
       alert('Por favor completá todos los campos obligatorios.');
@@ -474,11 +477,9 @@ let ordenAscendente = true;
 
     const edad = calcularEdad(fecha_nacimiento);
 
-
-
     const datos = {
       numero_paciente, nombre, apellido, dni,
-      fecha_nacimiento, edad, psicopedagoga, supervisora
+      fecha_nacimiento, edad, psicopedagoga, supervisora, obra_social
     };
 
     if (pacienteEditandoId === null) {
@@ -528,92 +529,101 @@ let ordenAscendente = true;
     });
   }
 
+  async function cargarSelectObrasSociales() {
+    const res = await fetch('/obras-sociales', { headers: { 'Authorization': token } });
+    const obras = await res.json();
+    const select = document.getElementById('nuevo_obra_social');
+    select.innerHTML = '<option value="">Seleccionar...</option>';
+    obras.forEach(o => {
+      select.innerHTML += `<option value="${o.nombre}">${o.nombre}</option>`;
+    });
+  }
+
   function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');
     sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
   }
 
-function renderizarPacientes(pacientes) {
-  const tbody = document.querySelector('#pacientesTable tbody');
-  tbody.innerHTML = '';
+  function renderizarPacientes(pacientes) {
+    const tbody = document.querySelector('#pacientesTable tbody');
+    tbody.innerHTML = '';
 
-  pacientes.forEach(p => {
-    const acciones = `
-      <button onclick="editarPaciente(${p.id})">Editar</button>
-      <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>
-    `;
+    pacientes.forEach(p => {
+      const acciones = `
+        <button onclick="editarPaciente(${p.id})">Editar</button>
+        <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>
+      `;
 
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${p.numero_paciente}</td>
-      <td>${p.nombre}</td>
-      <td>${p.apellido}</td>
-      <td>${p.dni}</td>
-      <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
-      <td>${p.edad}</td>
-      <td>${p.psicopedagoga || ''}</td>
-      <td>${p.supervisora || ''}</td>
-      <td>${acciones}</td>
-    `;
-    tbody.appendChild(tr);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${p.numero_paciente}</td>
+        <td>${p.nombre}</td>
+        <td>${p.apellido}</td>
+        <td>${p.dni}</td>
+        <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
+        <td>${p.edad}</td>
+        <td>${p.psicopedagoga || ''}</td>
+        <td>${p.supervisora || ''}</td>
+        <td>${p.obra_social || ''}</td>
+        <td>${acciones}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function cargarFiltros(pacientes) {
+    const filtroPsico = document.getElementById('filterPsico');
+    const filtroSuper = document.getElementById('filterSuper');
+
+    const psicos = [...new Set(pacientes.map(p => p.psicopedagoga).filter(Boolean))];
+    const supers = [...new Set(pacientes.map(p => p.supervisora).filter(Boolean))];
+
+    filtroPsico.innerHTML = '<option value="">Filtrar por Psicopedagoga</option>';
+    filtroSuper.innerHTML = '<option value="">Filtrar por Supervisora</option>';
+
+    psicos.forEach(p => {
+      const option = document.createElement('option');
+      option.value = p;
+      option.textContent = p;
+      filtroPsico.appendChild(option);
+    });
+
+    supers.forEach(s => {
+      const option = document.createElement('option');
+      option.value = s;
+      option.textContent = s;
+      filtroSuper.appendChild(option);
+    });
+  }
+
+  function aplicarFiltros() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const filtroPsico = document.getElementById('filterPsico').value;
+    const filtroSuper = document.getElementById('filterSuper').value;
+
+    let filtrados = allPacientes.filter(p => {
+      const matchSearch = p.apellido.toLowerCase().includes(search) || String(p.dni).includes(search);
+      const matchPsico = filtroPsico ? p.psicopedagoga === filtroPsico : true;
+      const matchSuper = filtroSuper ? p.supervisora === filtroSuper : true;
+      return matchSearch && matchPsico && matchSuper;
+    });
+
+    renderizarPacientes(filtrados);
+  }
+
+  document.getElementById('searchInput').addEventListener('input', aplicarFiltros);
+  document.getElementById('filterPsico').addEventListener('change', aplicarFiltros);
+  document.getElementById('filterSuper').addEventListener('change', aplicarFiltros);
+
+  document.getElementById('sortApellido').addEventListener('click', () => {
+    ordenAscendente = !ordenAscendente;
+    allPacientes.sort((a, b) => {
+      return ordenAscendente
+        ? a.apellido.localeCompare(b.apellido)
+        : b.apellido.localeCompare(a.apellido);
+    });
+    renderizarPacientes(allPacientes);
   });
-}
-
-function cargarFiltros(pacientes) {
-  const filtroPsico = document.getElementById('filterPsico');
-  const filtroSuper = document.getElementById('filterSuper');
-
-  const psicos = [...new Set(pacientes.map(p => p.psicopedagoga).filter(Boolean))];
-  const supers = [...new Set(pacientes.map(p => p.supervisora).filter(Boolean))];
-
-  filtroPsico.innerHTML = '<option value="">Filtrar por Psicopedagoga</option>';
-  filtroSuper.innerHTML = '<option value="">Filtrar por Supervisora</option>';
-
-  psicos.forEach(p => {
-    const option = document.createElement('option');
-    option.value = p;
-    option.textContent = p;
-    filtroPsico.appendChild(option);
-  });
-
-  supers.forEach(s => {
-    const option = document.createElement('option');
-    option.value = s;
-    option.textContent = s;
-    filtroSuper.appendChild(option);
-  });
-}
-
-function aplicarFiltros() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const filtroPsico = document.getElementById('filterPsico').value;
-  const filtroSuper = document.getElementById('filterSuper').value;
-
-  let filtrados = allPacientes.filter(p => {
-    const matchSearch = p.apellido.toLowerCase().includes(search) || String(p.dni).includes(search);
-    const matchPsico = filtroPsico ? p.psicopedagoga === filtroPsico : true;
-    const matchSuper = filtroSuper ? p.supervisora === filtroSuper : true;
-    return matchSearch && matchPsico && matchSuper;
-  });
-
-  renderizarPacientes(filtrados);
-}
-
-document.getElementById('searchInput').addEventListener('input', aplicarFiltros);
-document.getElementById('filterPsico').addEventListener('change', aplicarFiltros);
-document.getElementById('filterSuper').addEventListener('change', aplicarFiltros);
-
-document.getElementById('sortApellido').addEventListener('click', () => {
-  ordenAscendente = !ordenAscendente;
-  allPacientes.sort((a, b) => {
-    if (ordenAscendente) {
-      return a.apellido.localeCompare(b.apellido);
-    } else {
-      return b.apellido.localeCompare(a.apellido);
-    }
-  });
-  renderizarPacientes(allPacientes);
-});
 
   cargarPacientes();
 </script>
