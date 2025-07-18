@@ -75,7 +75,7 @@ router.get('/', async (req, res) => {
 });
 
 // Obtener un paciente por ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', verificarToken, async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(`
@@ -106,37 +106,6 @@ router.get('/:id', async (req, res) => {
     res.status(500).send('Error al obtener paciente por ID');
   }
 });
-
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const result = await pool.query(`
-      SELECT 
-        p.id,
-        p.numero_paciente,
-        p.nombre,
-        p.apellido,
-        p.dni,
-        p.fecha_nacimiento,
-        p.supervisora,
-        p.tipo_sesion,
-        p.monto_sesion,
-        p.obra_social
-      FROM pacientes p
-      WHERE p.id = $1
-    `, [id]);
-
-    if (result.rowCount === 0) {
-      return res.status(404).send('Paciente no encontrado');
-    }
-
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error("❌ [GET /:id] Error:", err);
-    res.status(500).send('Error al obtener paciente por ID');
-  }
-});
-
 
 // Crear paciente
 router.post('/', async (req, res) => {
