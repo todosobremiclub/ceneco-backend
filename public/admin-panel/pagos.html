@@ -214,17 +214,18 @@
     }
 
     async function cargarPacientes() {
-      const url = perfil === 'usuario' ? '/api/mis-pacientes' : '/pacientes';
-      const res = await fetch(url, { headers: { Authorization: token } });
-      const pacientes = await res.json();
-      const select = document.getElementById('paciente');
-      pacientes.forEach(p => {
-        const opt = document.createElement('option');
-        opt.value = p.id;
-        opt.textContent = `${p.nombre} (${p.turno || ''})`;
-        select.appendChild(opt);
-      });
-    }
+  const url = '/pacientes';  // Forzar que siempre traiga todos para probar
+  const res = await fetch(url, { headers: { Authorization: token } });
+  const pacientes = await res.json();
+  const select = document.getElementById('paciente');
+  pacientes.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `${p.nombre} ${p.apellido} (${p.numero_paciente})`;
+    select.appendChild(opt);
+  });
+}
+
 
     document.getElementById('paciente').addEventListener('change', async (e) => {
       const id = e.target.value;
@@ -241,7 +242,7 @@
     document.getElementById('cantidadSesiones').addEventListener('input', calcularMontos);
 
     function calcularMontos() {
-      let rawMonto = cleaveMonto.getRawValue();
+      let rawMonto = cleaveMonto.getRawValue() || '0';
       const monto = parseFloat(rawMonto) || 0;
       const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
       const total = monto * sesiones;
