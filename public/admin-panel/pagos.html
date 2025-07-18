@@ -245,8 +245,10 @@
     document.getElementById('montoSesion').addEventListener('input', calcularMontos);
 
 function calcularMontos() {
-  let rawMonto = cleaveMonto.getRawValue() || '0';
-  rawMonto = rawMonto.replace(/\./g, '').replace(',', '.');  // 🔥 Eliminar puntos de miles y convertir ',' decimal
+  let rawMonto = document.getElementById('montoSesion').value || '0';
+  rawMonto = rawMonto.replace(/[^\d,]/g, '')  // quita todo menos dígitos y coma
+                     .replace('.', '')        // quita punto separador de miles si hubiera
+                     .replace(',', '.');      // reemplaza coma decimal por punto decimal
   const monto = parseFloat(rawMonto) || 0;
   const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
   const total = monto * sesiones;
