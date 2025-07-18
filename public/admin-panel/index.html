@@ -4,291 +4,238 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gestión de Pacientes - Ceneco</title>
- <style>
-  body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: url('/fondo.png') no-repeat center center fixed;
-    background-size: cover;
-    color: #1a1a1a;
-  }
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: url('/fondo.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #1a1a1a;
+    }
 
-  h1 {
-    font-size: 20px;
-    color: #153E75;
-    font-weight: 600;
-  }
+    h1 {
+      font-size: 20px;
+      color: #153E75;
+      font-weight: 600;
+    }
 
-  h2, strong {
-    font-size: 16px;
-    color: #153E75;
-    font-weight: 600;
-  }
+    th, td {
+      font-family: 'Inter', sans-serif;
+      color: #0D1B2A;
+    }
 
-  th, td {
-    font-family: 'Inter', sans-serif;
-    color: #0D1B2A;
-  }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 220px;
+      height: 100vh;
+      background-color: #0b3d91;
+      padding-top: 60px;
+      box-sizing: border-box;
+      z-index: 1000;
+    }
 
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 220px;
-    height: 100vh;
-    background-color: #0b3d91;
-    padding-top: 60px;
-    box-sizing: border-box;
-    z-index: 1000;
-  }
+    .sidebar a, .sidebar button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease, padding-left 0.2s ease;
+    }
 
-  .sidebar a, .sidebar button {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 20px;
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 15px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease, padding-left 0.2s ease;
-  }
+    header {
+      position: fixed;
+      top: 0;
+      left: 220px;
+      right: 0;
+      height: 60px;
+      background-color: rgba(255, 255, 255, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-sizing: border-box;
+      z-index: 500;
+      font-weight: 600;
+      font-size: 17px;
+      color: #153E75;
+    }
 
-  .sidebar a:hover, .sidebar button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding-left: 30px;
-  }
+    main {
+      margin-left: 220px;
+      padding: 80px 30px 20px 30px;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+      color: #0D1B2A;
+    }
 
-  .sidebar-title {
-    padding: 10px 20px;
-    color: #ccc;
-    text-transform: uppercase;
-    font-size: 12px;
-    letter-spacing: 1px;
-  }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-size: 12px;
+    }
 
-  header {
-    position: fixed;
-    top: 0;
-    left: 220px;
-    right: 0;
-    height: 60px;
-    background-color: rgba(255, 255, 255, 0.95);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    box-sizing: border-box;
-    z-index: 500;
-    font-weight: 600;
-    font-size: 17px;
-    color: #153E75;
-  }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 6px;
+      text-align: left;
+      font-size: 12px;
+    }
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+    th {
+      background-color: #f5f7fa;
+      font-weight: 600;
+      color: #0D1B2A;
+    }
 
-  .logo-header {
-    height: 40px;
-    width: auto;
-  }
+    tbody tr:hover {
+      background-color: #f0f4f8;
+    }
 
-  .logout-btn {
-    padding: 6px 12px;
-    border: none;
-    background-color: #f44336;
-    color: #fff;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 500;
-  }
+    button {
+      padding: 4px 8px;
+      margin: 0 2px;
+      border: none;
+      background-color: #2196F3;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+    }
 
-  main {
-    margin-left: 220px;
-    padding: 80px 30px 20px 30px;
-    box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
-    color: #0D1B2A;
-  }
+    button.delete {
+      background-color: #f44336;
+    }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    margin-bottom: 30px;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    font-family: 'Inter', sans-serif;
-  }
+    .nuevo-btn {
+      margin-bottom: 10px;
+      padding: 6px 12px;
+      background-color: #4CAF50;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+    }
 
-  th, td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-    font-size: 14px;
-  }
+    .form-inline input {
+      margin-right: 10px;
+      margin-bottom: 5px;
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+    }
 
-  th {
-    background-color: #f5f7fa;
-    font-weight: 600;
-    color: #0D1B2A;
-  }
+    .toggle-btn {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: #0b3d91;
+      color: white;
+      border: none;
+      padding: 10px 12px;
+      font-size: 18px;
+      border-radius: 4px;
+      z-index: 3000;
+    }
 
-  td {
-    color: #0D1B2A;
-    font-weight: 400;
-  }
+    @media (max-width: 768px) {
+      table, th, td { font-size: 11px; }
+      .form-inline input { width: 100%; margin-right: 0; }
+    }
 
-  button {
-    padding: 6px 10px;
-    margin: 0 2px;
-    border: none;
-    background-color: #2196F3;
-    color: #fff;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 13px;
-    font-family: 'Inter', sans-serif;
-  }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
 
-  button.delete {
-    background-color: #f44336;
-  }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      font-family: 'Inter', sans-serif;
+    }
 
-  .nuevo-btn {
-    margin-bottom: 10px;
-    padding: 8px 14px;
-    background-color: #4CAF50;
-    border: none;
-    border-radius: 4px;
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-  }
+    .modal-content h3 {
+      margin-top: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #153E75;
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-  .form-inline input {
-    margin-right: 10px;
-    margin-bottom: 5px;
-    padding: 6px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-  }
+    .modal-content label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #333;
+    }
 
-  .toggle-btn {
-    display: none;
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    background-color: #0b3d91;
-    color: white;
-    border: none;
-    padding: 10px 12px;
-    font-size: 18px;
-    border-radius: 4px;
-    z-index: 3000;
-  }
+    .modal-content input,
+    .modal-content select {
+      width: 100%;
+      padding: 6px 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 12px;
+    }
 
-  @media (max-width: 768px) {
-    .toggle-btn { display: block; }
-    .sidebar { display: none; position: absolute; width: 100%; height: auto; padding-top: 0; }
-    header { left: 0; width: 100%; }
-    main { margin-left: 0; padding-top: 120px; }
-    table, th, td { font-size: 12px; }
-    .form-inline input { width: 100%; margin-right: 0; }
-  }
+    .modal-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
 
-  /* 🔧 Modal mejorado y oculto por defecto */
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-  }
-
-  .modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    font-family: 'Inter', sans-serif;
-  }
-
-  .modal-content h3 {
-    margin-top: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: #153E75;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-
-  .modal-content label {
-    display: block;
-    margin-bottom: 4px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #333;
-  }
-
-  .modal-content input,
-  .modal-content select {
-    width: 100%;
-    padding: 8px 10px;
-    margin-bottom: 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-
-  .modal-actions {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .modal-actions button {
-    flex: 1;
-    padding: 8px 0;
-    font-size: 14px;
-    border-radius: 4px;
-    font-weight: 500;
-  }
-</style>
-
-
-
+    .modal-actions button {
+      flex: 1;
+      padding: 6px 0;
+      font-size: 12px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+  </style>
 </head>
 <body>
-
   <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
 
   <div class="sidebar">
     <a href="index.html">👤 Pacientes</a>
-<a href="historia_clinica.html">📄 Historia Clínica</a>
+    <a href="historia_clinica.html">📄 Historia Clínica</a>
     <a href="configuracion.html">⚙️ Configuración</a>
     <button onclick="logout()">Cerrar sesión</button>
   </div>
-
 
   <header>
     <div class="header-left">
@@ -300,69 +247,64 @@
 
   <main>
     <div class="content-box">
-  <button class="nuevo-btn" onclick="abrirModal()">➕ Nuevo Paciente</button>
+      <button class="nuevo-btn" onclick="abrirModal()">➕ Nuevo Paciente</button>
 
-  <!-- 🔥 Bloque de filtros movido aquí -->
-  <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0;">
-    <input type="text" id="searchInput" placeholder="Buscar Apellido o DNI" style="padding: 5px; width: 200px;">
-    <select id="filterPsico" style="padding: 5px;">
-      <option value="">Filtrar por Psicopedagoga</option>
-    </select>
-    <select id="filterSuper" style="padding: 5px;">
-      <option value="">Filtrar por Supervisora</option>
-    </select>
-  </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0;">
+        <input type="text" id="searchInput" placeholder="Buscar Apellido o DNI" style="padding: 5px; width: 200px; font-size: 12px;">
+        <select id="filterPsico" style="padding: 5px; font-size: 12px;">
+          <option value="">Filtrar por Psicopedagoga</option>
+        </select>
+        <select id="filterSuper" style="padding: 5px; font-size: 12px;">
+          <option value="">Filtrar por Supervisora</option>
+        </select>
+      </div>
 
-  <table id="pacientesTable">
-    <thead>
-  <tr>
-    <th>N° Paciente</th>
-    <th>Nombre</th>
-    <th id="sortApellido">Apellido 🔽</th>
-    <th>DNI</th>
-    <th>Fecha Nacimiento</th>
-    <th>Edad</th>
-    <th>Psicopedagoga</th>
-    <th>Supervisora</th>
-    <th>Obra Social</th>
-    <th>Acciones</th>
-  </tr>
-</thead>
-
-    <tbody></tbody>
-  </table>
-</div>
-
+      <table id="pacientesTable">
+        <thead>
+          <tr>
+            <th>N° Paciente</th>
+            <th>Nombre</th>
+            <th id="sortApellido">Apellido 🔽</th>
+            <th>DNI</th>
+            <th>Fecha Nacimiento</th>
+            <th>Edad</th>
+            <th>Psicopedagoga</th>
+            <th>Supervisora</th>
+            <th>Obra Social</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </main>
-
 
   <div id="modal" class="modal">
     <div class="modal-content">
       <h3 id="modal-title">Nuevo Paciente</h3>
       <label>Nro Paciente</label>
-      <input type="text" id="nuevo_numero_paciente" readonly>
+      <input type="text" id="nuevo_numero_paciente" readonly style="font-size: 12px;">
 
       <label>Nombre</label>
-      <input type="text" id="nuevo_nombre">
+      <input type="text" id="nuevo_nombre" style="font-size: 12px;">
 
       <label>Apellido</label>
-      <input type="text" id="nuevo_apellido">
+      <input type="text" id="nuevo_apellido" style="font-size: 12px;">
 
       <label>DNI</label>
-      <input type="number" id="nuevo_dni">
+      <input type="number" id="nuevo_dni" style="font-size: 12px;">
 
       <label>Fecha Nacimiento</label>
-      <input type="date" id="nuevo_fecha_nacimiento">
+      <input type="date" id="nuevo_fecha_nacimiento" style="font-size: 12px;">
 
       <label>Psicopedagoga</label>
-      <select id="nuevo_psicopedagoga"></select>
+      <select id="nuevo_psicopedagoga" style="font-size: 12px;"></select>
 
       <label>Supervisora</label>
-      <select id="nuevo_supervisora"></select>
+      <select id="nuevo_supervisora" style="font-size: 12px;"></select>
 
-<label>Obra Social</label>
-<select id="nuevo_obra_social"></select>
-
+      <label>Obra Social</label>
+      <select id="nuevo_obra_social" style="font-size: 12px;"></select>
 
       <div class="modal-actions">
         <button onclick="guardarPaciente()">Guardar</button>
@@ -371,268 +313,191 @@
     </div>
   </div>
 
-<script>
-  const API_URL = '/pacientes';
-  let pacienteEditandoId = null;
-  let allPacientes = [];
-  let ordenAscendente = true;
+  <script>
+    const API_URL = '/pacientes';
+    const API_OBRAS = '/api/obras-sociales';
+    let pacienteEditandoId = null;
+    let allPacientes = [];
+    let ordenAscendente = true;
 
-  const perfil = localStorage.getItem('perfil');
-  const token = localStorage.getItem('token');
+    const perfil = localStorage.getItem('perfil');
+    const token = localStorage.getItem('token');
 
-  function logout() {
-    localStorage.clear();
-    window.location.href = 'login.html';
-  }
-
-  if (!token || !perfil) {
-    logout();
-  }
-
-  if (perfil === 'usuario') {
-    window.location.href = 'historia_clinica.html';
-  }
-
-  async function cargarPacientes() {
-    const response = await fetch(API_URL, { headers: { 'Authorization': token } });
-    if (!response.ok) {
-      logout();
-      return;
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'login.html';
     }
-    allPacientes = await response.json();
-    renderizarPacientes(allPacientes);
-    cargarFiltros(allPacientes);
-  }
 
-  async function eliminarPaciente(id) {
-    if (confirm('¿Seguro que querés eliminar este paciente?')) {
-      await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': token }
-      });
+    if (!token || !perfil) logout();
+    if (perfil === 'usuario') window.location.href = 'historia_clinica.html';
+
+    async function cargarPacientes() {
+      const response = await fetch(API_URL, { headers: { 'Authorization': token } });
+      if (!response.ok) { logout(); return; }
+      allPacientes = await response.json();
+      renderizarPacientes(allPacientes);
+      cargarFiltros(allPacientes);
+    }
+
+    async function eliminarPaciente(id) {
+      if (confirm('¿Seguro que querés eliminar este paciente?')) {
+        await fetch(`${API_URL}/${id}`, { method: 'DELETE', headers: { 'Authorization': token } });
+        cargarPacientes();
+      }
+    }
+
+    async function editarPaciente(id) {
+      const paciente = await fetch(`${API_URL}/${id}`, { headers: { 'Authorization': token } }).then(res => res.json());
+      abrirModal(paciente);
+    }
+
+    async function abrirModal(paciente = null) {
+      document.getElementById('modal').style.display = 'flex';
+      await cargarSelectPersonasPsico();
+      await cargarSelectPersonasSuper();
+      await cargarSelectObrasSociales();
+
+      if (paciente) {
+        pacienteEditandoId = paciente.id;
+        document.getElementById('modal-title').innerText = 'Editar Paciente';
+        document.getElementById('nuevo_numero_paciente').value = paciente.numero_paciente;
+        document.getElementById('nuevo_nombre').value = paciente.nombre;
+        document.getElementById('nuevo_apellido').value = paciente.apellido;
+        document.getElementById('nuevo_dni').value = paciente.dni;
+        document.getElementById('nuevo_fecha_nacimiento').value = paciente.fecha_nacimiento.split('T')[0];
+        document.getElementById('nuevo_psicopedagoga').value = paciente.psicopedagoga || '';
+        document.getElementById('nuevo_supervisora').value = paciente.supervisora || '';
+        document.getElementById('nuevo_obra_social').value = paciente.obra_social || '';
+      } else {
+        pacienteEditandoId = null;
+        document.getElementById('modal-title').innerText = 'Nuevo Paciente';
+        const pacientes = await fetch(API_URL, { headers: { 'Authorization': token } }).then(res => res.json());
+        let maxNumero = Math.max(0, ...pacientes.map(p => parseInt(p.numero_paciente)));
+        document.getElementById('nuevo_numero_paciente').value = String(maxNumero + 1).padStart(4, '0');
+        ['nuevo_nombre', 'nuevo_apellido', 'nuevo_dni', 'nuevo_fecha_nacimiento', 'nuevo_psicopedagoga', 'nuevo_supervisora', 'nuevo_obra_social'].forEach(id => {
+          document.getElementById(id).value = '';
+        });
+      }
+    }
+
+    function cerrarModal() { document.getElementById('modal').style.display = 'none'; }
+
+    async function guardarPaciente() {
+      const datos = {
+        numero_paciente: document.getElementById('nuevo_numero_paciente').value,
+        nombre: document.getElementById('nuevo_nombre').value,
+        apellido: document.getElementById('nuevo_apellido').value,
+        dni: document.getElementById('nuevo_dni').value,
+        fecha_nacimiento: document.getElementById('nuevo_fecha_nacimiento').value,
+        psicopedagoga: document.getElementById('nuevo_psicopedagoga').value,
+        supervisora: document.getElementById('nuevo_supervisora').value,
+        obra_social: document.getElementById('nuevo_obra_social').value
+      };
+      if (!datos.nombre || !datos.apellido || !datos.dni || !datos.fecha_nacimiento) {
+        alert('Por favor completá todos los campos obligatorios.');
+        return;
+      }
+      if (pacienteEditandoId === null) {
+        await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': token }, body: JSON.stringify(datos) });
+      } else {
+        await fetch(`${API_URL}/${pacienteEditandoId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': token }, body: JSON.stringify(datos) });
+      }
+      cerrarModal();
       cargarPacientes();
     }
-  }
 
-  async function editarPaciente(id) {
-    const paciente = await fetch(`${API_URL}/${id}`, {
-      headers: { 'Authorization': token }
-    }).then(res => res.json());
-    abrirModal(paciente);
-  }
-
-  async function abrirModal(paciente = null) {
-    document.getElementById('modal').style.display = 'flex';
-    await cargarSelectPersonasPsico();
-    await cargarSelectPersonasSuper();
-    await cargarSelectObrasSociales();
-
-    if (paciente) {
-      pacienteEditandoId = paciente.id;
-      document.getElementById('modal-title').innerText = 'Editar Paciente';
-      document.getElementById('nuevo_numero_paciente').value = paciente.numero_paciente;
-      document.getElementById('nuevo_nombre').value = paciente.nombre;
-      document.getElementById('nuevo_apellido').value = paciente.apellido;
-      document.getElementById('nuevo_dni').value = paciente.dni;
-      document.getElementById('nuevo_fecha_nacimiento').value = paciente.fecha_nacimiento.split('T')[0];
-      document.getElementById('nuevo_psicopedagoga').value = paciente.psicopedagoga || '';
-      document.getElementById('nuevo_supervisora').value = paciente.supervisora || '';
-      document.getElementById('nuevo_obra_social').value = paciente.obra_social || '';
-    } else {
-      pacienteEditandoId = null;
-      document.getElementById('modal-title').innerText = 'Nuevo Paciente';
-      const pacientes = await fetch(API_URL, {
-        headers: { 'Authorization': token }
-      }).then(res => res.json());
-      let maxNumero = Math.max(0, ...pacientes.map(p => parseInt(p.numero_paciente)));
-      const siguienteNumero = String(maxNumero + 1).padStart(4, '0');
-      document.getElementById('nuevo_numero_paciente').value = siguienteNumero;
-
-      document.getElementById('nuevo_nombre').value = '';
-      document.getElementById('nuevo_apellido').value = '';
-      document.getElementById('nuevo_dni').value = '';
-      document.getElementById('nuevo_fecha_nacimiento').value = '';
-      document.getElementById('nuevo_psicopedagoga').value = '';
-      document.getElementById('nuevo_supervisora').value = '';
-      document.getElementById('nuevo_obra_social').value = '';
-    }
-  }
-
-  function cerrarModal() {
-    document.getElementById('modal').style.display = 'none';
-  }
-
-  async function guardarPaciente() {
-    const numero_paciente = document.getElementById('nuevo_numero_paciente').value;
-    const nombre = document.getElementById('nuevo_nombre').value;
-    const apellido = document.getElementById('nuevo_apellido').value;
-    const dni = document.getElementById('nuevo_dni').value;
-    const fecha_nacimiento = document.getElementById('nuevo_fecha_nacimiento').value;
-    const psicopedagoga = document.getElementById('nuevo_psicopedagoga').value;
-    const supervisora = document.getElementById('nuevo_supervisora').value;
-    const obra_social = document.getElementById('nuevo_obra_social').value;
-
-    if (!nombre || !apellido || !dni || !fecha_nacimiento) {
-      alert('Por favor completá todos los campos obligatorios.');
-      return;
-    }
-
-    const edad = calcularEdad(fecha_nacimiento);
-
-    const datos = {
-      numero_paciente, nombre, apellido, dni,
-      fecha_nacimiento, edad, psicopedagoga, supervisora, obra_social
-    };
-
-    if (pacienteEditandoId === null) {
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': token },
-        body: JSON.stringify(datos)
-      });
-    } else {
-      await fetch(`${API_URL}/${pacienteEditandoId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': token },
-        body: JSON.stringify(datos)
+    async function cargarSelectPersonasPsico() {
+      const res = await fetch('/personas', { headers: { 'Authorization': token } });
+      const personas = await res.json();
+      const select = document.getElementById('nuevo_psicopedagoga');
+      select.innerHTML = '<option value="">Seleccionar...</option>';
+      personas.filter(p => p.tipo === 'psicopedagoga').forEach(p => {
+        select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
       });
     }
 
-    cerrarModal();
+    async function cargarSelectPersonasSuper() {
+      const res = await fetch('/personas', { headers: { 'Authorization': token } });
+      const personas = await res.json();
+      const select = document.getElementById('nuevo_supervisora');
+      select.innerHTML = '<option value="">Seleccionar...</option>';
+      personas.filter(p => p.tipo === 'supervisora').forEach(p => {
+        select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
+      });
+    }
+
+    async function cargarSelectObrasSociales() {
+      const res = await fetch(API_OBRAS, { headers: { 'Authorization': token } });
+      const obras = await res.json();
+      const select = document.getElementById('nuevo_obra_social');
+      select.innerHTML = '<option value="">Seleccionar...</option>';
+      obras.forEach(o => {
+        select.innerHTML += `<option value="${o.nombre}">${o.nombre}</option>`;
+      });
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function renderizarPacientes(pacientes) {
+      const tbody = document.querySelector('#pacientesTable tbody');
+      tbody.innerHTML = '';
+      pacientes.forEach(p => {
+        const acciones = `
+          <button onclick="editarPaciente(${p.id})">Editar</button>
+          <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>`;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.numero_paciente}</td>
+          <td>${p.nombre}</td>
+          <td>${p.apellido}</td>
+          <td>${p.dni}</td>
+          <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
+          <td>${p.edad}</td>
+          <td>${p.psicopedagoga || ''}</td>
+          <td>${p.supervisora || ''}</td>
+          <td>${p.obra_social || ''}</td>
+          <td>${acciones}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function cargarFiltros(pacientes) {
+      const filtroPsico = document.getElementById('filterPsico');
+      const filtroSuper = document.getElementById('filterSuper');
+      const psicos = [...new Set(pacientes.map(p => p.psicopedagoga).filter(Boolean))];
+      const supers = [...new Set(pacientes.map(p => p.supervisora).filter(Boolean))];
+      filtroPsico.innerHTML = '<option value="">Filtrar por Psicopedagoga</option>';
+      filtroSuper.innerHTML = '<option value="">Filtrar por Supervisora</option>';
+      psicos.forEach(p => { filtroPsico.innerHTML += `<option value="${p}">${p}</option>`; });
+      supers.forEach(s => { filtroSuper.innerHTML += `<option value="${s}">${s}</option>`; });
+    }
+
+    function aplicarFiltros() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const filtroPsico = document.getElementById('filterPsico').value;
+      const filtroSuper = document.getElementById('filterSuper').value;
+      let filtrados = allPacientes.filter(p => {
+        const matchSearch = p.apellido.toLowerCase().includes(search) || String(p.dni).includes(search);
+        const matchPsico = filtroPsico ? p.psicopedagoga === filtroPsico : true;
+        const matchSuper = filtroSuper ? p.supervisora === filtroSuper : true;
+        return matchSearch && matchPsico && matchSuper;
+      });
+      renderizarPacientes(filtrados);
+    }
+
+    document.getElementById('searchInput').addEventListener('input', aplicarFiltros);
+    document.getElementById('filterPsico').addEventListener('change', aplicarFiltros);
+    document.getElementById('filterSuper').addEventListener('change', aplicarFiltros);
+    document.getElementById('sortApellido').addEventListener('click', () => {
+      ordenAscendente = !ordenAscendente;
+      allPacientes.sort((a, b) => ordenAscendente ? a.apellido.localeCompare(b.apellido) : b.apellido.localeCompare(a.apellido));
+      renderizarPacientes(allPacientes);
+    });
+
     cargarPacientes();
-  }
-
-  function calcularEdad(fecha) {
-    const nacimiento = new Date(fecha);
-    const hoy = new Date();
-    let edad = hoy.getFullYear() - nacimiento.getFullYear();
-    const m = hoy.getMonth() - nacimiento.getMonth();
-    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
-    return edad;
-  }
-
-  async function cargarSelectPersonasPsico() {
-    const res = await fetch('/personas', { headers: { 'Authorization': token } });
-    const personas = await res.json();
-    const select = document.getElementById('nuevo_psicopedagoga');
-    select.innerHTML = '<option value="">Seleccionar...</option>';
-    personas.filter(p => p.tipo === 'psicopedagoga').forEach(p => {
-      select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-    });
-  }
-
-  async function cargarSelectPersonasSuper() {
-    const res = await fetch('/personas', { headers: { 'Authorization': token } });
-    const personas = await res.json();
-    const select = document.getElementById('nuevo_supervisora');
-    select.innerHTML = '<option value="">Seleccionar...</option>';
-    personas.filter(p => p.tipo === 'supervisora').forEach(p => {
-      select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-    });
-  }
-
-  async function cargarSelectObrasSociales() {
-    const res = await fetch('/obras-sociales', { headers: { 'Authorization': token } });
-    const obras = await res.json();
-    const select = document.getElementById('nuevo_obra_social');
-    select.innerHTML = '<option value="">Seleccionar...</option>';
-    obras.forEach(o => {
-      select.innerHTML += `<option value="${o.nombre}">${o.nombre}</option>`;
-    });
-  }
-
-  function toggleSidebar() {
-    const sidebar = document.querySelector('.sidebar');
-    sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
-  }
-
-  function renderizarPacientes(pacientes) {
-    const tbody = document.querySelector('#pacientesTable tbody');
-    tbody.innerHTML = '';
-
-    pacientes.forEach(p => {
-      const acciones = `
-        <button onclick="editarPaciente(${p.id})">Editar</button>
-        <button class="delete" onclick="eliminarPaciente(${p.id})">Eliminar</button>
-      `;
-
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-  <td>${p.numero_paciente}</td>
-  <td>${p.nombre}</td>
-  <td>${p.apellido}</td>
-  <td>${p.dni}</td>
-  <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
-  <td>${p.edad}</td>
-  <td>${p.psicopedagoga || ''}</td>
-  <td>${p.supervisora || ''}</td>
-  <td>${p.obra_social || ''}</td>
-  <td>${acciones}</td>
-`;
-
-      tbody.appendChild(tr);
-    });
-  }
-
-  function cargarFiltros(pacientes) {
-    const filtroPsico = document.getElementById('filterPsico');
-    const filtroSuper = document.getElementById('filterSuper');
-
-    const psicos = [...new Set(pacientes.map(p => p.psicopedagoga).filter(Boolean))];
-    const supers = [...new Set(pacientes.map(p => p.supervisora).filter(Boolean))];
-
-    filtroPsico.innerHTML = '<option value="">Filtrar por Psicopedagoga</option>';
-    filtroSuper.innerHTML = '<option value="">Filtrar por Supervisora</option>';
-
-    psicos.forEach(p => {
-      const option = document.createElement('option');
-      option.value = p;
-      option.textContent = p;
-      filtroPsico.appendChild(option);
-    });
-
-    supers.forEach(s => {
-      const option = document.createElement('option');
-      option.value = s;
-      option.textContent = s;
-      filtroSuper.appendChild(option);
-    });
-  }
-
-  function aplicarFiltros() {
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    const filtroPsico = document.getElementById('filterPsico').value;
-    const filtroSuper = document.getElementById('filterSuper').value;
-
-    let filtrados = allPacientes.filter(p => {
-      const matchSearch = p.apellido.toLowerCase().includes(search) || String(p.dni).includes(search);
-      const matchPsico = filtroPsico ? p.psicopedagoga === filtroPsico : true;
-      const matchSuper = filtroSuper ? p.supervisora === filtroSuper : true;
-      return matchSearch && matchPsico && matchSuper;
-    });
-
-    renderizarPacientes(filtrados);
-  }
-
-  document.getElementById('searchInput').addEventListener('input', aplicarFiltros);
-  document.getElementById('filterPsico').addEventListener('change', aplicarFiltros);
-  document.getElementById('filterSuper').addEventListener('change', aplicarFiltros);
-
-  document.getElementById('sortApellido').addEventListener('click', () => {
-    ordenAscendente = !ordenAscendente;
-    allPacientes.sort((a, b) => {
-      return ordenAscendente
-        ? a.apellido.localeCompare(b.apellido)
-        : b.apellido.localeCompare(a.apellido);
-    });
-    renderizarPacientes(allPacientes);
-  });
-
-  cargarPacientes();
-</script>
-
-
-
-
+  </script>
 </body>
 </html>
