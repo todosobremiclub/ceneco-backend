@@ -240,6 +240,8 @@
     });
 
     document.getElementById('cantidadSesiones').addEventListener('input', calcularMontos);
+    document.getElementById('montoSesion').addEventListener('input', calcularMontos);
+
 
     function calcularMontos() {
       let rawMonto = cleaveMonto.getRawValue() || '0';
