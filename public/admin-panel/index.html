@@ -52,31 +52,33 @@
     }
 
     header {
-      position: fixed;
-      top: 0;
-      left: 220px;
-      right: 0;
-      height: 60px;
-      background-color: rgba(255, 255, 255, 0.95);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      box-sizing: border-box;
-      z-index: 500;
-      font-weight: 600;
-      font-size: 17px;
-      color: #153E75;
-    }
+  position: fixed;
+  top: 0;
+  left: 220px;
+  right: 0;
+  height: 60px;
+  background-color: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-sizing: border-box;
+  z-index: 500;
+  font-weight: 600;
+  font-size: 15px; /* 🔧 antes 17px */
+  color: #153E75;
+}
 
-    main {
-      margin-left: 220px;
-      padding: 80px 30px 20px 30px;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-      color: #0D1B2A;
-    }
+
+ main {
+  margin-left: 220px;
+  padding: 80px 30px 20px 30px;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  color: #0D1B2A;
+  margin-top: 60px; /* 🔧 agregado para compensar header */
+}
+
 
     table {
       width: 100%;
@@ -225,6 +227,12 @@
       border-radius: 4px;
       font-weight: 500;
     }
+
+.logo-header {
+    height: 30px;
+    width: auto;
+    margin-right: 10px;
+  }
   </style>
 </head>
 <body>
