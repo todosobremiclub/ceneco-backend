@@ -27,9 +27,14 @@ app.use('/historia', historiaClinicaRoutes);
 const authRoutes = require('./routes/authRoutes');
 app.use('/api', authRoutes);
 
-// 🚨 Nuevo: pagos routes
+// 🚨 Pagos routes
 const pagosRoutes = require('./routes/pagosRoutes');
 app.use('/api/pagos', pagosRoutes); // Prefijo /api/pagos para las operaciones de pagos
+
+// ✅ Obras sociales routes (nuevo)
+const obrasSocialesRoutes = require('./routes/obrasSociales');
+app.use('/api/obras-sociales', obrasSocialesRoutes);
+
 
 // Static files para admin-panel
 app.use(express.static(path.join(__dirname, 'public/admin-panel')));
