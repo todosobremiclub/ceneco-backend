@@ -230,7 +230,8 @@
     document.getElementById('paciente').addEventListener('change', async (e) => {
       const id = e.target.value;
       if (!id) return;
-      const res = await fetch(`/api/pacientes/${id}`, { headers: { Authorization: token } });
+      const res = await fetch(`/pacientes/${id}`, { headers: { Authorization: token } });
+
       const p = await res.json();
       document.getElementById('obraSocial').value = p.obra_social || '';
       document.getElementById('tipoSesion').value = p.tipo_sesion || '';
