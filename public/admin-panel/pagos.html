@@ -128,7 +128,7 @@
 
   <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
 
-  <div class="sidebar">
+  <div class="sidebar" id="sidebar">
     <a href="index.html">👥 Pacientes</a>
     <a href="historia_clinica.html">📄 Historia Clínica</a>
     <a href="pagos.html">💰 Pagos</a>
@@ -153,16 +153,16 @@
         </select>
 
         <label for="dias">Días evaluados</label>
-        <input type="text" id="dias" placeholder="Ej: Lunes 17 y 24">
+        <input type="text" id="dias" placeholder="Seleccione días">
 
         <label for="obraSocial">Obra Social</label>
         <input type="text" id="obraSocial" readonly>
 
         <label for="tipoSesion">Tipo de sesión</label>
-        <input type="text" id="tipoSesion" readonly>
+        <input type="text" id="tipoSesion">
 
         <label for="montoSesion">Monto por sesión</label>
-        <input type="number" id="montoSesion" readonly>
+        <input type="text" id="montoSesion">
 
         <label for="cantidadSesiones">Cantidad de sesiones</label>
         <input type="number" id="cantidadSesiones" min="1" value="1">
@@ -181,112 +181,130 @@
     </div>
   </main>
 
+  <!-- 🔹 Scripts adicionales al final -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
+
   <script>
-  const token = localStorage.getItem('token');
-  const perfil = localStorage.getItem('perfil');
+    const token = localStorage.getItem('token');
+    const perfil = localStorage.getItem('perfil');
 
-  if (!token || !['admin', 'usuario', 'supervisora'].includes(perfil)) {
-    logout();
-  }
-
-  const sidebar = document.getElementById('sidebar');
-  sidebar.innerHTML = '';
-
-  if (perfil === 'admin' || perfil === 'supervisora') {
-    sidebar.innerHTML = `
-      <a href="index.html">👥 Pacientes</a>
-      <a href="historia_clinica.html">📄 Historia Clínica</a>
-      <a href="pagos.html">💰 Pagos</a>
-      <a href="configuracion.html">⚙️ Configuración</a>
-      <button onclick="logout()">🚪 Cerrar sesión</button>
-    `;
-  } else if (perfil === 'usuario') {
-    sidebar.innerHTML = `
-      <a href="historia_clinica.html">📄 Historia Clínica</a>
-      <a href="pagos.html">💰 Pagos</a>
-      <button onclick="logout()">🚪 Cerrar sesión</button>
-    `;
-  }
-
-  async function cargarPacientes() {
-    const url = perfil === 'usuario' ? '/api/mis-pacientes' : '/pacientes';
-    const res = await fetch(url, { headers: { Authorization: token } });
-    const pacientes = await res.json();
-    const select = document.getElementById('paciente');
-    pacientes.forEach(p => {
-      const opt = document.createElement('option');
-      opt.value = p.id;
-      opt.textContent = `${p.nombre} (${p.turno})`;
-      select.appendChild(opt);
-    });
-  }
-
-  document.getElementById('paciente').addEventListener('change', async (e) => {
-    const id = e.target.value;
-    if (!id) return;
-    const res = await fetch(`/api/pacientes/${id}`, { headers: { Authorization: token } });
-    const p = await res.json();
-    document.getElementById('obraSocial').value = p.obra_social || '';
-    document.getElementById('tipoSesion').value = p.tipo_sesion || '';
-    document.getElementById('montoSesion').value = p.monto_sesion || 0;
-    document.getElementById('supervisora').value = p.supervisora || '';
-    calcularMontos();
-  });
-
-  document.getElementById('cantidadSesiones').addEventListener('input', calcularMontos);
-
-  function calcularMontos() {
-    const monto = parseFloat(document.getElementById('montoSesion').value) || 0;
-    const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
-    const total = monto * sesiones;
-    const supervisora = total * 0.3;
-    document.getElementById('montoTotal').value = `$${total.toLocaleString()}`;
-    document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString()}`;
-  }
-
-  document.getElementById('pagoForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const pacienteId = document.getElementById('paciente').value;
-    const dias = document.getElementById('dias').value;
-    const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
-    const total = parseFloat(document.getElementById('montoSesion').value) * sesiones;
-    const montoSup = total * 0.3;
-    const payload = {
-      paciente_id: pacienteId,
-      dias_evaluados: dias,
-      cantidad_sesiones: sesiones,
-      monto_total: total,
-      monto_supervisora: montoSup
-    };
-    const res = await fetch('/api/pagos', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: JSON.stringify(payload)
-    });
-    if (res.ok) {
-      alert('Pago registrado correctamente');
-      document.getElementById('pagoForm').reset();
-    } else {
-      alert('Error al registrar el pago');
+    if (!token || !['admin', 'usuario', 'supervisora'].includes(perfil)) {
+      logout();
     }
-  });
 
-  function logout() {
-    localStorage.clear();
-    window.location.href = 'login.html';
-  }
+    const sidebar = document.getElementById('sidebar');
+    sidebar.innerHTML = '';
 
-  function toggleSidebar() {
-    const sidebar = document.querySelector('.sidebar');
-    sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
-  }
+    if (perfil === 'admin' || perfil === 'supervisora') {
+      sidebar.innerHTML = `
+        <a href="index.html">👥 Pacientes</a>
+        <a href="historia_clinica.html">📄 Historia Clínica</a>
+        <a href="pagos.html">💰 Pagos</a>
+        <a href="configuracion.html">⚙️ Configuración</a>
+        <button onclick="logout()">🚪 Cerrar sesión</button>
+      `;
+    } else if (perfil === 'usuario') {
+      sidebar.innerHTML = `
+        <a href="historia_clinica.html">📄 Historia Clínica</a>
+        <a href="pagos.html">💰 Pagos</a>
+        <button onclick="logout()">🚪 Cerrar sesión</button>
+      `;
+    }
 
-  cargarPacientes();
-</script>
+    async function cargarPacientes() {
+      const url = perfil === 'usuario' ? '/api/mis-pacientes' : '/pacientes';
+      const res = await fetch(url, { headers: { Authorization: token } });
+      const pacientes = await res.json();
+      const select = document.getElementById('paciente');
+      pacientes.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `${p.nombre} (${p.turno || ''})`;
+        select.appendChild(opt);
+      });
+    }
 
+    document.getElementById('paciente').addEventListener('change', async (e) => {
+      const id = e.target.value;
+      if (!id) return;
+      const res = await fetch(`/api/pacientes/${id}`, { headers: { Authorization: token } });
+      const p = await res.json();
+      document.getElementById('obraSocial').value = p.obra_social || '';
+      document.getElementById('tipoSesion').value = p.tipo_sesion || '';
+      cleaveMonto.setRawValue(p.monto_sesion || 0);
+      document.getElementById('supervisora').value = p.supervisora || '';
+      calcularMontos();
+    });
+
+    document.getElementById('cantidadSesiones').addEventListener('input', calcularMontos);
+
+    function calcularMontos() {
+      let rawMonto = cleaveMonto.getRawValue();
+      const monto = parseFloat(rawMonto) || 0;
+      const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
+      const total = monto * sesiones;
+      const supervisora = total * 0.3;
+      document.getElementById('montoTotal').value = `$${total.toLocaleString()}`;
+      document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString()}`;
+    }
+
+    document.getElementById('pagoForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pacienteId = document.getElementById('paciente').value;
+      const dias = document.getElementById('dias').value;
+      const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
+      let rawMonto = cleaveMonto.getRawValue();
+      const monto = parseFloat(rawMonto) || 0;
+      const total = monto * sesiones;
+      const montoSup = total * 0.3;
+      const payload = {
+        paciente_id: pacienteId,
+        dias_evaluados: dias,
+        cantidad_sesiones: sesiones,
+        monto_total: total,
+        monto_supervisora: montoSup
+      };
+      const res = await fetch('/api/pagos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        alert('Pago registrado correctamente');
+        document.getElementById('pagoForm').reset();
+      } else {
+        alert('Error al registrar el pago');
+      }
+    });
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
+    }
+
+    flatpickr("#dias", {
+      mode: "multiple",
+      dateFormat: "Y-m-d"
+    });
+
+    const cleaveMonto = new Cleave('#montoSesion', {
+      prefix: '$',
+      numeral: true,
+      numeralThousandsGroupStyle: 'thousand'
+    });
+
+    cargarPacientes();
+  </script>
 
 </body>
 </html>
