@@ -315,18 +315,20 @@
 
   <table id="pacientesTable">
     <thead>
-      <tr>
-        <th>N° Paciente</th>
-        <th>Nombre</th>
-        <th id="sortApellido">Apellido 🔽</th>
-        <th>DNI</th>
-        <th>Fecha Nacimiento</th>
-        <th>Edad</th>
-        <th>Psicopedagoga</th>
-        <th>Supervisora</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
+  <tr>
+    <th>N° Paciente</th>
+    <th>Nombre</th>
+    <th id="sortApellido">Apellido 🔽</th>
+    <th>DNI</th>
+    <th>Fecha Nacimiento</th>
+    <th>Edad</th>
+    <th>Psicopedagoga</th>
+    <th>Supervisora</th>
+    <th>Obra Social</th>
+    <th>Acciones</th>
+  </tr>
+</thead>
+
     <tbody></tbody>
   </table>
 </div>
@@ -556,17 +558,18 @@
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${p.numero_paciente}</td>
-        <td>${p.nombre}</td>
-        <td>${p.apellido}</td>
-        <td>${p.dni}</td>
-        <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
-        <td>${p.edad}</td>
-        <td>${p.psicopedagoga || ''}</td>
-        <td>${p.supervisora || ''}</td>
-        <td>${p.obra_social || ''}</td>
-        <td>${acciones}</td>
-      `;
+  <td>${p.numero_paciente}</td>
+  <td>${p.nombre}</td>
+  <td>${p.apellido}</td>
+  <td>${p.dni}</td>
+  <td>${new Date(p.fecha_nacimiento).toLocaleDateString()}</td>
+  <td>${p.edad}</td>
+  <td>${p.psicopedagoga || ''}</td>
+  <td>${p.supervisora || ''}</td>
+  <td>${p.obra_social || ''}</td>
+  <td>${acciones}</td>
+`;
+
       tbody.appendChild(tr);
     });
   }
