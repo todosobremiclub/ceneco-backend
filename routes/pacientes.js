@@ -5,22 +5,15 @@ const verificarToken = require('../middleware/verificarToken');
 
 // Middleware soloUser (para psicopedagogas)
 function soloUser(req, res, next) {
-  console.log("🔎 [soloUser] req.usuario recibido:", req.usuario);
   if (req.usuario.perfil !== 'usuario') {
-    console.log("❌ [soloUser] perfil no autorizado:", req.usuario.perfil);
     return res.status(403).send('Acceso permitido solo a psicopedagogas');
   }
-  console.log("✅ [soloUser] acceso permitido a psicopedagoga");
   next();
 }
 
 // Obtener solo pacientes asignados a la psicopedagoga logueada
 router.get('/mis-pacientes', verificarToken, soloUser, async (req, res) => {
-  console.log("📥 [GET /mis-pacientes] Iniciando para usuario:", req.usuario);
-
   const nombrePsicopedagoga = req.usuario.nombre;
-  console.log("🔔 [GET /mis-pacientes] nombrePsicopedagoga =", nombrePsicopedagoga);
-
   try {
     const result = await pool.query(`
       SELECT 
@@ -32,15 +25,14 @@ router.get('/mis-pacientes', verificarToken, soloUser, async (req, res) => {
         p.fecha_nacimiento,
         EXTRACT(YEAR FROM AGE(CURRENT_DATE, p.fecha_nacimiento)) AS edad,
         COALESCE(psico.nombre || ' ' || psico.apellido, p.psicopedagoga) AS psicopedagoga,
-        COALESCE(sup.nombre || ' ' || sup.apellido, p.supervisora) AS supervisora
+        COALESCE(sup.nombre || ' ' || sup.apellido, p.supervisora) AS supervisora,
+        p.obra_social
       FROM pacientes p
       LEFT JOIN personas psico ON psico.nombre = p.psicopedagoga
       LEFT JOIN personas sup ON sup.nombre = p.supervisora
       WHERE p.psicopedagoga = $1
       ORDER BY p.numero_paciente
     `, [nombrePsicopedagoga]);
-
-    console.log(`✅ [GET /mis-pacientes] Pacientes encontrados: ${result.rowCount}`);
     res.json(result.rows);
   } catch (err) {
     console.error("❌ [GET /mis-pacientes] Error:", err);
@@ -61,7 +53,8 @@ router.get('/', async (req, res) => {
         p.fecha_nacimiento,
         EXTRACT(YEAR FROM AGE(CURRENT_DATE, p.fecha_nacimiento)) AS edad,
         COALESCE(psico.nombre || ' ' || psico.apellido, p.psicopedagoga) AS psicopedagoga,
-        COALESCE(sup.nombre || ' ' || sup.apellido, p.supervisora) AS supervisora
+        COALESCE(sup.nombre || ' ' || sup.apellido, p.supervisora) AS supervisora,
+        p.obra_social
       FROM pacientes p
       LEFT JOIN personas psico ON psico.nombre = p.psicopedagoga
       LEFT JOIN personas sup ON sup.nombre = p.supervisora
@@ -87,11 +80,11 @@ router.get('/:id', verificarToken, async (req, res) => {
         p.dni,
         p.fecha_nacimiento,
         EXTRACT(YEAR FROM AGE(CURRENT_DATE, p.fecha_nacimiento)) AS edad,
+        COALESCE(psico.nombre || ' ' || psico.apellido, p.psicopedagoga) AS psicopedagoga,
         COALESCE(sup.nombre || ' ' || sup.apellido, p.supervisora) AS supervisora,
-        p.tipo_sesion,
-        p.monto_sesion,
         p.obra_social
       FROM pacientes p
+      LEFT JOIN personas psico ON psico.nombre = p.psicopedagoga
       LEFT JOIN personas sup ON sup.nombre = p.supervisora
       WHERE p.id = $1
     `, [id]);
@@ -113,12 +106,11 @@ router.post('/', async (req, res) => {
   try {
     const result = await pool.query(`
       INSERT INTO pacientes 
-  (numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora, obra_social)
-VALUES 
-  ($1, $2, $3, $4, $5, $6, $7, $8)
-RETURNING *
-
-    `, [numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora]);
+      (numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora, obra_social)
+      VALUES 
+      ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *
+    `, [numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora, obra_social]);
     res.json(result.rows[0]);
   } catch (err) {
     console.error("❌ [POST /] Error:", err);
@@ -129,7 +121,7 @@ RETURNING *
 // Editar paciente
 router.put('/:id', async (req, res) => {
   const id = req.params.id;
-  const { numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora } = req.body;
+  const { numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora, obra_social } = req.body;
   try {
     const existente = await pool.query(
       'SELECT 1 FROM pacientes WHERE dni = $1 AND id != $2',
@@ -141,18 +133,17 @@ router.put('/:id', async (req, res) => {
 
     await pool.query(`
       UPDATE pacientes
-SET 
-  numero_paciente=$1, 
-  nombre=$2, 
-  apellido=$3, 
-  dni=$4, 
-  fecha_nacimiento=$5, 
-  psicopedagoga=$6, 
-  supervisora=$7,
-  obra_social=$8
-WHERE id=$9
-
-    `, [numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora, id]);
+      SET 
+        numero_paciente=$1, 
+        nombre=$2, 
+        apellido=$3, 
+        dni=$4, 
+        fecha_nacimiento=$5, 
+        psicopedagoga=$6, 
+        supervisora=$7,
+        obra_social=$8
+      WHERE id=$9
+    `, [numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora, obra_social, id]);
 
     res.send('Paciente actualizado');
   } catch (err) {
@@ -174,4 +165,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
-
