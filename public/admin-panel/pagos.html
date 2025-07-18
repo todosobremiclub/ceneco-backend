@@ -236,7 +236,8 @@
       document.getElementById('obraSocial').value = p.obra_social || '';
       document.getElementById('tipoSesion').value = p.tipo_sesion || '';
       cleaveMonto.setRawValue(p.monto_sesion || 0);
-      document.getElementById('supervisora').value = p.supervisora || '';
+     document.getElementById('montoSesion').dispatchEvent(new Event('input'))
+    document.getElementById('supervisora').value = p.supervisora || '';
       calcularMontos();
     });
 
@@ -245,14 +246,16 @@
 
 
     function calcularMontos() {
-      let rawMonto = cleaveMonto.getRawValue() || '0';
-      const monto = parseFloat(rawMonto) || 0;
-      const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
-      const total = monto * sesiones;
-      const supervisora = total * 0.3;
-      document.getElementById('montoTotal').value = `$${total.toLocaleString()}`;
-      document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString()}`;
-    }
+  let rawMonto = cleaveMonto.getRawValue() || '0';
+  rawMonto = rawMonto.replace(/\./g, '').replace(',', '.');  // Convertir $20.000,50 → 20000.50
+  const monto = parseFloat(rawMonto) || 0;
+  const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
+  const total = monto * sesiones;
+  const supervisora = total * 0.3;
+  document.getElementById('montoTotal').value = `$${total.toLocaleString('de-DE')}`;
+  document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString('de-DE')}`;
+}
+
 
     document.getElementById('pagoForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -301,11 +304,14 @@
       dateFormat: "Y-m-d"
     });
 
-    const cleaveMonto = new Cleave('#montoSesion', {
-      prefix: '$',
-      numeral: true,
-      numeralThousandsGroupStyle: 'thousand'
-    });
+   const cleaveMonto = new Cleave('#montoSesion', {
+  prefix: '$',
+  numeral: true,
+  numeralThousandsGroupStyle: 'thousand',
+  numeralDecimalMark: ',',
+  delimiter: '.'
+});
+
 
     cargarPacientes();
   </script>
