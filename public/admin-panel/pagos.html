@@ -377,12 +377,14 @@ const payload = {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${p.id}</td>
-          <td>${p.paciente_nombre || ''}</td>
-          <td>${new Date(p.fecha).toLocaleDateString()}</td>
-          <td>$${p.monto_total}</td>
-          <td>$${p.monto_supervisora}</td>
-          <td>${p.dias_evaluados || ''}</td>
-          <td>${p.cantidad_sesiones || ''}</td>
+  <td>${p.paciente_nombre || ''}</td>
+  <td>${new Date(p.fecha).toLocaleDateString()}</td>
+  <td>$${p.monto_total}</td>
+  <td>$${p.monto_supervisora}</td>
+  <td>${p.dias_evaluados || ''}</td>
+  <td>${p.cantidad_sesiones || ''}</td>
+  <td>${p.obra_social || ''}</td>
+  <td>${p.tipo_sesion || ''}</td>
         `;
         tbody.appendChild(tr);
       });
