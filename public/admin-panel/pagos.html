@@ -423,32 +423,47 @@
     }
   });
 
-  async function cargarPagos() {
-    const res = await fetch('/api/pagos', { headers: { 'Authorization': token } });
-    if (!res.ok) return;
-    const pagos = await res.json();
-    const tbody = document.querySelector('#tablaPagos tbody');
-    tbody.innerHTML = '';
-    pagos.forEach(p => {
+ async function cargarPagos() {
+  const res = await fetch('/api/pagos', { headers: { 'Authorization': token } });
+  if (!res.ok) return;
+  const pagos = await res.json();
+
+  const tbody = document.querySelector('#tablaPagos tbody');
+  tbody.innerHTML = '';
+
+  const agrupadoPorPsicopedagoga = {};
+  pagos.forEach(p => {
+    const key = p.psicopedagoga || 'Sin psicopedagoga';
+    if (!agrupadoPorPsicopedagoga[key]) agrupadoPorPsicopedagoga[key] = [];
+    agrupadoPorPsicopedagoga[key].push(p);
+  });
+
+  Object.keys(agrupadoPorPsicopedagoga).forEach(psico => {
+    const trHeader = document.createElement('tr');
+    trHeader.innerHTML = `<td colspan="12"><strong>Pagos de ${psico}</strong></td>`;
+    tbody.appendChild(trHeader);
+
+    agrupadoPorPsicopedagoga[psico].forEach(p => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-  <td>${p.id}</td>
-  <td>${p.paciente_nombre || ''}</td>
-  <td>${new Date(p.fecha).toLocaleDateString()}</td>
-  <td>$${p.monto_total}</td>
-  <td>$${p.monto_supervisora}</td>
-  <td>$${p.monto_supervisora2 || '0.00'}</td> <!-- 🔔 Nuevo campo -->
-  <td>${p.dias_evaluados || ''}</td>
-  <td>${p.cantidad_sesiones || ''}</td>
-  <td>${p.obra_social || ''}</td>
-  <td>${p.tipo_sesion || ''}</td>
-  <td>${p.supervisora || ''}</td>
-  <td><button onclick="eliminarPago(${p.id})">🗑️</button></td>
-`;
-
+        <td>${p.id}</td>
+        <td>${p.paciente_nombre || ''}</td>
+        <td>${new Date(p.fecha).toLocaleDateString()}</td>
+        <td>$${p.monto_total}</td>
+        <td>$${p.monto_supervisora}</td>
+        <td>$${p.monto_supervisora2 || '0.00'}</td>
+        <td>${p.dias_evaluados || ''}</td>
+        <td>${p.cantidad_sesiones || ''}</td>
+        <td>${p.obra_social || ''}</td>
+        <td>${p.tipo_sesion || ''}</td>
+        <td>${p.supervisora || ''}</td>
+        <td><button onclick="eliminarPago(${p.id})">🗑️</button></td>
+      `;
       tbody.appendChild(tr);
     });
-  }
+  });
+}
+
 
   function abrirFormularioPago() {
     document.getElementById('formularioPago').style.display = 'block';

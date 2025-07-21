@@ -7,13 +7,17 @@ const verificarToken = require('../middleware/verificarToken');
 router.get('/', verificarToken, async (req, res) => {
   try {
     let query = `
-      SELECT pagos.id, pagos.fecha, pagos.monto_total, pagos.monto_supervisora, pagos.monto_supervisora2, pagos.dias_evaluados, pagos.cantidad_sesiones,
-        pagos.obra_social, pagos.tipo_sesion,
-        pacientes.nombre || ' ' || pacientes.apellido as paciente_nombre,
-        personas.nombre || ' ' || personas.apellido as supervisora
-      FROM pagos
-      JOIN pacientes ON pagos.paciente_id = pacientes.id
-      LEFT JOIN personas ON personas.nombre = pacientes.supervisora
+      SELECT 
+  pagos.id, pagos.fecha, pagos.monto_total, pagos.monto_supervisora, pagos.monto_supervisora2, pagos.dias_evaluados, pagos.cantidad_sesiones,
+  pagos.obra_social, pagos.tipo_sesion,
+  pacientes.nombre || ' ' || pacientes.apellido as paciente_nombre,
+  personas.nombre || ' ' || personas.apellido as supervisora,
+  pp.nombre || ' ' || pp.apellido as psicopedagoga
+FROM pagos
+JOIN pacientes ON pagos.paciente_id = pacientes.id
+LEFT JOIN personas ON personas.nombre = pacientes.supervisora
+LEFT JOIN personas pp ON pp.id = pagos.psicopedagoga_id
+
     `;
 
     let params = [];
