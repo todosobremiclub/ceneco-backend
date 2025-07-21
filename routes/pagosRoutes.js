@@ -23,16 +23,16 @@ router.get('/', verificarToken, async (req, res) => {
 
 // ✅ POST /api/pagos → Guardar pago
 router.post('/', verificarToken, async (req, res) => {
-  const { paciente_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora } = req.body;
+  const { paciente_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion } = req.body;
   const psicopedagogaId = req.usuario.id;
 
   try {
     await pool.query(
-  `INSERT INTO pagos 
-   (paciente_id, psicopedagoga_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion, fecha)
-   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
-  [paciente_id, psicopedagogaId, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion]
-);
+      `INSERT INTO pagos 
+       (paciente_id, psicopedagoga_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion, fecha)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+      [paciente_id, psicopedagogaId, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion]
+    );
 
     res.json({ success: true });
   } catch (err) {
