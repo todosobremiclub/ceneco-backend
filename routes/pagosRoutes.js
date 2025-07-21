@@ -6,16 +6,26 @@ const verificarToken = require('../middleware/verificarToken');
 // ✅ GET /api/pagos → Listar pagos
 router.get('/', verificarToken, async (req, res) => {
   try {
-    const result = await pool.query(`
+    let query = `
       SELECT pagos.id, pagos.fecha, pagos.monto_total, pagos.monto_supervisora, pagos.monto_supervisora2, pagos.dias_evaluados, pagos.cantidad_sesiones,
-       pagos.obra_social, pagos.tipo_sesion,
-       pacientes.nombre || ' ' || pacientes.apellido as paciente_nombre,
-       personas.nombre || ' ' || personas.apellido as supervisora
-FROM pagos
-JOIN pacientes ON pagos.paciente_id = pacientes.id
-LEFT JOIN personas ON personas.nombre = pacientes.supervisora
-ORDER BY pagos.fecha DESC
-    `);
+        pagos.obra_social, pagos.tipo_sesion,
+        pacientes.nombre || ' ' || pacientes.apellido as paciente_nombre,
+        personas.nombre || ' ' || personas.apellido as supervisora
+      FROM pagos
+      JOIN pacientes ON pagos.paciente_id = pacientes.id
+      LEFT JOIN personas ON personas.nombre = pacientes.supervisora
+    `;
+
+    let params = [];
+
+    if (req.usuario.perfil === 'usuario') {
+      query += ` WHERE pagos.psicopedagoga_id = $1`;
+      params.push(req.usuario.id);
+    }
+
+    query += ` ORDER BY pagos.fecha DESC`;
+
+    const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
     console.error('Error al obtener pagos:', err);
@@ -41,8 +51,8 @@ router.post('/', verificarToken, async (req, res) => {
   try {
     await pool.query(
       `INSERT INTO pagos 
-       (paciente_id, psicopedagoga_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, monto_supervisora2, obra_social, tipo_sesion, fecha)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())`,
+        (paciente_id, psicopedagoga_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, monto_supervisora2, obra_social, tipo_sesion, fecha)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())`,
       [paciente_id, psicopedagogaId, dias_evaluados, sesiones, monto_total, monto_supervisora, monto_supervisora2, obra_social, tipo_sesion]
     );
     res.json({ success: true });
