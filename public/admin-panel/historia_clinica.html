@@ -249,14 +249,13 @@ async function cargarTiposRegistro() {
 }
 
 async function cargarPacientes() {
-  let url = perfil === 'usuario' ? '/pacientes/mis-pacientes' : '/pacientes';
-  const res = await fetch(url, { headers: { 'Authorization': token } });
+  const res = await fetch('/pacientes', { headers: { 'Authorization': token } });
   if (!res.ok) {
     logout();
     return;
   }
   const pacientes = await res.json();
-  allPacientes = pacientes; // Guardamos lista para filtros
+  allPacientes = pacientes;
   cargarFiltros(allPacientes);
   renderizarPacientes(allPacientes);
 }
