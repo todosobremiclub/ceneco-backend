@@ -336,43 +336,44 @@
     }
 
     document.getElementById('pagoForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const pacienteId = document.getElementById('paciente').value;
-      const dias = document.getElementById('dias').value;
-      const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
-      let rawMonto = cleaveMonto.getRawValue();
-      console.log("🧮 rawMonto antes de parseFloat:", rawMonto);
-      const monto = parseFloat(rawMonto) || 0;
-      const total = monto * sesiones;
-      const montoSup = total * 0.3;
-     const obraSocial = document.getElementById('obraSocial').value;
-const tipoSesion = document.getElementById('tipoSesion').value;
+  e.preventDefault();
+  const pacienteId = document.getElementById('paciente').value;
+  const dias = document.getElementById('dias').value;
+  const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
 
-const payload = {
-  paciente_id: pacienteId,
-  dias_evaluados: dias,
-  cantidad_sesiones: sesiones,
-  monto_total: total,
-  monto_supervisora: montoSup,
-  obra_social: obraSocial,
-  tipo_sesion: tipoSesion
-};
-      console.log("📝 Payload que se envía al backend:", payload);
+  let rawMonto = cleaveMonto.getRawValue();  // Esto ya devuelve limpio: "20000" SIN el "$"
+  const monto_sesion = parseFloat(rawMonto) || 0;
 
-      const res = await fetch('/api/pagos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': token },
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        alert('Pago registrado correctamente');
-        document.getElementById('pagoForm').reset();
-        cerrarFormularioPago();
-        cargarPagos();
-      } else {
-        alert('Error al registrar el pago');
-      }
-    });
+  const payload = {
+    paciente_id: pacienteId,
+    dias_evaluados: dias,
+    cantidad_sesiones: sesiones,
+    monto_sesion,  // Enviamos el valor limpio como número
+    obra_social: document.getElementById('obraSocial').value,
+    tipo_sesion: document.getElementById('tipoSesion').value
+  };
+
+  console.log('Payload que se envía al backend:', payload);
+
+  const res = await fetch('/api/pagos', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (res.ok) {
+    alert('Pago registrado correctamente');
+    document.getElementById('pagoForm').reset();
+    cerrarModal();
+    cargarPagos();
+  } else {
+    alert('Error al registrar el pago');
+  }
+});
+
 
     async function cargarPagos() {
       const res = await fetch('/api/pagos', { headers: { 'Authorization': token } });
