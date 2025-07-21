@@ -6,192 +6,194 @@
   <title>Pagos - Ceneco</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: url('/fondo.png') no-repeat center center fixed;
-      background-size: cover;
-      color: #1a1a1a;
-    }
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: url('/fondo.png') no-repeat center center fixed;
+    background-size: cover;
+    color: #1a1a1a;
+  }
 
-    h1 {
-      font-size: 20px;
-      color: #153E75;
-      font-weight: 600;
-      margin: 0 0 0 10px;
-    }
+  h1 {
+    font-size: 20px;
+    color: #153E75;
+    font-weight: 600;
+    margin: 0 0 0 10px;
+  }
 
-    main {
-      margin-left: 220px;
-      padding: 120px 30px 20px 30px;
-    }
+  main {
+    margin-left: 220px;
+    padding: 80px 15px 20px 15px; /* 🔧 padding lateral reducido */
+  }
 
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 220px;
-      height: 100vh;
-      background-color: #0b3d91;
-      padding-top: 60px;
-      box-sizing: border-box;
-      z-index: 1000;
-    }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 220px;
+    height: 100vh;
+    background-color: #0b3d91;
+    padding-top: 60px;
+    box-sizing: border-box;
+    z-index: 1000;
+  }
 
-    .sidebar a, .sidebar button {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 20px;
-      color: #ffffff;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 14px;
-      border: none;
-      background: none;
-      cursor: pointer;
-      transition: background-color 0.2s ease, padding-left 0.2s ease;
-    }
+  .sidebar a, .sidebar button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, padding-left 0.2s ease;
+  }
 
-    .sidebar a:hover, .sidebar button:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      padding-left: 30px;
-    }
+  .sidebar a:hover, .sidebar button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding-left: 30px;
+  }
 
-    header {
-      position: fixed;
-      top: 0;
-      left: 220px;
-      right: 0;
-      height: 60px;
-      background-color: rgba(255, 255, 255, 0.95);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      z-index: 500;
-      font-weight: 600;
-      font-size: 17px;
-      color: #153E75;
-    }
+  header {
+    position: fixed;
+    top: 0;
+    left: 220px;
+    right: 0;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 500;
+    font-weight: 600;
+    font-size: 17px;
+    color: #153E75;
+  }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-    }
+  .header-left {
+    display: flex;
+    align-items: center;
+  }
 
-    .logo-header {
-      height: 30px;
-      width: auto;
-      margin-right: 10px;
-    }
+  .logo-header {
+    height: 30px;
+    width: auto;
+    margin-right: 10px;
+  }
 
-    .form-container {
-      background: white;
-      padding: 20px 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      max-width: 600px;
-      margin: 0 auto;
-      display: none;
-    }
+  .form-container {
+    background: white;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    max-width: 600px;
+    margin: 0 auto;
+    display: none;
+  }
 
-    .form-container h2 {
-      margin-bottom: 20px;
-      color: #153E75;
-      font-size: 18px;
-      font-weight: 600;
-    }
+  .form-container h2 {
+    margin-bottom: 20px;
+    color: #153E75;
+    font-size: 18px;
+    font-weight: 600;
+  }
 
-    .form-container label {
-      display: block;
-      font-weight: 500;
-      margin-bottom: 5px;
-      color: #153E75;
-      font-size: 14px;
-    }
+  .form-container label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #153E75;
+    font-size: 14px;
+  }
 
-    .form-container input, .form-container select {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
-    }
+  .form-container input, .form-container select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
 
-    /* 🔧 Agregamos estilos para mostrar divs como campos */
-    .campo-monto {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
-      background-color: #f9f9f9;
-    }
+  /* 🔧 Mostrar divs como campos */
+  .campo-monto {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+  }
 
-    .form-container button {
-      padding: 10px 16px;
-      background-color: #2196F3;
-      border: none;
-      color: white;
-      border-radius: 4px;
-      font-weight: 500;
-      font-size: 14px;
-      cursor: pointer;
-      width: 100%;
-    }
+  .form-container button {
+    padding: 10px 16px;
+    background-color: #2196F3;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100%;
+  }
 
-    .form-container button:hover {
-      background-color: #1976D2;
-    }
+  .form-container button:hover {
+    background-color: #1976D2;
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      font-size: 14px;
-    }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-size: 12px; /* 🔧 fuente reducida para compactar */
+  }
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-    }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 4px; /* 🔧 padding reducido */
+    text-align: left;
+    white-space: nowrap; /* 🔧 evita saltos de línea */
+  }
 
-    th {
-      background-color: #f5f7fa;
-      font-weight: 600;
-      color: #0D1B2A;
-    }
+  th {
+    background-color: #f5f7fa;
+    font-weight: 600;
+    color: #0D1B2A;
+  }
 
-    tbody tr:hover {
-      background-color: #f0f4f8;
-    }
+  tbody tr:hover {
+    background-color: #f0f4f8;
+  }
 
-    .nuevo-btn {
-      display: inline-block;
-      margin-bottom: 15px;
-      padding: 8px 14px;
-      background-color: #4CAF50;
-      color: #fff;
-      font-size: 14px;
-      font-weight: 500;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
+  .nuevo-btn {
+    display: inline-block;
+    margin-bottom: 15px;
+    padding: 8px 14px;
+    background-color: #4CAF50;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
 
-    .nuevo-btn:hover {
-      background-color: #388E3C;
-    }
-  </style>
+  .nuevo-btn:hover {
+    background-color: #388E3C;
+  }
+</style>
+
 </head>
 <body>
 
@@ -265,14 +267,16 @@
     <th>Fecha</th>
     <th>Monto Total</th>
     <th>Monto Supervisora</th>
+    <th>Monto Supervisora 2</th> <!-- 🔔 Nueva columna -->
     <th>Días Evaluados</th>
     <th>Cantidad de sesiones</th>
-    <th>Obra Social</th>   <!-- 🟢 Faltaba esta columna -->
-    <th>Tipo de sesión</th> <!-- 🟢 Faltaba esta columna -->
-    <th>Supervisora</th>   <!-- 🟢 Nuevo campo Supervisora -->
-    <th>Acciones</th> <!-- 🟢 Botón eliminar -->
+    <th>Obra Social</th>
+    <th>Tipo de sesión</th>
+    <th>Supervisora</th>
+    <th>Acciones</th>
   </tr>
 </thead>
+
 
       <tbody></tbody>
     </table>
@@ -428,18 +432,20 @@
     pagos.forEach(p => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${p.id}</td>
-        <td>${p.paciente_nombre || ''}</td>
-        <td>${new Date(p.fecha).toLocaleDateString()}</td>
-        <td>$${p.monto_total}</td>
-        <td>$${p.monto_supervisora}</td>
-        <td>${p.dias_evaluados || ''}</td>
-        <td>${p.cantidad_sesiones || ''}</td>
-        <td>${p.obra_social || ''}</td>
-        <td>${p.tipo_sesion || ''}</td>
-        <td>${p.supervisora || ''}</td>
-        <td><button onclick="eliminarPago(${p.id})">🗑️</button></td>
-      `;
+  <td>${p.id}</td>
+  <td>${p.paciente_nombre || ''}</td>
+  <td>${new Date(p.fecha).toLocaleDateString()}</td>
+  <td>$${p.monto_total}</td>
+  <td>$${p.monto_supervisora}</td>
+  <td>$${p.monto_supervisora2 || '0.00'}</td> <!-- 🔔 Nuevo campo -->
+  <td>${p.dias_evaluados || ''}</td>
+  <td>${p.cantidad_sesiones || ''}</td>
+  <td>${p.obra_social || ''}</td>
+  <td>${p.tipo_sesion || ''}</td>
+  <td>${p.supervisora || ''}</td>
+  <td><button onclick="eliminarPago(${p.id})">🗑️</button></td>
+`;
+
       tbody.appendChild(tr);
     });
   }
