@@ -12,10 +12,9 @@ function soloUser(req, res, next) {
 }
 
 // Obtener solo pacientes asignados a la psicopedagoga logueada
-router.get('/mis-pacientes', verificarToken, soloUser, async (req, res) => {
-  const nombrePsicopedagoga = req.usuario.nombre;
+router.get('/', verificarToken, async (req, res) => {
   try {
-    const result = await pool.query(`
+    let query = `
       SELECT 
         p.id,
         p.numero_paciente,
@@ -30,13 +29,22 @@ router.get('/mis-pacientes', verificarToken, soloUser, async (req, res) => {
       FROM pacientes p
       LEFT JOIN personas psico ON psico.nombre = p.psicopedagoga
       LEFT JOIN personas sup ON sup.nombre = p.supervisora
-      WHERE p.psicopedagoga = $1
-      ORDER BY p.numero_paciente
-    `, [nombrePsicopedagoga]);
+    `;
+
+    const params = [];
+
+    if (req.usuario.perfil === 'usuario') {
+      query += ` WHERE p.psicopedagoga = $1`;
+      params.push(req.usuario.nombre);
+    }
+
+    query += ` ORDER BY p.numero_paciente`;
+
+    const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
-    console.error("❌ [GET /mis-pacientes] Error:", err);
-    res.status(500).send('Error al obtener mis pacientes');
+    console.error("❌ [GET /] Error:", err);
+    res.status(500).send('Error al obtener pacientes');
   }
 });
 
