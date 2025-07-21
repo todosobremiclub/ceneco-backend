@@ -325,9 +325,9 @@
     document.getElementById('montoSesion').addEventListener('input', calcularMontos);
 
     function calcularMontos() {
-      let rawMonto = document.getElementById('montoSesion').value || '0';
-      rawMonto = rawMonto.replace(/[^\d,]/g, '').replace('.', '').replace(',', '.');
-      const monto = parseFloat(rawMonto) || 0;
+      let rawMonto = cleaveMonto.getRawValue();
+const monto = parseFloat(rawMonto.replace(',', '.')) || 0;
+
       const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
       const total = monto * sesiones;
       const supervisora = total * 0.3;
