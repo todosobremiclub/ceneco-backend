@@ -13,16 +13,19 @@
       background-size: cover;
       color: #1a1a1a;
     }
+
     h1 {
       font-size: 20px;
       color: #153E75;
       font-weight: 600;
       margin: 0 0 0 10px;
     }
+
     main {
       margin-left: 220px;
       padding: 120px 30px 20px 30px;
     }
+
     .sidebar {
       position: fixed;
       top: 0;
@@ -34,6 +37,7 @@
       box-sizing: border-box;
       z-index: 1000;
     }
+
     .sidebar a, .sidebar button {
       display: flex;
       align-items: center;
@@ -42,16 +46,18 @@
       color: #ffffff;
       text-decoration: none;
       font-weight: 500;
-      font-size: 15px;
+      font-size: 14px;
       border: none;
       background: none;
       cursor: pointer;
       transition: background-color 0.2s ease, padding-left 0.2s ease;
     }
+
     .sidebar a:hover, .sidebar button:hover {
       background-color: rgba(255, 255, 255, 0.1);
       padding-left: 30px;
     }
+
     header {
       position: fixed;
       top: 0;
@@ -69,16 +75,18 @@
       font-size: 17px;
       color: #153E75;
     }
+
     .header-left {
       display: flex;
       align-items: center;
     }
+
     .logo-header {
-      height: 40px;
+      height: 30px; /* Reducido para estética compacta */
       width: auto;
-      margin-top: 8px;
       margin-right: 10px;
     }
+
     .form-container {
       background: white;
       padding: 20px 30px;
@@ -86,13 +94,16 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       max-width: 600px;
       margin: 0 auto;
+      display: none; /* Importante: oculto al inicio */
     }
+
     .form-container h2 {
       margin-bottom: 20px;
       color: #153E75;
       font-size: 18px;
       font-weight: 600;
     }
+
     .form-container label {
       display: block;
       font-weight: 500;
@@ -100,6 +111,7 @@
       color: #153E75;
       font-size: 14px;
     }
+
     .form-container input, .form-container select {
       width: 100%;
       padding: 8px;
@@ -108,6 +120,7 @@
       border-radius: 4px;
       font-size: 14px;
     }
+
     .form-container button {
       padding: 10px 16px;
       background-color: #2196F3;
@@ -119,8 +132,53 @@
       cursor: pointer;
       width: 100%;
     }
+
     .form-container button:hover {
       background-color: #1976D2;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f5f7fa;
+      font-weight: 600;
+      color: #0D1B2A;
+    }
+
+    tbody tr:hover {
+      background-color: #f0f4f8;
+    }
+
+    .nuevo-btn {
+      display: inline-block;
+      margin-bottom: 15px;
+      padding: 8px 14px;
+      background-color: #4CAF50;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .nuevo-btn:hover {
+      background-color: #388E3C;
     }
   </style>
 </head>
@@ -139,12 +197,14 @@
   <header>
     <div class="header-left">
       <img src="logo.png" alt="Logo" class="logo-header">
-      <h1>Registro de Pagos - Ceneco</h1>
+      <h1>Gestión de Pagos - Ceneco</h1>
     </div>
   </header>
 
   <main>
-    <div class="form-container">
+    <button class="nuevo-btn" onclick="abrirFormularioPago()">+ Registrar Pago</button>
+
+    <div class="form-container" id="formularioPago">
       <h2>Registro de Evaluaciones</h2>
       <form id="pagoForm">
         <label for="paciente">Paciente</label>
@@ -177,28 +237,27 @@
         <input type="text" id="montoSupervisora" readonly>
 
         <button type="submit">Registrar Pago</button>
+        <button type="button" onclick="cerrarFormularioPago()">Cancelar</button>
       </form>
-
-<h2 style="margin-top: 30px;">Pagos Registrados</h2>
-<table id="tablaPagos">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Paciente</th>
-      <th>Fecha</th>
-      <th>Monto Total</th>
-      <th>Monto Supervisora</th>
-      <th>Días Evaluados</th>
-      <th>Cantidad de sesiones</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-
     </div>
+
+    <h2 style="margin-top: 30px;">Pagos Registrados</h2>
+    <table id="tablaPagos">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Paciente</th>
+          <th>Fecha</th>
+          <th>Monto Total</th>
+          <th>Monto Supervisora</th>
+          <th>Días Evaluados</th>
+          <th>Cantidad de sesiones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </main>
 
-  <!-- 🔹 Scripts adicionales al final -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
@@ -231,49 +290,45 @@
     }
 
     async function cargarPacientes() {
-  const url = '/pacientes';  // Forzar que siempre traiga todos para probar
-  const res = await fetch(url, { headers: { Authorization: token } });
-  const pacientes = await res.json();
-  const select = document.getElementById('paciente');
-  pacientes.forEach(p => {
-    const opt = document.createElement('option');
-    opt.value = p.id;
-    opt.textContent = `${p.nombre} ${p.apellido} (${p.numero_paciente})`;
-    select.appendChild(opt);
-  });
-}
-
+      const url = '/pacientes';
+      const res = await fetch(url, { headers: { Authorization: token } });
+      const pacientes = await res.json();
+      const select = document.getElementById('paciente');
+      select.innerHTML = '<option value="">Seleccione</option>';
+      pacientes.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `${p.nombre} ${p.apellido} (${p.numero_paciente})`;
+        select.appendChild(opt);
+      });
+    }
 
     document.getElementById('paciente').addEventListener('change', async (e) => {
       const id = e.target.value;
       if (!id) return;
       const res = await fetch(`/pacientes/${id}`, { headers: { Authorization: token } });
-
       const p = await res.json();
       document.getElementById('obraSocial').value = p.obra_social || '';
       document.getElementById('tipoSesion').value = p.tipo_sesion || '';
       cleaveMonto.setRawValue(p.monto_sesion || 0);
-     document.getElementById('montoSesion').dispatchEvent(new Event('input'))
-    document.getElementById('supervisora').value = p.supervisora || '';
+      document.getElementById('montoSesion').dispatchEvent(new Event('input'));
+      document.getElementById('supervisora').value = p.supervisora || '';
       calcularMontos();
     });
 
     document.getElementById('cantidadSesiones').addEventListener('input', calcularMontos);
     document.getElementById('montoSesion').addEventListener('input', calcularMontos);
 
-function calcularMontos() {
-  let rawMonto = document.getElementById('montoSesion').value || '0';
-  rawMonto = rawMonto.replace(/[^\d,]/g, '')  // quita todo menos dígitos y coma
-                     .replace('.', '')        // quita punto separador de miles si hubiera
-                     .replace(',', '.');      // reemplaza coma decimal por punto decimal
-  const monto = parseFloat(rawMonto) || 0;
-  const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
-  const total = monto * sesiones;
-  const supervisora = total * 0.3;
-  document.getElementById('montoTotal').value = `$${total.toLocaleString('de-DE')}`;
-  document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString('de-DE')}`;
-}
-
+    function calcularMontos() {
+      let rawMonto = document.getElementById('montoSesion').value || '0';
+      rawMonto = rawMonto.replace(/[^\d,]/g, '').replace('.', '').replace(',', '.');
+      const monto = parseFloat(rawMonto) || 0;
+      const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
+      const total = monto * sesiones;
+      const supervisora = total * 0.3;
+      document.getElementById('montoTotal').value = `$${total.toLocaleString('de-DE')}`;
+      document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString('de-DE')}`;
+    }
 
     document.getElementById('pagoForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -293,20 +348,47 @@ function calcularMontos() {
       };
       const res = await fetch('/api/pagos', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': token
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': token },
         body: JSON.stringify(payload)
       });
       if (res.ok) {
         alert('Pago registrado correctamente');
         document.getElementById('pagoForm').reset();
+        cerrarFormularioPago();
         cargarPagos();
       } else {
         alert('Error al registrar el pago');
       }
     });
+
+    async function cargarPagos() {
+      const res = await fetch('/api/pagos', { headers: { 'Authorization': token } });
+      if (!res.ok) return;
+      const pagos = await res.json();
+      const tbody = document.querySelector('#tablaPagos tbody');
+      tbody.innerHTML = '';
+      pagos.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.id}</td>
+          <td>${p.paciente_nombre || ''}</td>
+          <td>${new Date(p.fecha).toLocaleDateString()}</td>
+          <td>$${p.monto_total}</td>
+          <td>$${p.monto_supervisora}</td>
+          <td>${p.dias_evaluados || ''}</td>
+          <td>${p.cantidad_sesiones || ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function abrirFormularioPago() {
+      document.getElementById('formularioPago').style.display = 'block';
+    }
+
+    function cerrarFormularioPago() {
+      document.getElementById('formularioPago').style.display = 'none';
+    }
 
     function logout() {
       localStorage.clear();
@@ -318,45 +400,18 @@ function calcularMontos() {
       sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
     }
 
-    flatpickr("#dias", {
-      mode: "multiple",
-      dateFormat: "Y-m-d"
+    flatpickr("#dias", { mode: "multiple", dateFormat: "Y-m-d" });
+
+    const cleaveMonto = new Cleave('#montoSesion', {
+      prefix: '$',
+      numeral: true,
+      numeralThousandsGroupStyle: 'thousand',
+      numeralDecimalMark: ',',
+      delimiter: '.'
     });
 
-   const cleaveMonto = new Cleave('#montoSesion', {
-  prefix: '$',
-  numeral: true,
-  numeralThousandsGroupStyle: 'thousand',
-  numeralDecimalMark: ',',
-  delimiter: '.'
-});
-
-
     cargarPacientes();
-
-async function cargarPagos() {
-  const res = await fetch('/api/pagos', { headers: { 'Authorization': token } });
-  if (!res.ok) return;
-  const pagos = await res.json();
-  const tbody = document.querySelector('#tablaPagos tbody');
-  tbody.innerHTML = '';
-
-  pagos.forEach(p => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${p.id}</td>
-      <td>${p.paciente_nombre || ''}</td>
-      <td>${new Date(p.fecha).toLocaleDateString()}</td>
-      <td>$${p.monto_total}</td>
-      <td>$${p.monto_supervisora}</td>
-      <td>${p.dias_evaluados || ''}</td>
-      <td>${p.cantidad_sesiones || ''}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-
+    cargarPagos();
   </script>
 
 </body>
