@@ -82,7 +82,7 @@
     }
 
     .logo-header {
-      height: 30px; /* Reducido para estética compacta */
+      height: 30px;
       width: auto;
       margin-right: 10px;
     }
@@ -94,7 +94,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       max-width: 600px;
       margin: 0 auto;
-      display: none; /* Importante: oculto al inicio */
+      display: none;
     }
 
     .form-container h2 {
@@ -119,6 +119,17 @@
       border: 1px solid #ccc;
       border-radius: 4px;
       font-size: 14px;
+    }
+
+    /* 🔧 Agregamos estilos para mostrar divs como campos */
+    .campo-monto {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      background-color: #f9f9f9;
     }
 
     .form-container button {
@@ -231,10 +242,10 @@
       <input type="text" id="supervisora" readonly>
 
       <label>Monto total</label>
-      <div id="montoTotal">$0</div>
+<div id="montoTotal" class="campo-monto">$0</div>
 
-      <label>% Supervisora (30%)</label>
-      <div id="montoSupervisora">$0</div>
+<label>% Supervisora (30%)</label>
+<div id="montoSupervisora" class="campo-monto">$0</div>
 
       <button type="submit">Registrar Pago</button>
       <button type="button" onclick="cerrarFormularioPago()">Cancelar</button>
