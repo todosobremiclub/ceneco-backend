@@ -326,21 +326,22 @@
 document.getElementById('cantidadSesiones').addEventListener('change', calcularMontos);
 
 
-    function calcularMontos() {
+   function calcularMontos() {
   console.log("🔥 calcularMontos llamado");
   let rawMonto = cleaveMonto.getRawValue();
   const monto = parseFloat(rawMonto) || 0;
-  const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
+
+  let sesiones = parseInt(document.getElementById('cantidadSesiones').value);
+  if (isNaN(sesiones) || sesiones < 1) {
+    sesiones = 1; // 🔧 Default a 1 si está vacío o menor a 1
+    document.getElementById('cantidadSesiones').value = 1;
+  }
+
   const total = monto * sesiones;
   const supervisora = total * 0.3;
   document.getElementById('montoTotal').value = `$${total.toLocaleString('de-DE')}`;
   document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString('de-DE')}`;
 }
-
-
-
-
-
 
     document.getElementById('pagoForm').addEventListener('submit', async (e) => {
   e.preventDefault();
