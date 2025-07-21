@@ -1,13 +1,29 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db'); // asegúrate que `pool` apunta a tu conexión Postgres
+const pool = require('../db');
 const verificarToken = require('../middleware/verificarToken');
 
+// ✅ GET /api/pagos → Listar pagos
+router.get('/', verificarToken, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT pagos.id, pagos.fecha, pagos.monto_total, pagos.monto_supervisora, pagos.dias_evaluados, pagos.cantidad_sesiones,
+             pacientes.nombre || ' ' || pacientes.apellido as paciente_nombre
+      FROM pagos
+      JOIN pacientes ON pagos.paciente_id = pacientes.id
+      ORDER BY pagos.fecha DESC
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error al obtener pagos:', err);
+    res.status(500).send('Error al obtener pagos');
+  }
+});
 
-// Endpoint POST para registrar pagos
+// ✅ POST /api/pagos → Guardar pago
 router.post('/', verificarToken, async (req, res) => {
   const { paciente_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora } = req.body;
-  const psicopedagogaId = req.usuario.id; // asegúrate que `req.usuario` trae datos correctos
+  const psicopedagogaId = req.usuario.id;
 
   try {
     await pool.query(
@@ -22,7 +38,5 @@ router.post('/', verificarToken, async (req, res) => {
     res.status(500).json({ error: 'Error al registrar el pago' });
   }
 });
-
-// Si querés agregar más rutas de pagos (como listados, reportes, etc), van acá también.
 
 module.exports = router;
