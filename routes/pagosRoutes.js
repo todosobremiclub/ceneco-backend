@@ -10,9 +10,10 @@ router.get('/', verificarToken, async (req, res) => {
       SELECT pagos.id, pagos.fecha, pagos.monto_total, pagos.monto_supervisora, pagos.dias_evaluados, pagos.cantidad_sesiones,
        pagos.obra_social, pagos.tipo_sesion,
        pacientes.nombre || ' ' || pacientes.apellido as paciente_nombre,
-       pacientes.supervisora
+       personas.nombre || ' ' || personas.apellido as supervisora
 FROM pagos
 JOIN pacientes ON pagos.paciente_id = pacientes.id
+LEFT JOIN personas ON personas.nombre = pacientes.supervisora
 ORDER BY pagos.fecha DESC
 
     `);
@@ -25,12 +26,13 @@ ORDER BY pagos.fecha DESC
 
 // ✅ POST /api/pagos → Guardar pago
 router.post('/', verificarToken, async (req, res) => {
-  const { paciente_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion } = req.body;
+  const { paciente_id, dias_evaluados, cantidad_sesiones, obra_social, tipo_sesion, monto_sesion } = req.body;
   const psicopedagogaId = req.usuario.id;
 
-  console.log('📥 Payload recibido en POST /api/pagos:', {
-    paciente_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion
-  });
+  const sesiones = parseInt(cantidad_sesiones) || 0;
+  const montoUnitario = parseFloat(monto_sesion) || 0;
+  const monto_total = montoUnitario * sesiones;
+  const monto_supervisora = monto_total * 0.3;
 
   try {
     await pool.query(
@@ -39,10 +41,9 @@ router.post('/', verificarToken, async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
       [paciente_id, psicopedagogaId, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion]
     );
-
     res.json({ success: true });
   } catch (err) {
-    console.error('Error al registrar pago:', err);
+    console.error(err);
     res.status(500).json({ error: 'Error al registrar el pago' });
   }
 });
