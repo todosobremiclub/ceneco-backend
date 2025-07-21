@@ -325,15 +325,14 @@
     document.getElementById('montoSesion').addEventListener('input', calcularMontos);
 
     function calcularMontos() {
-      let rawMonto = cleaveMonto.getRawValue();
-const monto = parseFloat(rawMonto.replace(',', '.')) || 0;
+  const monto = cleaveMonto.getRawValue() || 0;
+  const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
+  const total = monto * sesiones;
+  const supervisora = total * 0.3;
+  document.getElementById('montoTotal').value = `$${total.toLocaleString('de-DE')}`;
+  document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString('de-DE')}`;
+}
 
-      const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
-      const total = monto * sesiones;
-      const supervisora = total * 0.3;
-      document.getElementById('montoTotal').value = `$${total.toLocaleString('de-DE')}`;
-      document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString('de-DE')}`;
-    }
 
     document.getElementById('pagoForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -372,7 +371,7 @@ const monto = parseFloat(rawMonto.replace(',', '.')) || 0;
   if (res.ok) {
     alert('Pago registrado correctamente');
     document.getElementById('pagoForm').reset();
-    cerrarModal();
+    cerrarFormularioPago();
     cargarPagos();
   } else {
     alert('Error al registrar el pago');
