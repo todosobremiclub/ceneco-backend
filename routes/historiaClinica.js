@@ -73,7 +73,8 @@ const autor_nombre = req.usuario.nombre;
 
 // Guardar con archivo
 router.post('/documento', verificarToken, upload.single('archivo'), async (req, res) => {
-  const { paciente_id, tipo, contenido } = req.body;
+  const paciente_id = parseInt(req.body.paciente_id, 10);
+  const { tipo, contenido } = req.body;
   const autor = req.usuario.perfil;
   const autor_nombre = req.usuario.nombre;
 
