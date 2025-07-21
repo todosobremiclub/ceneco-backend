@@ -40,8 +40,20 @@ router.post('/', verificarToken, async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error('Error al registrar pago:', err);
     res.status(500).json({ error: 'Error al registrar el pago' });
+  }
+});
+
+// ✅ DELETE /api/pagos/:id → Eliminar pago
+router.delete('/:id', verificarToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM pagos WHERE id = $1', [id]);
+    res.sendStatus(204);
+  } catch (err) {
+    console.error('Error al eliminar pago:', err);
+    res.status(500).send('Error al eliminar pago');
   }
 });
 
