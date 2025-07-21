@@ -178,6 +178,23 @@
 
         <button type="submit">Registrar Pago</button>
       </form>
+
+<h2 style="margin-top: 30px;">Pagos Registrados</h2>
+<table id="tablaPagos">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Paciente</th>
+      <th>Fecha</th>
+      <th>Monto Total</th>
+      <th>Monto Supervisora</th>
+      <th>Días Evaluados</th>
+      <th>Cantidad de sesiones</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
     </div>
   </main>
 
@@ -285,6 +302,7 @@ function calcularMontos() {
       if (res.ok) {
         alert('Pago registrado correctamente');
         document.getElementById('pagoForm').reset();
+        cargarPagos();
       } else {
         alert('Error al registrar el pago');
       }
@@ -315,6 +333,30 @@ function calcularMontos() {
 
 
     cargarPacientes();
+
+async function cargarPagos() {
+  const res = await fetch('/api/pagos', { headers: { 'Authorization': token } });
+  if (!res.ok) return;
+  const pagos = await res.json();
+  const tbody = document.querySelector('#tablaPagos tbody');
+  tbody.innerHTML = '';
+
+  pagos.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${p.id}</td>
+      <td>${p.paciente_nombre || ''}</td>
+      <td>${new Date(p.fecha).toLocaleDateString()}</td>
+      <td>$${p.monto_total}</td>
+      <td>$${p.monto_supervisora}</td>
+      <td>${p.dias_evaluados || ''}</td>
+      <td>${p.cantidad_sesiones || ''}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+
   </script>
 
 </body>
