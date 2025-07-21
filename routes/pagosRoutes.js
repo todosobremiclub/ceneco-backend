@@ -26,6 +26,10 @@ router.post('/', verificarToken, async (req, res) => {
   const { paciente_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion } = req.body;
   const psicopedagogaId = req.usuario.id;
 
+  console.log('📥 Payload recibido en POST /api/pagos:', {
+    paciente_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion
+  });
+
   try {
     await pool.query(
       `INSERT INTO pagos 
