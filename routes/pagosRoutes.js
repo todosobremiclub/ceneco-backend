@@ -29,21 +29,26 @@ router.post('/', verificarToken, async (req, res) => {
   const { paciente_id, dias_evaluados, cantidad_sesiones, obra_social, tipo_sesion, monto_sesion } = req.body;
   const psicopedagogaId = req.usuario.id;
 
+  // 🔔 Cálculos seguros en backend:
   const sesiones = parseInt(cantidad_sesiones) || 0;
   const montoUnitario = parseFloat(monto_sesion) || 0;
   const monto_total = montoUnitario * sesiones;
   const monto_supervisora = monto_total * 0.3;
+
+  console.log('📝 Registrando pago con: ', {
+    paciente_id, psicopedagogaId, dias_evaluados, sesiones, montoUnitario, monto_total, monto_supervisora, obra_social, tipo_sesion
+  });
 
   try {
     await pool.query(
       `INSERT INTO pagos 
        (paciente_id, psicopedagoga_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion, fecha)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
-      [paciente_id, psicopedagogaId, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion]
+      [paciente_id, psicopedagogaId, dias_evaluados, sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion]
     );
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error('❌ Error al registrar pago:', err);
     res.status(500).json({ error: 'Error al registrar el pago' });
   }
 });
