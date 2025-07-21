@@ -438,20 +438,34 @@
     agrupadoPorPsicopedagoga[key].push(p);
   });
 
-  Object.keys(agrupadoPorPsicopedagoga).forEach(psico => {
+  Object.keys(agrupadoPorPsicopedagoga).forEach((psico, index) => {
+    const groupId = `grupo-${index}`;
+
+    // 🔔 Fila cabecera clickeable
     const trHeader = document.createElement('tr');
-    trHeader.innerHTML = `<td colspan="12"><strong>Pagos de ${psico}</strong></td>`;
+    trHeader.style.backgroundColor = '#e0e7ff';
+    trHeader.style.cursor = 'pointer';
+    trHeader.onclick = () => {
+      const rows = document.querySelectorAll(`.fila-${groupId}`);
+      rows.forEach(row => {
+        row.style.display = (row.style.display === 'none' ? 'table-row' : 'none');
+      });
+    };
+    trHeader.innerHTML = `<td colspan="12"><strong>Pagos de ${psico} ▼</strong></td>`;
     tbody.appendChild(trHeader);
 
+    // 🔔 Filas ocultas por defecto
     agrupadoPorPsicopedagoga[psico].forEach(p => {
       const tr = document.createElement('tr');
+      tr.classList.add(`fila-${groupId}`);
+      tr.style.display = 'none';
       tr.innerHTML = `
         <td>${p.id}</td>
         <td>${p.paciente_nombre || ''}</td>
         <td>${new Date(p.fecha).toLocaleDateString()}</td>
-        <td>$${p.monto_total}</td>
-        <td>$${p.monto_supervisora}</td>
-        <td>$${p.monto_supervisora2 || '0.00'}</td>
+        <td>$${p.monto_total.toFixed(2)}</td>
+        <td>$${p.monto_supervisora.toFixed(2)}</td>
+        <td>$${p.monto_supervisora2 ? p.monto_supervisora2.toFixed(2) : '0.00'}</td>
         <td>${p.dias_evaluados || ''}</td>
         <td>${p.cantidad_sesiones || ''}</td>
         <td>${p.obra_social || ''}</td>
@@ -463,6 +477,7 @@
     });
   });
 }
+
 
 
   function abrirFormularioPago() {
