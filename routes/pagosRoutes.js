@@ -8,11 +8,13 @@ router.get('/', verificarToken, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT pagos.id, pagos.fecha, pagos.monto_total, pagos.monto_supervisora, pagos.dias_evaluados, pagos.cantidad_sesiones,
-             pagos.obra_social, pagos.tipo_sesion,
-             pacientes.nombre || ' ' || pacientes.apellido as paciente_nombre
-      FROM pagos
-      JOIN pacientes ON pagos.paciente_id = pacientes.id
-      ORDER BY pagos.fecha DESC
+       pagos.obra_social, pagos.tipo_sesion,
+       pacientes.nombre || ' ' || pacientes.apellido as paciente_nombre,
+       pacientes.supervisora
+FROM pagos
+JOIN pacientes ON pagos.paciente_id = pacientes.id
+ORDER BY pagos.fecha DESC
+
     `);
     res.json(result.rows);
   } catch (err) {

@@ -244,16 +244,21 @@
     <h2 style="margin-top: 30px;">Pagos Registrados</h2>
     <table id="tablaPagos">
       <thead>
-        <tr>
-          <th>ID</th>
-          <th>Paciente</th>
-          <th>Fecha</th>
-          <th>Monto Total</th>
-          <th>Monto Supervisora</th>
-          <th>Días Evaluados</th>
-          <th>Cantidad de sesiones</th>
-        </tr>
-      </thead>
+  <tr>
+    <th>ID</th>
+    <th>Paciente</th>
+    <th>Fecha</th>
+    <th>Monto Total</th>
+    <th>Monto Supervisora</th>
+    <th>Días Evaluados</th>
+    <th>Cantidad de sesiones</th>
+    <th>Obra Social</th>   <!-- 🟢 Faltaba esta columna -->
+    <th>Tipo de sesión</th> <!-- 🟢 Faltaba esta columna -->
+    <th>Supervisora</th>   <!-- 🟢 Nuevo campo Supervisora -->
+    <th>Acciones</th> <!-- 🟢 Botón eliminar -->
+  </tr>
+</thead>
+
       <tbody></tbody>
     </table>
   </main>
@@ -336,6 +341,7 @@
       const dias = document.getElementById('dias').value;
       const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
       let rawMonto = cleaveMonto.getRawValue();
+      console.log("🧮 rawMonto antes de parseFloat:", rawMonto);
       const monto = parseFloat(rawMonto) || 0;
       const total = monto * sesiones;
       const montoSup = total * 0.3;
@@ -351,6 +357,7 @@ const payload = {
   obra_social: obraSocial,
   tipo_sesion: tipoSesion
 };
+      console.log("📝 Payload que se envía al backend:", payload);
 
       const res = await fetch('/api/pagos', {
         method: 'POST',
@@ -376,7 +383,7 @@ const payload = {
       pagos.forEach(p => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${p.id}</td>
+  <td>${p.id}</td>
   <td>${p.paciente_nombre || ''}</td>
   <td>${new Date(p.fecha).toLocaleDateString()}</td>
   <td>$${p.monto_total}</td>
@@ -385,7 +392,11 @@ const payload = {
   <td>${p.cantidad_sesiones || ''}</td>
   <td>${p.obra_social || ''}</td>
   <td>${p.tipo_sesion || ''}</td>
-        `;
+  <td>${p.supervisora || ''}</td> <!-- 🟢 Nuevo -->
+  <td><button onclick="eliminarPago(${p.id})">🗑️</button></td>
+`;
+
+
         tbody.appendChild(tr);
       });
     }
@@ -417,6 +428,21 @@ const payload = {
       numeralDecimalMark: ',',
       delimiter: '.'
     });
+
+async function eliminarPago(id) {
+  if (confirm("¿Seguro que querés eliminar este pago?")) {
+    const res = await fetch(`/api/pagos/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: token },
+    });
+    if (res.ok) {
+      cargarPagos();
+    } else {
+      alert("Error al eliminar pago");
+    }
+  }
+}
+
 
     cargarPacientes();
     cargarPagos();
