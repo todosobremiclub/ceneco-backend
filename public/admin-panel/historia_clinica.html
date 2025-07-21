@@ -417,7 +417,7 @@ function mostrarFormulario(pacienteId) {
       ${tiposRegistro.map(t => `<option value="${t.nombre}">${t.nombre}</option>`).join('')}
     </select>
     <textarea id="contenido-${pacienteId}" placeholder="Escribir texto..."></textarea>
-    <input type="file" id="archivo-${pacienteId}" style="display:none">
+    <input type="file" id="archivo-${pacienteId}" name="archivo" style="display:none"> <!-- 🔧 fix aquí -->
     <button onclick="guardarActividad(${pacienteId})">Guardar</button>
   `;
   div.innerHTML = html;
