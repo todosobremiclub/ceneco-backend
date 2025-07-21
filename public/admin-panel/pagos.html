@@ -244,8 +244,11 @@
       <label>Monto total</label>
 <div id="montoTotal" class="campo-monto">$0</div>
 
-<label>% Supervisora (30%)</label>
+<label>% Supervisora (20%)</label>
 <div id="montoSupervisora" class="campo-monto">$0</div>
+
+<label>% Supervisora 2 (10%)</label>
+<div id="montoSupervisora2" class="campo-monto">$0</div>
 
       <button type="submit">Registrar Pago</button>
       <button type="button" onclick="cerrarFormularioPago()">Cancelar</button>
@@ -358,10 +361,14 @@
   }
 
   const total = monto * sesiones;
-  const supervisora = total * 0.3;
+  const supervisora = total * 0.2;   // 20%
+  const supervisora2 = total * 0.1;  // 10%
+
   document.getElementById('montoTotal').textContent = `$${total.toLocaleString('de-DE')}`;
   document.getElementById('montoSupervisora').textContent = `$${supervisora.toLocaleString('de-DE')}`;
+  document.getElementById('montoSupervisora2').textContent = `$${supervisora2.toLocaleString('de-DE')}`;
 }
+
 
 
   document.getElementById('pagoForm').addEventListener('submit', async (e) => {
