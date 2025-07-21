@@ -339,13 +339,19 @@
       const monto = parseFloat(rawMonto) || 0;
       const total = monto * sesiones;
       const montoSup = total * 0.3;
-      const payload = {
-        paciente_id: pacienteId,
-        dias_evaluados: dias,
-        cantidad_sesiones: sesiones,
-        monto_total: total,
-        monto_supervisora: montoSup
-      };
+     const obraSocial = document.getElementById('obraSocial').value;
+const tipoSesion = document.getElementById('tipoSesion').value;
+
+const payload = {
+  paciente_id: pacienteId,
+  dias_evaluados: dias,
+  cantidad_sesiones: sesiones,
+  monto_total: total,
+  monto_supervisora: montoSup,
+  obra_social: obraSocial,
+  tipo_sesion: tipoSesion
+};
+
       const res = await fetch('/api/pagos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': token },

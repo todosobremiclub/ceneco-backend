@@ -8,6 +8,7 @@ router.get('/', verificarToken, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT pagos.id, pagos.fecha, pagos.monto_total, pagos.monto_supervisora, pagos.dias_evaluados, pagos.cantidad_sesiones,
+             pagos.obra_social, pagos.tipo_sesion,
              pacientes.nombre || ' ' || pacientes.apellido as paciente_nombre
       FROM pagos
       JOIN pacientes ON pagos.paciente_id = pacientes.id
@@ -27,11 +28,12 @@ router.post('/', verificarToken, async (req, res) => {
 
   try {
     await pool.query(
-      `INSERT INTO pagos 
-       (paciente_id, psicopedagoga_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, fecha)
-       VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
-      [paciente_id, psicopedagogaId, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora]
-    );
+  `INSERT INTO pagos 
+   (paciente_id, psicopedagoga_id, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion, fecha)
+   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+  [paciente_id, psicopedagogaId, dias_evaluados, cantidad_sesiones, monto_total, monto_supervisora, obra_social, tipo_sesion]
+);
+
     res.json({ success: true });
   } catch (err) {
     console.error(err);
