@@ -8,7 +8,7 @@ const verificarToken = require('../middleware/verificarToken');
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Obtener historia clínica por numero_paciente
-router.get('/:numero_paciente', async (req, res) => {
+router.get('/:numero_paciente', verificarToken, async (req, res) => {
   const { numero_paciente } = req.params;
   try {
     const result = await pool.query(
@@ -40,7 +40,7 @@ router.get('/:numero_paciente', async (req, res) => {
         contenido: r.contenido,
         adjunto,
         autor: r.autor,
-        autor_nombre: r.autor_nombre  // ✅ devolvemos también autor_nombre
+        autor_nombre: r.autor_nombre
       };
     }));
 
@@ -54,8 +54,8 @@ router.get('/:numero_paciente', async (req, res) => {
 // Guardar texto simple
 router.post('/', verificarToken, async (req, res) => {
   const { paciente_id, tipo, contenido } = req.body;
-  const autor = req.user.perfil;
-  const autor_nombre = req.user.nombre;
+  const autor = req.usuario.perfil;
+  const autor_nombre = req.usuario.nombre;
 
   try {
     await pool.query(
@@ -70,11 +70,11 @@ router.post('/', verificarToken, async (req, res) => {
   }
 });
 
-// Guardar con archivo (subir a Firebase Storage)
+// Guardar con archivo
 router.post('/documento', verificarToken, upload.single('archivo'), async (req, res) => {
   const { paciente_id, tipo, contenido } = req.body;
-  const autor = req.user.perfil;
-  const autor_nombre = req.user.nombre;
+  const autor = req.usuario.perfil;
+  const autor_nombre = req.usuario.nombre;
 
   if (!req.file) {
     return res.status(400).send('Archivo no recibido');
@@ -117,7 +117,7 @@ router.post('/documento', verificarToken, upload.single('archivo'), async (req, 
 });
 
 // Eliminar registro
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verificarToken, async (req, res) => {
   const { id } = req.params;
   try {
     await pool.query('DELETE FROM historia_clinica WHERE id = $1', [id]);
@@ -129,7 +129,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Editar registro
-router.put('/:id', async (req, res) => {
+router.put('/:id', verificarToken, async (req, res) => {
   const { id } = req.params;
   const { tipo, contenido } = req.body;
   try {
@@ -146,8 +146,8 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Limpiar tabla historia_clinica
-router.post('/limpiar', async (req, res) => {
+// Limpiar historia completa
+router.post('/limpiar', verificarToken, async (req, res) => {
   try {
     await pool.query('DELETE FROM historia_clinica');
     res.sendStatus(200);
