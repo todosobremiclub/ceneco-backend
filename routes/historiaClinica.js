@@ -54,7 +54,7 @@ router.get('/:numero_paciente', verificarToken, async (req, res) => {
 // Guardar texto simple
 router.post('/', verificarToken, async (req, res) => {
   const { paciente_id, tipo, contenido } = req.body;
-  cconst autor = req.usuario.perfil;
+  const autor = req.usuario.perfil;
 const autor_nombre = req.usuario.nombre;
 
 
