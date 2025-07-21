@@ -461,19 +461,20 @@
       tr.classList.add(`grupo-${index}`);
       tr.style.display = 'none';
       tr.innerHTML = `
-        <td>${p.id}</td>
-        <td>${p.paciente_nombre || ''}</td>
-        <td>${new Date(p.fecha).toLocaleDateString()}</td>
-        <td>$${p.monto_total.toFixed(2)}</td>
-        <td>$${p.monto_supervisora.toFixed(2)}</td>
-        <td>$${p.monto_supervisora2 ? p.monto_supervisora2.toFixed(2) : '0.00'}</td>
-        <td>${p.dias_evaluados || ''}</td>
-        <td>${p.cantidad_sesiones || ''}</td>
-        <td>${p.obra_social || ''}</td>
-        <td>${p.tipo_sesion || ''}</td>
-        <td>${p.supervisora || ''}</td>
-        <td><button onclick="eliminarPago(${p.id})">🗑️</button></td>
-      `;
+  <td>${p.id}</td>
+  <td>${p.paciente_nombre || ''}</td>
+  <td>${new Date(p.fecha).toLocaleDateString()}</td>
+  <td>$${parseFloat(p.monto_total || 0).toFixed(2)}</td>
+  <td>$${parseFloat(p.monto_supervisora || 0).toFixed(2)}</td>
+  <td>$${parseFloat(p.monto_supervisora2 || 0).toFixed(2)}</td>
+  <td>${p.dias_evaluados || ''}</td>
+  <td>${p.cantidad_sesiones || ''}</td>
+  <td>${p.obra_social || ''}</td>
+  <td>${p.tipo_sesion || ''}</td>
+  <td>${p.supervisora || ''}</td>
+  <td><button onclick="eliminarPago(${p.id})">🗑️</button></td>
+`;
+
       tbodyPagos.appendChild(tr);
     });
     tabla.appendChild(tbodyPagos);
