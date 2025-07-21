@@ -424,12 +424,14 @@
   });
 
  async function cargarPagos() {
+ async function cargarPagos() {
   const res = await fetch('/api/pagos', { headers: { 'Authorization': token } });
   if (!res.ok) return;
   const pagos = await res.json();
 
-  const tbody = document.querySelector('#tablaPagos tbody');
-  tbody.innerHTML = '';
+  const tabla = document.getElementById('tablaPagos');
+  const oldTbodies = tabla.querySelectorAll('tbody');
+  oldTbodies.forEach(t => t.remove()); // Limpieza total antes de renderizar
 
   const agrupadoPorPsicopedagoga = {};
   pagos.forEach(p => {
@@ -439,25 +441,24 @@
   });
 
   Object.keys(agrupadoPorPsicopedagoga).forEach((psico, index) => {
-    const groupId = `grupo-${index}`;
-
-    // 🔔 Fila cabecera clickeable
+    const tbodyHeader = document.createElement('tbody');
     const trHeader = document.createElement('tr');
     trHeader.style.backgroundColor = '#e0e7ff';
     trHeader.style.cursor = 'pointer';
     trHeader.onclick = () => {
-      const rows = document.querySelectorAll(`.fila-${groupId}`);
+      const rows = document.querySelectorAll(`.grupo-${index}`);
       rows.forEach(row => {
         row.style.display = (row.style.display === 'none' ? 'table-row' : 'none');
       });
     };
     trHeader.innerHTML = `<td colspan="12"><strong>Pagos de ${psico} ▼</strong></td>`;
-    tbody.appendChild(trHeader);
+    tbodyHeader.appendChild(trHeader);
+    tabla.appendChild(tbodyHeader);
 
-    // 🔔 Filas ocultas por defecto
+    const tbodyPagos = document.createElement('tbody');
     agrupadoPorPsicopedagoga[psico].forEach(p => {
       const tr = document.createElement('tr');
-      tr.classList.add(`fila-${groupId}`);
+      tr.classList.add(`grupo-${index}`);
       tr.style.display = 'none';
       tr.innerHTML = `
         <td>${p.id}</td>
@@ -473,10 +474,12 @@
         <td>${p.supervisora || ''}</td>
         <td><button onclick="eliminarPago(${p.id})">🗑️</button></td>
       `;
-      tbody.appendChild(tr);
+      tbodyPagos.appendChild(tr);
     });
+    tabla.appendChild(tbodyPagos);
   });
 }
+
 
 
 
