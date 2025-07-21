@@ -346,23 +346,23 @@
   });
 
   function calcularMontos() {
-    console.log("🔥 calcularMontos llamado");
-    let rawMonto = cleaveMonto.getRawValue();
-    const monto = parseFloat(rawMonto) || 0;
+  console.log("🔥 calcularMontos llamado");
+  let rawMonto = cleaveMonto.getRawValue();
+  rawMonto = rawMonto.replace('$', '').replace(/\./g, '').replace(',', '.').trim();
+  const monto = parseFloat(rawMonto) || 0;
 
-    let sesiones = parseInt(document.getElementById('cantidadSesiones').value);
-    if (isNaN(sesiones) || sesiones < 1) {
-      sesiones = 1;
-      document.getElementById('cantidadSesiones').value = 1;
-    }
-
-    const total = monto * sesiones;
-    const supervisora = total * 0.3;
-    document.getElementById('montoTotal').textContent = `$${total.toLocaleString('de-DE')}`;
-document.getElementById('montoSupervisora').textContent = `$${supervisora.toLocaleString('de-DE')}`;
-
-
+  let sesiones = parseInt(document.getElementById('cantidadSesiones').value);
+  if (isNaN(sesiones) || sesiones < 1) {
+    sesiones = 1;
+    document.getElementById('cantidadSesiones').value = 1;
   }
+
+  const total = monto * sesiones;
+  const supervisora = total * 0.3;
+  document.getElementById('montoTotal').textContent = `$${total.toLocaleString('de-DE')}`;
+  document.getElementById('montoSupervisora').textContent = `$${supervisora.toLocaleString('de-DE')}`;
+}
+
 
   document.getElementById('pagoForm').addEventListener('submit', async (e) => {
     e.preventDefault();
