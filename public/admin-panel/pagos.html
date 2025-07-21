@@ -337,23 +337,28 @@
 
     document.getElementById('pagoForm').addEventListener('submit', async (e) => {
   e.preventDefault();
+
   const pacienteId = document.getElementById('paciente').value;
   const dias = document.getElementById('dias').value;
   const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
 
-  let rawMonto = cleaveMonto.getRawValue();  // Esto ya devuelve limpio: "20000" SIN el "$"
-  const monto_sesion = parseFloat(rawMonto) || 0;
+  let rawMonto = document.getElementById('montoSesion').value;
+  rawMonto = rawMonto.replace(/\./g, '').replace(',', '.').replace('$', '').trim();
+  const monto = parseFloat(rawMonto) || 0;
+
+  const obraSocial = document.getElementById('obraSocial').value;
+  const tipoSesion = document.getElementById('tipoSesion').value;
+
+  console.log('✅ Payload antes de enviar', { pacienteId, dias, sesiones, monto });
 
   const payload = {
     paciente_id: pacienteId,
     dias_evaluados: dias,
     cantidad_sesiones: sesiones,
-    monto_sesion,  // Enviamos el valor limpio como número
-    obra_social: document.getElementById('obraSocial').value,
-    tipo_sesion: document.getElementById('tipoSesion').value
+    monto_sesion: monto,
+    obra_social: obraSocial,
+    tipo_sesion: tipoSesion
   };
-
-  console.log('Payload que se envía al backend:', payload);
 
   const res = await fetch('/api/pagos', {
     method: 'POST',
@@ -373,6 +378,7 @@
     alert('Error al registrar el pago');
   }
 });
+
 
 
     async function cargarPagos() {
