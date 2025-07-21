@@ -265,203 +265,200 @@
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
 
-  <script>
-    const token = localStorage.getItem('token');
-    const perfil = localStorage.getItem('perfil');
+<script>
+  const token = localStorage.getItem('token');
+  const perfil = localStorage.getItem('perfil');
 
-    if (!token || !['admin', 'usuario', 'supervisora'].includes(perfil)) {
-      logout();
-    }
-
-    const sidebar = document.getElementById('sidebar');
-    sidebar.innerHTML = '';
-
-    if (perfil === 'admin' || perfil === 'supervisora') {
-      sidebar.innerHTML = `
-        <a href="index.html">👥 Pacientes</a>
-        <a href="historia_clinica.html">📄 Historia Clínica</a>
-        <a href="pagos.html">💰 Pagos</a>
-        <a href="configuracion.html">⚙️ Configuración</a>
-        <button onclick="logout()">🚪 Cerrar sesión</button>
-      `;
-    } else if (perfil === 'usuario') {
-      sidebar.innerHTML = `
-        <a href="historia_clinica.html">📄 Historia Clínica</a>
-        <a href="pagos.html">💰 Pagos</a>
-        <button onclick="logout()">🚪 Cerrar sesión</button>
-      `;
-    }
-
-    async function cargarPacientes() {
-      const url = '/pacientes';
-      const res = await fetch(url, { headers: { Authorization: token } });
-      const pacientes = await res.json();
-      const select = document.getElementById('paciente');
-      select.innerHTML = '<option value="">Seleccione</option>';
-      pacientes.forEach(p => {
-        const opt = document.createElement('option');
-        opt.value = p.id;
-        opt.textContent = `${p.nombre} ${p.apellido} (${p.numero_paciente})`;
-        select.appendChild(opt);
-      });
-    }
-
-    document.getElementById('paciente').addEventListener('change', async (e) => {
-      const id = e.target.value;
-      if (!id) return;
-      const res = await fetch(`/pacientes/${id}`, { headers: { Authorization: token } });
-      const p = await res.json();
-      document.getElementById('obraSocial').value = p.obra_social || '';
-      document.getElementById('tipoSesion').value = p.tipo_sesion || '';
-      cleaveMonto.setRawValue(p.monto_sesion || 0);
-      document.getElementById('montoSesion').dispatchEvent(new Event('input'));
-      document.getElementById('supervisora').value = p.supervisora || '';
-      calcularMontos();
-    });
-
-    document.getElementById('cantidadSesiones').addEventListener('input', calcularMontos);
-    document.getElementById('montoSesion').addEventListener('input', calcularMontos);
-document.getElementById('cantidadSesiones').addEventListener('change', calcularMontos);
-
-
-   function calcularMontos() {
-  console.log("🔥 calcularMontos llamado");
-  let rawMonto = cleaveMonto.getRawValue();
-  const monto = parseFloat(rawMonto) || 0;
-
-  let sesiones = parseInt(document.getElementById('cantidadSesiones').value);
-  if (isNaN(sesiones) || sesiones < 1) {
-    sesiones = 1; // 🔧 Default a 1 si está vacío o menor a 1
-    document.getElementById('cantidadSesiones').value = 1;
+  if (!token || !['admin', 'usuario', 'supervisora'].includes(perfil)) {
+    logout();
   }
 
-  const total = monto * sesiones;
-  const supervisora = total * 0.3;
-  document.getElementById('montoTotal').value = `$${total.toLocaleString('de-DE')}`;
-  document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString('de-DE')}`;
-}
+  const sidebar = document.getElementById('sidebar');
+  sidebar.innerHTML = '';
 
-    document.getElementById('pagoForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
+  if (perfil === 'admin' || perfil === 'supervisora') {
+    sidebar.innerHTML = `
+      <a href="index.html">👥 Pacientes</a>
+      <a href="historia_clinica.html">📄 Historia Clínica</a>
+      <a href="pagos.html">💰 Pagos</a>
+      <a href="configuracion.html">⚙️ Configuración</a>
+      <button onclick="logout()">🚪 Cerrar sesión</button>
+    `;
+  } else if (perfil === 'usuario') {
+    sidebar.innerHTML = `
+      <a href="historia_clinica.html">📄 Historia Clínica</a>
+      <a href="pagos.html">💰 Pagos</a>
+      <button onclick="logout()">🚪 Cerrar sesión</button>
+    `;
+  }
 
-  const pacienteId = document.getElementById('paciente').value;
-  const dias = document.getElementById('dias').value;
-  const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
+  flatpickr("#dias", { mode: "multiple", dateFormat: "Y-m-d" });
 
-  let rawMonto = document.getElementById('montoSesion').value;
-  rawMonto = rawMonto.replace(/\./g, '').replace(',', '.').replace('$', '').trim();
-  const monto = parseFloat(rawMonto) || 0;
-
-  const obraSocial = document.getElementById('obraSocial').value;
-  const tipoSesion = document.getElementById('tipoSesion').value;
-
-  console.log('✅ Payload antes de enviar', { pacienteId, dias, sesiones, monto });
-
-  const payload = {
-    paciente_id: pacienteId,
-    dias_evaluados: dias,
-    cantidad_sesiones: sesiones,
-    monto_sesion: monto,
-    obra_social: obraSocial,
-    tipo_sesion: tipoSesion
-  };
-
-  const res = await fetch('/api/pagos', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': token
-    },
-    body: JSON.stringify(payload)
+  const cleaveMonto = new Cleave('#montoSesion', {
+    prefix: '$',
+    numeral: true,
+    numeralThousandsGroupStyle: 'thousand',
+    numeralDecimalMark: ',',
+    delimiter: '.'
   });
 
-  if (res.ok) {
-    alert('Pago registrado correctamente');
-    document.getElementById('pagoForm').reset();
-    cerrarFormularioPago();
-    cargarPagos();
-  } else {
-    alert('Error al registrar el pago');
+  document.getElementById('cantidadSesiones').addEventListener('input', calcularMontos);
+  document.getElementById('cantidadSesiones').addEventListener('change', calcularMontos);
+  document.getElementById('montoSesion').addEventListener('input', calcularMontos);
+
+  async function cargarPacientes() {
+    const res = await fetch('/pacientes', { headers: { Authorization: token } });
+    const pacientes = await res.json();
+    const select = document.getElementById('paciente');
+    select.innerHTML = '<option value="">Seleccione</option>';
+    pacientes.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = `${p.nombre} ${p.apellido} (${p.numero_paciente})`;
+      select.appendChild(opt);
+    });
   }
-});
 
+  document.getElementById('paciente').addEventListener('change', async (e) => {
+    const id = e.target.value;
+    if (!id) return;
+    const res = await fetch(`/pacientes/${id}`, { headers: { Authorization: token } });
+    const p = await res.json();
+    document.getElementById('obraSocial').value = p.obra_social || '';
+    document.getElementById('tipoSesion').value = p.tipo_sesion || '';
+    cleaveMonto.setRawValue(p.monto_sesion || 0);
+    setTimeout(() => calcularMontos(), 0);
+    document.getElementById('supervisora').value = p.supervisora || '';
+  });
 
+  function calcularMontos() {
+    console.log("🔥 calcularMontos llamado");
+    let rawMonto = cleaveMonto.getRawValue();
+    const monto = parseFloat(rawMonto) || 0;
 
-    async function cargarPagos() {
-      const res = await fetch('/api/pagos', { headers: { 'Authorization': token } });
-      if (!res.ok) return;
-      const pagos = await res.json();
-      const tbody = document.querySelector('#tablaPagos tbody');
-      tbody.innerHTML = '';
-      pagos.forEach(p => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-  <td>${p.id}</td>
-  <td>${p.paciente_nombre || ''}</td>
-  <td>${new Date(p.fecha).toLocaleDateString()}</td>
-  <td>$${p.monto_total}</td>
-  <td>$${p.monto_supervisora}</td>
-  <td>${p.dias_evaluados || ''}</td>
-  <td>${p.cantidad_sesiones || ''}</td>
-  <td>${p.obra_social || ''}</td>
-  <td>${p.tipo_sesion || ''}</td>
-  <td>${p.supervisora || ''}</td> <!-- 🟢 Nuevo -->
-  <td><button onclick="eliminarPago(${p.id})">🗑️</button></td>
-`;
-
-
-        tbody.appendChild(tr);
-      });
+    let sesiones = parseInt(document.getElementById('cantidadSesiones').value);
+    if (isNaN(sesiones) || sesiones < 1) {
+      sesiones = 1;
+      document.getElementById('cantidadSesiones').value = 1;
     }
 
-    function abrirFormularioPago() {
-      document.getElementById('formularioPago').style.display = 'block';
+    const total = monto * sesiones;
+    const supervisora = total * 0.3;
+    document.getElementById('montoTotal').value = `$${total.toLocaleString('de-DE')}`;
+    document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString('de-DE')}`;
+  }
+
+  document.getElementById('pagoForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const pacienteId = document.getElementById('paciente').value;
+    const dias = document.getElementById('dias').value;
+
+    let sesiones = parseInt(document.getElementById('cantidadSesiones').value);
+    if (isNaN(sesiones) || sesiones < 1) {
+      sesiones = 1;
     }
 
-    function cerrarFormularioPago() {
-      document.getElementById('formularioPago').style.display = 'none';
-    }
+    let rawMonto = document.getElementById('montoSesion').value;
+    rawMonto = rawMonto.replace(/\./g, '').replace(',', '.').replace('$', '').trim();
+    const monto = parseFloat(rawMonto) || 0;
 
-    function logout() {
-      localStorage.clear();
-      window.location.href = 'login.html';
-    }
+    const obraSocial = document.getElementById('obraSocial').value;
+    const tipoSesion = document.getElementById('tipoSesion').value;
 
-    function toggleSidebar() {
-      const sidebar = document.querySelector('.sidebar');
-      sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
-    }
+    console.log('✅ Payload antes de enviar', { pacienteId, dias, sesiones, monto });
 
-    flatpickr("#dias", { mode: "multiple", dateFormat: "Y-m-d" });
+    const payload = {
+      paciente_id: pacienteId,
+      dias_evaluados: dias,
+      cantidad_sesiones: sesiones,
+      monto_sesion: monto,
+      obra_social: obraSocial,
+      tipo_sesion: tipoSesion
+    };
 
-    const cleaveMonto = new Cleave('#montoSesion', {
-      prefix: '$',
-      numeral: true,
-      numeralThousandsGroupStyle: 'thousand',
-      numeralDecimalMark: ',',
-      delimiter: '.'
+    const res = await fetch('/api/pagos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token
+      },
+      body: JSON.stringify(payload)
     });
 
-async function eliminarPago(id) {
-  if (confirm("¿Seguro que querés eliminar este pago?")) {
-    const res = await fetch(`/api/pagos/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: token },
-    });
     if (res.ok) {
+      alert('Pago registrado correctamente');
+      document.getElementById('pagoForm').reset();
+      cerrarFormularioPago();
       cargarPagos();
     } else {
-      alert("Error al eliminar pago");
+      alert('Error al registrar el pago');
+    }
+  });
+
+  async function cargarPagos() {
+    const res = await fetch('/api/pagos', { headers: { 'Authorization': token } });
+    if (!res.ok) return;
+    const pagos = await res.json();
+    const tbody = document.querySelector('#tablaPagos tbody');
+    tbody.innerHTML = '';
+    pagos.forEach(p => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${p.id}</td>
+        <td>${p.paciente_nombre || ''}</td>
+        <td>${new Date(p.fecha).toLocaleDateString()}</td>
+        <td>$${p.monto_total}</td>
+        <td>$${p.monto_supervisora}</td>
+        <td>${p.dias_evaluados || ''}</td>
+        <td>${p.cantidad_sesiones || ''}</td>
+        <td>${p.obra_social || ''}</td>
+        <td>${p.tipo_sesion || ''}</td>
+        <td>${p.supervisora || ''}</td>
+        <td><button onclick="eliminarPago(${p.id})">🗑️</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function abrirFormularioPago() {
+    document.getElementById('formularioPago').style.display = 'block';
+  }
+
+  function cerrarFormularioPago() {
+    document.getElementById('formularioPago').style.display = 'none';
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = 'login.html';
+  }
+
+  function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
+  }
+
+  async function eliminarPago(id) {
+    if (confirm("¿Seguro que querés eliminar este pago?")) {
+      const res = await fetch(`/api/pagos/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: token }
+      });
+      if (res.ok) {
+        cargarPagos();
+      } else {
+        alert("Error al eliminar pago");
+      }
     }
   }
-}
 
+  cargarPacientes();
+  cargarPagos();
+</script>
 
-    cargarPacientes();
-    cargarPagos();
-  </script>
 
 </body>
 </html>
