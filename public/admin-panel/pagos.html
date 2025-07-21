@@ -323,9 +323,12 @@
 
     document.getElementById('cantidadSesiones').addEventListener('input', calcularMontos);
     document.getElementById('montoSesion').addEventListener('input', calcularMontos);
+document.getElementById('cantidadSesiones').addEventListener('change', calcularMontos);
+
 
     function calcularMontos() {
-  let rawMonto = cleaveMonto.getRawValue();  // 🔧 Usar cleaveMonto.getRawValue() que devuelve el número limpio
+  console.log("🔥 calcularMontos llamado");
+  let rawMonto = cleaveMonto.getRawValue();
   const monto = parseFloat(rawMonto) || 0;
   const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
   const total = monto * sesiones;
@@ -333,6 +336,7 @@
   document.getElementById('montoTotal').value = `$${total.toLocaleString('de-DE')}`;
   document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString('de-DE')}`;
 }
+
 
 
 
