@@ -3,15 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const verificarToken = require('../middleware/verificarToken');
 
-// Middleware soloUser (para psicopedagogas)
-function soloUser(req, res, next) {
-  if (req.usuario.perfil !== 'usuario') {
-    return res.status(403).send('Acceso permitido solo a psicopedagogas');
-  }
-  next();
-}
-
-// Obtener solo pacientes asignados a la psicopedagoga logueada
+// ✅ GET /pacientes → ver todos o solo asignados según perfil
 router.get('/', verificarToken, async (req, res) => {
   try {
     let query = `
@@ -48,34 +40,7 @@ router.get('/', verificarToken, async (req, res) => {
   }
 });
 
-// Obtener todos los pacientes
-router.get('/', async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT 
-        p.id,
-        p.numero_paciente,
-        p.nombre,
-        p.apellido,
-        p.dni,
-        p.fecha_nacimiento,
-        EXTRACT(YEAR FROM AGE(CURRENT_DATE, p.fecha_nacimiento)) AS edad,
-        COALESCE(psico.nombre || ' ' || psico.apellido, p.psicopedagoga) AS psicopedagoga,
-        COALESCE(sup.nombre || ' ' || sup.apellido, p.supervisora) AS supervisora,
-        p.obra_social
-      FROM pacientes p
-      LEFT JOIN personas psico ON psico.nombre = p.psicopedagoga
-      LEFT JOIN personas sup ON sup.nombre = p.supervisora
-      ORDER BY p.numero_paciente
-    `);
-    res.json(result.rows);
-  } catch (err) {
-    console.error("❌ [GET /] Error:", err);
-    res.status(500).send('Error al obtener pacientes');
-  }
-});
-
-// Obtener un paciente por ID
+// ✅ GET /pacientes/:id → obtener paciente por ID
 router.get('/:id', verificarToken, async (req, res) => {
   const { id } = req.params;
   try {
@@ -108,7 +73,7 @@ router.get('/:id', verificarToken, async (req, res) => {
   }
 });
 
-// Crear paciente
+// ✅ POST /pacientes → crear paciente
 router.post('/', async (req, res) => {
   const { numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora, obra_social } = req.body;
   try {
@@ -126,7 +91,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Editar paciente
+// ✅ PUT /pacientes/:id → editar paciente
 router.put('/:id', async (req, res) => {
   const id = req.params.id;
   const { numero_paciente, nombre, apellido, dni, fecha_nacimiento, psicopedagoga, supervisora, obra_social } = req.body;
@@ -160,7 +125,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Eliminar paciente
+// ✅ DELETE /pacientes/:id → eliminar paciente
 router.delete('/:id', async (req, res) => {
   const id = req.params.id;
   try {
