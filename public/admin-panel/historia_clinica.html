@@ -440,12 +440,17 @@ async function guardarActividad(pacienteId) {
     return;
   }
 
+  if ((tipo.toLowerCase() === 'documento' || tipo.toLowerCase() === 'estudio') && !archivo) {
+    alert('Debes adjuntar un archivo para este tipo de registro.');
+    return;
+  }
+
   if (tipo.toLowerCase() === 'documento' || tipo.toLowerCase() === 'estudio') {
     const fd = new FormData();
     fd.append('paciente_id', pacienteId);
     fd.append('tipo', tipo);
     fd.append('contenido', contenido);
-    if (archivo) fd.append('archivo', archivo);
+    fd.append('archivo', archivo);
     await fetch('/historia/documento', { method: 'POST', body: fd, headers: { 'Authorization': token } });
   } else {
     await fetch('/historia', {
