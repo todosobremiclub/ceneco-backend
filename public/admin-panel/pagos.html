@@ -325,8 +325,7 @@
     document.getElementById('montoSesion').addEventListener('input', calcularMontos);
 
     function calcularMontos() {
-  // 🔧 Usamos cleaveMonto.getRawValue() para obtener el valor numérico limpio
-  let rawMonto = cleaveMonto.getRawValue();
+  let rawMonto = cleaveMonto.getRawValue();  // 🔧 Usar el método oficial de Cleave para obtener el valor numérico correcto
   const monto = parseFloat(rawMonto) || 0;
   const sesiones = parseInt(document.getElementById('cantidadSesiones').value) || 0;
   const total = monto * sesiones;
@@ -334,6 +333,7 @@
   document.getElementById('montoTotal').value = `$${total.toLocaleString('de-DE')}`;
   document.getElementById('montoSupervisora').value = `$${supervisora.toLocaleString('de-DE')}`;
 }
+
 
 
 
