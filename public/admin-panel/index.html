@@ -233,6 +233,63 @@
     width: auto;
     margin-right: 10px;
   }
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+    position: fixed;
+    width: 200px;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: #0b3d91;
+    z-index: 3000;
+    padding-top: 60px;
+  }
+
+  .toggle-btn {
+    display: block;
+  }
+
+  header {
+    left: 0;
+    padding-left: 50px;
+  }
+
+  main {
+    margin-left: 0;
+    padding: 80px 15px 20px 15px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h1 {
+    font-size: 16px;
+  }
+
+  table {
+    font-size: 11px;
+    overflow-x: auto;
+    display: block;
+  }
+
+  th, td {
+    white-space: nowrap;
+  }
+
+  .content-box {
+    overflow-x: auto;
+  }
+
+  .modal-content {
+    width: 90%;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -247,10 +304,12 @@
   </div>
 
   <header>
-    <div class="header-left">
-      <img src="logo.png" alt="Logo" class="logo-header">
-      <h1>Gestión de Pacientes - Ceneco</h1>
-    </div>
+    <header>
+  <div class="header-left">
+    <img src="logo.png" alt="Logo" class="logo-header">
+    <span style="font-weight: 600;">Gestión de Pacientes - Ceneco</span>
+  </div>
+
     <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
   </header>
 
