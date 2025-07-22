@@ -75,8 +75,6 @@
       font-family: 'Inter', sans-serif;
       color: #0D1B2A;
       margin-top: 60px;
-      background-color: rgba(255, 255, 255, 0.9);
-      border-radius: 8px;
     }
 
     table {
@@ -143,6 +141,8 @@
       cursor: pointer;
       font-size: 12px;
       font-weight: 500;
+      z-index: 10;
+      position: relative;
     }
 
     .form-inline input {
@@ -517,9 +517,17 @@
     }
 
     function toggleSidebar() {
-      const sidebar = document.querySelector('.sidebar');
-      sidebar.style.display = (sidebar.style.display === 'block') ? 'none' : 'block';
+  const sidebar = document.querySelector('.sidebar');
+  sidebar.classList.toggle('active');
+
+  document.addEventListener('click', function fueraDelMenu(e) {
+    if (!sidebar.contains(e.target) && !e.target.classList.contains('toggle-btn')) {
+      sidebar.classList.remove('active');
+      document.removeEventListener('click', fueraDelMenu);
     }
+  });
+}
+
 
     function renderizarPacientes(pacientes) {
       const tbody = document.querySelector('#pacientesTable tbody');
