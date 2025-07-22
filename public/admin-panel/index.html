@@ -19,11 +19,6 @@
       font-weight: 600;
     }
 
-    th, td {
-      font-family: 'Inter', sans-serif;
-      color: #0D1B2A;
-    }
-
     .sidebar {
       position: fixed;
       top: 0;
@@ -51,6 +46,10 @@
       transition: background-color 0.2s ease, padding-left 0.2s ease;
     }
 
+    .sidebar.active {
+      display: block !important;
+    }
+
     header {
       position: fixed;
       top: 0;
@@ -76,6 +75,8 @@
       font-family: 'Inter', sans-serif;
       color: #0D1B2A;
       margin-top: 60px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
     }
 
     table {
@@ -94,12 +95,13 @@
       padding: 6px;
       text-align: left;
       font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      color: #0D1B2A;
     }
 
     th {
       background-color: #f5f7fa;
       font-weight: 600;
-      color: #0D1B2A;
     }
 
     tbody tr:hover {
@@ -115,11 +117,21 @@
       cursor: pointer;
       border-radius: 4px;
       font-size: 12px;
-      font-family: 'Inter', sans-serif;
     }
 
     button.delete {
       background-color: #f44336;
+    }
+
+    .logout-btn {
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
     }
 
     .nuevo-btn {
@@ -140,7 +152,6 @@
       border-radius: 4px;
       border: 1px solid #ccc;
       font-size: 12px;
-      font-family: 'Inter', sans-serif;
     }
 
     .toggle-btn {
@@ -222,7 +233,7 @@
     }
 
     .logo-header {
-      height: 30px;
+      max-height: 35px;
       width: auto;
       margin-right: 10px;
     }
@@ -231,6 +242,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      overflow: hidden;
     }
 
     @media (max-width: 768px) {
@@ -266,6 +278,11 @@
         white-space: nowrap;
       }
 
+      .logout-btn {
+        padding: 6px 8px;
+        font-size: 11px;
+      }
+
       table {
         font-size: 11px;
         overflow-x: auto;
@@ -286,6 +303,7 @@
     }
   </style>
 </head>
+>
 <body>
   <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
 
