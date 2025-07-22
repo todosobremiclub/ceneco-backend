@@ -5,316 +5,189 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gestión de Pacientes - Ceneco</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: url('/fondo.png') no-repeat center center fixed;
-      background-size: cover;
-      color: #1a1a1a;
-    }
+   body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: url('/fondo.png') no-repeat center center fixed;
+  background-size: cover;
+  color: #1a1a1a;
+}
 
-    h1, .titulo-header {
-      font-size: 20px;
-      color: #153E75;
-      font-weight: 600;
-    }
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 100vh;
+  background-color: #0b3d91;
+  padding-top: 60px;
+  box-sizing: border-box;
+  z-index: 1000;
+}
 
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 220px;
-      height: 100vh;
-      background-color: #0b3d91;
-      padding-top: 60px;
-      box-sizing: border-box;
-      z-index: 1000;
-    }
+.sidebar a, .sidebar button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
 
-    .sidebar a, .sidebar button {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 20px;
-      color: #ffffff;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 14px;
-      border: none;
-      background: none;
-      cursor: pointer;
-      transition: background-color 0.2s ease, padding-left 0.2s ease;
-    }
+.sidebar.active {
+  display: block !important;
+}
 
-    .sidebar.active {
-      display: block !important;
-    }
+.toggle-btn {
+  display: none;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background-color: #0b3d91;
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  font-size: 18px;
+  border-radius: 4px;
+  z-index: 3001;
+}
 
-    header {
-      position: fixed;
-      top: 0;
-      left: 220px;
-      right: 0;
-      height: 60px;
-      background-color: rgba(255, 255, 255, 0.95);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      box-sizing: border-box;
-      z-index: 500;
-      font-weight: 600;
-      font-size: 15px;
-      color: #153E75;
-    }
+header {
+  position: fixed;
+  top: 0;
+  left: 220px;
+  right: 0;
+  height: 60px;
+  background-color: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-sizing: border-box;
+  z-index: 500;
+}
 
-    main {
-      margin-left: 220px;
-      padding: 80px 30px 20px 30px;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-      color: #0D1B2A;
-      margin-top: 60px;
-    }
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-    .content-box {
-      background-color: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    }
+.logo-header {
+  max-height: 30px;
+  margin-right: 8px;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      margin-bottom: 30px;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      font-size: 12px;
-    }
+.titulo-header {
+  font-size: 17px;
+  font-weight: 600;
+  white-space: nowrap;
+}
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 6px;
-      text-align: left;
-      font-size: 12px;
-      font-family: 'Inter', sans-serif;
-      color: #0D1B2A;
-    }
+.logout-btn {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
 
-    th {
-      background-color: #f5f7fa;
-      font-weight: 600;
-    }
+main {
+  margin-left: 220px;
+  margin-top: 60px;
+  padding: 30px;
+  box-sizing: border-box;
+}
 
-    tbody tr:hover {
-      background-color: #f0f4f8;
-    }
+.content-box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
 
-    button {
-      padding: 4px 8px;
-      margin: 0 2px;
-      border: none;
-      background-color: #2196F3;
-      color: #fff;
-      cursor: pointer;
-      border-radius: 4px;
-      font-size: 12px;
-    }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  margin-top: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 12px;
+}
 
-    button.delete {
-      background-color: #f44336;
-    }
+th, td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  text-align: left;
+}
 
-    .logout-btn {
-      background-color: #2196F3;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-    }
+th {
+  background-color: #f5f7fa;
+  font-weight: 600;
+}
 
-    .nuevo-btn {
-      margin-bottom: 10px;
-      padding: 6px 12px;
-      background-color: #4CAF50;
-      border-radius: 4px;
-      color: white;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 500;
-      z-index: 10;
-      position: relative;
-    }
+tbody tr:hover {
+  background-color: #f0f4f8;
+}
 
-    .form-inline input {
-      margin-right: 10px;
-      margin-bottom: 5px;
-      padding: 6px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      font-size: 12px;
-    }
+.nuevo-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  font-size: 13px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
 
-    .toggle-btn {
-      display: none;
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      background-color: #0b3d91;
-      color: white;
-      border: none;
-      padding: 10px 12px;
-      font-size: 18px;
-      border-radius: 4px;
-      z-index: 3000;
-    }
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
 
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.4);
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-    }
+  .toggle-btn {
+    display: block;
+  }
 
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      font-family: 'Inter', sans-serif;
-    }
+  header {
+    left: 0;
+    width: 100%;
+    padding-left: 50px;
+  }
 
-    .modal-content h3 {
-      margin-top: 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: #153E75;
-      text-align: center;
-      margin-bottom: 20px;
-    }
+  main {
+    margin-left: 0;
+    padding: 80px 15px 20px 15px;
+  }
 
-    .modal-content label {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 12px;
-      font-weight: 500;
-      color: #333;
-    }
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 
-    .modal-content input,
-    .modal-content select {
-      width: 100%;
-      padding: 6px 8px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 12px;
-    }
+  .logout-btn {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+}
 
-    .modal-actions {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .modal-actions button {
-      flex: 1;
-      padding: 6px 0;
-      font-size: 12px;
-      border-radius: 4px;
-      font-weight: 500;
-    }
-
-    .logo-header {
-      max-height: 35px;
-      width: auto;
-      margin-right: 10px;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      overflow: hidden;
-    }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        display: none;
-        position: fixed;
-        width: 200px;
-        left: 0;
-        top: 0;
-        height: 100%;
-        background-color: #0b3d91;
-        z-index: 3000;
-        padding-top: 60px;
-      }
-
-      .toggle-btn {
-        display: block;
-      }
-
-      header {
-        left: 0;
-        padding-left: 50px;
-        width: 100%;
-      }
-
-      main {
-        margin-left: 0;
-        padding: 80px 15px 20px 15px;
-      }
-
-      .titulo-header {
-        font-size: 16px;
-        white-space: nowrap;
-      }
-
-      .logout-btn {
-        padding: 6px 8px;
-        font-size: 11px;
-      }
-
-      table {
-        font-size: 11px;
-        overflow-x: auto;
-        display: block;
-      }
-
-      th, td {
-        white-space: nowrap;
-      }
-
-      .content-box {
-        overflow-x: auto;
-      }
-
-      .modal-content {
-        width: 95%;
-      }
-    }
   </style>
 </head>
 >
 <body>
   <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
 
-  <div class="sidebar">
+  <div class="sidebar" id="sidebar">
     <a href="index.html">👤 Pacientes</a>
     <a href="historia_clinica.html">📄 Historia Clínica</a>
     <a href="pagos.html">💰 Pagos</a>
@@ -323,77 +196,67 @@
   </div>
 
   <header>
-    <header>
-  <div class="header-left">
-    <img src="logo.png" alt="Logo" class="logo-header">
-    <span style="font-weight: 600;">Gestión de Pacientes - Ceneco</span>
-  </div>
-
+    <div class="header-left">
+      <img src="logo.png" alt="Logo" class="logo-header">
+      <span class="titulo-header">Gestión de Pacientes - Ceneco</span>
+    </div>
     <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
   </header>
 
   <main>
-  <div class="content-box">
-    <button class="nuevo-btn" onclick="abrirModal()">➕ Nuevo Paciente</button>
+    <div class="content-box">
+      <button class="nuevo-btn" onclick="abrirModal()">➕ Nuevo Paciente</button>
 
-    <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0;">
-      <input type="text" id="searchInput" placeholder="Buscar Apellido o DNI" style="padding: 5px; width: 200px; font-size: 12px;">
-      <select id="filterPsico" style="padding: 5px; font-size: 12px;">
-        <option value="">Filtrar por Psicopedagoga</option>
-      </select>
-      <select id="filterSuper" style="padding: 5px; font-size: 12px;">
-        <option value="">Filtrar por Supervisora</option>
-      </select>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0;">
+        <input type="text" id="searchInput" placeholder="Buscar Apellido o DNI" style="padding: 5px; width: 200px; font-size: 12px;">
+        <select id="filterPsico" style="padding: 5px; font-size: 12px;">
+          <option value="">Filtrar por Psicopedagoga</option>
+        </select>
+        <select id="filterSuper" style="padding: 5px; font-size: 12px;">
+          <option value="">Filtrar por Supervisora</option>
+        </select>
+      </div>
+
+      <table id="pacientesTable">
+        <thead>
+          <tr>
+            <th>N° Paciente</th>
+            <th>Nombre</th>
+            <th id="sortApellido">Apellido 🔽</th>
+            <th>DNI</th>
+            <th>Fecha Nacimiento</th>
+            <th>Edad</th>
+            <th>Psicopedagoga</th>
+            <th>Supervisora</th>
+            <th>Obra Social</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
+  </main>
 
-    <table id="pacientesTable">
-      <thead>
-        <tr>
-          <th>N° Paciente</th>
-          <th>Nombre</th>
-          <th id="sortApellido">Apellido 🔽</th>
-          <th>DNI</th>
-          <th>Fecha Nacimiento</th>
-          <th>Edad</th>
-          <th>Psicopedagoga</th>
-          <th>Supervisora</th>
-          <th>Obra Social</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</main>
-
-
+  <!-- Modal -->
   <div id="modal" class="modal">
     <div class="modal-content">
       <h3 id="modal-title">Nuevo Paciente</h3>
       <label>Nro Paciente</label>
       <input type="text" id="nuevo_numero_paciente" readonly style="font-size: 12px;">
-
       <label>Nombre</label>
       <input type="text" id="nuevo_nombre" style="font-size: 12px;">
-
       <label>Apellido</label>
       <input type="text" id="nuevo_apellido" style="font-size: 12px;">
-
       <label>DNI</label>
       <input type="number" id="nuevo_dni" style="font-size: 12px;">
-
       <label>Fecha Nacimiento</label>
       <input type="date" id="nuevo_fecha_nacimiento" style="font-size: 12px;">
-
       <label>Psicopedagoga</label>
       <select id="nuevo_psicopedagoga" style="font-size: 12px;"></select>
-
       <label>Supervisora</label>
       <select id="nuevo_supervisora" style="font-size: 12px;"></select>
-
       <label>Obra Social</label>
       <select id="nuevo_obra_social" style="font-size: 12px;"></select>
-
       <div class="modal-actions">
         <button onclick="guardarPaciente()">Guardar</button>
         <button onclick="cerrarModal()">Cancelar</button>
@@ -525,16 +388,18 @@
     }
 
     function toggleSidebar() {
-  const sidebar = document.querySelector('.sidebar');
+  const sidebar = document.getElementById('sidebar');
   sidebar.classList.toggle('active');
 
-  document.addEventListener('click', function fueraDelMenu(e) {
+  // cierre al tocar fuera
+  document.addEventListener('click', function fueraDeSidebar(e) {
     if (!sidebar.contains(e.target) && !e.target.classList.contains('toggle-btn')) {
       sidebar.classList.remove('active');
-      document.removeEventListener('click', fueraDelMenu);
+      document.removeEventListener('click', fueraDeSidebar);
     }
   });
 }
+
 
 
     function renderizarPacientes(pacientes) {
