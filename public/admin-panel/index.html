@@ -13,7 +13,7 @@
       color: #1a1a1a;
     }
 
-    h1 {
+    h1, .titulo-header {
       font-size: 20px;
       color: #153E75;
       font-weight: 600;
@@ -52,33 +52,31 @@
     }
 
     header {
-  position: fixed;
-  top: 0;
-  left: 220px;
-  right: 0;
-  height: 60px;
-  background-color: rgba(255, 255, 255, 0.95);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  box-sizing: border-box;
-  z-index: 500;
-  font-weight: 600;
-  font-size: 15px; /* 🔧 antes 17px */
-  color: #153E75;
-}
+      position: fixed;
+      top: 0;
+      left: 220px;
+      right: 0;
+      height: 60px;
+      background-color: rgba(255, 255, 255, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-sizing: border-box;
+      z-index: 500;
+      font-weight: 600;
+      font-size: 15px;
+      color: #153E75;
+    }
 
-
- main {
-  margin-left: 220px;
-  padding: 80px 30px 20px 30px;
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
-  color: #0D1B2A;
-  margin-top: 60px; /* 🔧 agregado para compensar header */
-}
-
+    main {
+      margin-left: 220px;
+      padding: 80px 30px 20px 30px;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+      color: #0D1B2A;
+      margin-top: 60px;
+    }
 
     table {
       width: 100%;
@@ -159,11 +157,6 @@
       z-index: 3000;
     }
 
-    @media (max-width: 768px) {
-      table, th, td { font-size: 11px; }
-      .form-inline input { width: 100%; margin-right: 0; }
-    }
-
     .modal {
       display: none;
       position: fixed;
@@ -228,68 +221,69 @@
       font-weight: 500;
     }
 
-.logo-header {
-    height: 30px;
-    width: auto;
-    margin-right: 10px;
-  }
+    .logo-header {
+      height: 30px;
+      width: auto;
+      margin-right: 10px;
+    }
 
-@media (max-width: 768px) {
-  .sidebar {
-    display: none;
-    position: fixed;
-    width: 200px;
-    left: 0;
-    top: 0;
-    height: 100%;
-    background-color: #0b3d91;
-    z-index: 3000;
-    padding-top: 60px;
-  }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-  .toggle-btn {
-    display: block;
-  }
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+        position: fixed;
+        width: 200px;
+        left: 0;
+        top: 0;
+        height: 100%;
+        background-color: #0b3d91;
+        z-index: 3000;
+        padding-top: 60px;
+      }
 
-  header {
-    left: 0;
-    padding-left: 50px;
-  }
+      .toggle-btn {
+        display: block;
+      }
 
-  main {
-    margin-left: 0;
-    padding: 80px 15px 20px 15px;
-  }
+      header {
+        left: 0;
+        padding-left: 50px;
+        width: 100%;
+      }
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+      main {
+        margin-left: 0;
+        padding: 80px 15px 20px 15px;
+      }
 
-  h1 {
-    font-size: 16px;
-  }
+      .titulo-header {
+        font-size: 16px;
+        white-space: nowrap;
+      }
 
-  table {
-    font-size: 11px;
-    overflow-x: auto;
-    display: block;
-  }
+      table {
+        font-size: 11px;
+        overflow-x: auto;
+        display: block;
+      }
 
-  th, td {
-    white-space: nowrap;
-  }
+      th, td {
+        white-space: nowrap;
+      }
 
-  .content-box {
-    overflow-x: auto;
-  }
+      .content-box {
+        overflow-x: auto;
+      }
 
-  .modal-content {
-    width: 90%;
-  }
-}
-
+      .modal-content {
+        width: 95%;
+      }
+    }
   </style>
 </head>
 <body>
