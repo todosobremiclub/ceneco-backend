@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reportes - Ceneco</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="configuracion.css" />
+</head>
+<body>
+  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+  <div class="sidebar" id="sidebar">
+    <a href="index.html">👤 Pacientes</a>
+    <a href="historia_clinica.html">📄 Historia Clínica</a>
+    <a href="pagos.html">💰 Pagos</a>
+    <a href="reportes.html">📊 Reportes</a>
+    <a href="configuracion.html">⚙️ Configuración</a>
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
+
+  <header>
+    <div class="header-left">
+      <img src="logo.png" alt="Logo" class="logo-header" />
+      <h1>Reportes de Supervisora - Ceneco</h1>
+    </div>
+    <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+  </header>
+
+  <main>
+    <section>
+      <h2 class="section-title">🗓️ Recaudación mensual por Supervisora</h2>
+      <table id="tabla_reportes">
+        <thead>
+          <tr>
+            <th>Mes</th>
+            <th>Supervisora</th>
+            <th>Monto Total</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const token = localStorage.getItem('token');
+    const perfil = localStorage.getItem('perfil');
+    if (!token || perfil !== 'admin') logout();
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('active');
+
+      document.addEventListener('click', function fueraDeSidebar(e) {
+        if (!sidebar.contains(e.target) && !e.target.classList.contains('toggle-btn')) {
+          sidebar.classList.remove('active');
+          document.removeEventListener('click', fueraDeSidebar);
+        }
+      });
+    }
+
+    async function cargarReporte() {
+      const res = await fetch('/reportes/supervisoras', {
+        headers: { 'Authorization': token }
+      });
+      const data = await res.json();
+      const tbody = document.querySelector('#tabla_reportes tbody');
+      tbody.innerHTML = '';
+      data.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${formatearMes(item.mes)}</td>
+          <td>${item.supervisora}</td>
+          <td>$${item.monto.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function formatearMes(mesISO) {
+      const [anio, mes] = mesISO.split('-');
+      const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      return `${meses[parseInt(mes) - 1]} ${anio}`;
+    }
+
+    cargarReporte();
+  </script>
+</body>
+</html>
