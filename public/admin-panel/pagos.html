@@ -348,6 +348,15 @@
   `;
 }
 
+} else if (perfil === 'usuario') {
+  sidebar.innerHTML = `
+    <a href="historia_clinica.html">📄 Historia Clínica</a>
+    <a href="pagos.html">💰 Pagos</a>
+    <button onclick="logout()">🚪 Cerrar sesión</button>
+  `;
+}
+
+
 
   flatpickr("#dias", { mode: "multiple", dateFormat: "Y-m-d" });
 
