@@ -288,7 +288,22 @@
   </script>
 </body
 
-  
+  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
+  <div class="sidebar" id="sidebar">
+    <a href="index.html">👥 Pacientes</a>
+    <a href="historia_clinica.html">📄 Historia Clínica</a>
+    <a href="pagos.html">💰 Pagos</a>
+    <a href="configuracion.html">⚙️ Configuración</a>
+    <button onclick="logout()">🚪 Cerrar sesión</button>
+  </div>
+
+  <header>
+    <div class="header-left">
+      <img src="logo.png" alt="Logo" class="logo-header">
+      <h1>Gestión de Pagos - Ceneco</h1>
+    </div>
+  </header>
 
   <main>
   <button class="nuevo-btn" onclick="abrirFormularioPago()">+ Registrar Pago</button>
