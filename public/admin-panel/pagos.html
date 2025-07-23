@@ -79,11 +79,15 @@
       padding: 80px 15px 20px 15px;
     }
 
-    h1 {
-      font-size: 20px;
-      color: #153E75;
-      font-weight: 600;
-      margin: 0;
+    .nuevo-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      font-size: 13px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 12px;
     }
 
     .filtros {
@@ -92,6 +96,47 @@
       gap: 10px;
       align-items: center;
       margin-bottom: 20px;
+    }
+
+    .form-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 0 auto;
+      display: none;
+    }
+
+    .form-container input, .form-container select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .form-container button {
+      padding: 10px 16px;
+      background-color: #2196F3;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .campo-monto {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      background-color: #f9f9f9;
     }
 
     table {
@@ -118,71 +163,6 @@
       color: #0D1B2A;
     }
 
-    tbody tr:hover {
-      background-color: #f0f4f8;
-    }
-
-    .nuevo-btn {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      font-size: 13px;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-bottom: 12px;
-    }
-
-    .form-container {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      max-width: 600px;
-      margin: 0 auto;
-      display: none;
-    }
-
-    .form-container h2 {
-      margin-bottom: 20px;
-      color: #153E75;
-      font-size: 18px;
-    }
-
-    .form-container label {
-      display: block;
-      font-weight: 500;
-      margin-bottom: 5px;
-      color: #153E75;
-      font-size: 14px;
-    }
-
-    .form-container input, .form-container select {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-
-    .form-container button {
-      padding: 10px 16px;
-      background-color: #2196F3;
-      border: none;
-      color: white;
-      border-radius: 4px;
-      font-weight: 500;
-      font-size: 14px;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    .form-container button:hover {
-      background-color: #1976D2;
-    }
-
-    /* 🔽 Responsive */
     @media (max-width: 768px) {
       .sidebar {
         display: none;
@@ -248,6 +228,8 @@
   </header>
 
   <main>
+    <button class="nuevo-btn" onclick="abrirFormularioPago()">+ Registrar Pago</button>
+
     <div class="filtros">
       <input type="text" id="searchInput" placeholder="Buscar Apellido o DNI">
       <select id="filterPsico">
@@ -258,110 +240,29 @@
       </select>
     </div>
 
-    <div id="pacientesContainer"></div>
-  </main>
+    <h2>Pagos Registrados</h2>
 
-  <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      sidebar.classList.toggle('active');
-
-      document.addEventListener('click', function fueraDeSidebar(e) {
-        if (!sidebar.contains(e.target) && !e.target.classList.contains('toggle-btn')) {
-          sidebar.classList.remove('active');
-          document.removeEventListener('click', fueraDeSidebar);
-        }
-      });
-    }
-
-    function logout() {
-      localStorage.clear();
-      window.location.href = 'login.html';
-    }
-  </script>
-</body
-
-  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-
-  <div class="sidebar" id="sidebar">
-    <a href="index.html">👥 Pacientes</a>
-    <a href="historia_clinica.html">📄 Historia Clínica</a>
-    <a href="pagos.html">💰 Pagos</a>
-    <a href="configuracion.html">⚙️ Configuración</a>
-    <button onclick="logout()">🚪 Cerrar sesión</button>
-  </div>
-
-  <header>
-    <div class="header-left">
-      <img src="logo.png" alt="Logo" class="logo-header">
-      <h1>Gestión de Pagos - Ceneco</h1>
+    <div class="form-container" id="formularioPago">
+      <!-- ...formulario aquí... -->
     </div>
-  </header>
 
-  <main>
-  <button class="nuevo-btn" onclick="abrirFormularioPago()">+ Registrar Pago</button>
-
-  <div class="form-container" id="formularioPago">
-    <h2>Registro de Evaluaciones</h2>
-    <form id="pagoForm">
-      <label for="paciente">Paciente</label>
-      <select id="paciente" required>
-        <option value="">Seleccione</option>
-      </select>
-
-      <label for="dias">Días evaluados</label>
-      <input type="text" id="dias" placeholder="Seleccione días">
-
-      <label for="obraSocial">Obra Social</label>
-      <input type="text" id="obraSocial" readonly>
-
-      <label for="tipoSesion">Tipo de sesión</label>
-      <input type="text" id="tipoSesion">
-
-      <label for="montoSesion">Monto por sesión</label>
-      <input type="text" id="montoSesion">
-
-      <label for="cantidadSesiones">Cantidad de sesiones</label>
-      <input type="number" id="cantidadSesiones" min="1" value="1">
-
-      <label for="supervisora">Supervisora</label>
-      <input type="text" id="supervisora" readonly>
-
-      <label>Monto total</label>
-<div id="montoTotal" class="campo-monto">$0</div>
-
-<label>% Supervisora (20%)</label>
-<div id="montoSupervisora" class="campo-monto">$0</div>
-
-<label>% Supervisora 2 (10%)</label>
-<div id="montoSupervisora2" class="campo-monto">$0</div>
-
-      <button type="submit">Registrar Pago</button>
-      <button type="button" onclick="cerrarFormularioPago()">Cancelar</button>
-    </form>
-  </div>
-
-
-    <h2 style="margin-top: 30px;">Pagos Registrados</h2>
     <table id="tablaPagos">
       <thead>
-  <tr>
-    <th>ID</th>
-    <th>Paciente</th>
-    <th>Fecha</th>
-    <th>Monto Total</th>
-    <th>Monto Supervisora</th>
-    <th>Monto Supervisora 2</th> <!-- 🔔 Nueva columna -->
-    <th>Días Evaluados</th>
-    <th>Cantidad de sesiones</th>
-    <th>Obra Social</th>
-    <th>Tipo de sesión</th>
-    <th>Supervisora</th>
-    <th>Acciones</th>
-  </tr>
-</thead>
-
-
+        <tr>
+          <th>ID</th>
+          <th>Paciente</th>
+          <th>Fecha</th>
+          <th>Monto Total</th>
+          <th>Monto Supervisora</th>
+          <th>Monto Supervisora 2</th>
+          <th>Días Evaluados</th>
+          <th>Cantidad de sesiones</th>
+          <th>Obra Social</th>
+          <th>Tipo de sesión</th>
+          <th>Supervisora</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
       <tbody></tbody>
     </table>
   </main>
