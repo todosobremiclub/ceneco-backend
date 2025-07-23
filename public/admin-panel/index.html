@@ -545,31 +545,7 @@ function actualizarIconosOrden(campo) {
 }
 
 
-  // Resetear íconos
-  Object.values(iconos).forEach(el => { if (el) el.textContent = '⬍'; });
-
-  if (ordenActual.campo === campo) {
-    ordenActual.asc = !ordenActual.asc;
-  } else {
-    ordenActual = { campo, asc: true };
-  }
-
-  const icono = iconos[campo];
-  if (icono) icono.textContent = ordenActual.asc ? '▲' : '▼';
-
-  allPacientes.sort((a, b) => {
-    const valA = a[campo];
-    const valB = b[campo];
-    if (campo === 'numero_paciente') return ordenActual.asc ? valA - valB : valB - valA;
-    return ordenActual.asc
-      ? valA.localeCompare(valB)
-      : valB.localeCompare(valA);
-  });
-
-  renderizarPacientes(allPacientes);
-}
-
-
+ 
     cargarPacientes();
   </script>
 </body>
