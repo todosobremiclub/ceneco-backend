@@ -286,77 +286,6 @@
       window.location.href = 'login.html';
     }
   </script>
-</body
-
-  
-
-  <main>
-  <button class="nuevo-btn" onclick="abrirFormularioPago()">+ Registrar Pago</button>
-
-  <div class="form-container" id="formularioPago">
-    <h2>Registro de Evaluaciones</h2>
-    <form id="pagoForm">
-      <label for="paciente">Paciente</label>
-      <select id="paciente" required>
-        <option value="">Seleccione</option>
-      </select>
-
-      <label for="dias">Días evaluados</label>
-      <input type="text" id="dias" placeholder="Seleccione días">
-
-      <label for="obraSocial">Obra Social</label>
-      <input type="text" id="obraSocial" readonly>
-
-      <label for="tipoSesion">Tipo de sesión</label>
-      <input type="text" id="tipoSesion">
-
-      <label for="montoSesion">Monto por sesión</label>
-      <input type="text" id="montoSesion">
-
-      <label for="cantidadSesiones">Cantidad de sesiones</label>
-      <input type="number" id="cantidadSesiones" min="1" value="1">
-
-      <label for="supervisora">Supervisora</label>
-      <input type="text" id="supervisora" readonly>
-
-      <label>Monto total</label>
-<div id="montoTotal" class="campo-monto">$0</div>
-
-<label>% Supervisora (20%)</label>
-<div id="montoSupervisora" class="campo-monto">$0</div>
-
-<label>% Supervisora 2 (10%)</label>
-<div id="montoSupervisora2" class="campo-monto">$0</div>
-
-      <button type="submit">Registrar Pago</button>
-      <button type="button" onclick="cerrarFormularioPago()">Cancelar</button>
-    </form>
-  </div>
-
-
-    
-    <table id="tablaPagos">
-      <thead>
-  <tr>
-    <th>ID</th>
-    <th>Paciente</th>
-    <th>Fecha</th>
-    <th>Monto Total</th>
-    <th>Monto Supervisora</th>
-    <th>Monto Supervisora 2</th> <!-- 🔔 Nueva columna -->
-    <th>Días Evaluados</th>
-    <th>Cantidad de sesiones</th>
-    <th>Obra Social</th>
-    <th>Tipo de sesión</th>
-    <th>Supervisora</th>
-    <th>Acciones</th>
-  </tr>
-</thead>
-
-
-      <tbody></tbody>
-    </table>
-  </main>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -507,7 +436,31 @@
 
   const tabla = document.getElementById('tablaPagos');
   const oldTbodies = tabla.querySelectorAll('tbody');
-  oldTbodies.forEach(t => t.remove()); // Limpieza total antes de renderizar
+oldTbodies.forEach(t => t.remove()); // Borra solo tbodies
+
+const thead = tabla.querySelector('thead');
+if (!thead) {
+  const theadHTML = `
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Paciente</th>
+        <th>Fecha</th>
+        <th>Monto Total</th>
+        <th>Monto Supervisora</th>
+        <th>Monto Supervisora 2</th>
+        <th>Días Evaluados</th>
+        <th>Cantidad de sesiones</th>
+        <th>Obra Social</th>
+        <th>Tipo de sesión</th>
+        <th>Supervisora</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+  `;
+  tabla.insertAdjacentHTML('afterbegin', theadHTML);
+}
+
 
   const agrupadoPorPsicopedagoga = {};
   pagos.forEach(p => {
