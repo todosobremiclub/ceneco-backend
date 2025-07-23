@@ -419,24 +419,32 @@ tbody tr:hover {
     }
 
     async function cargarSelectPersonasPsico() {
-      const res = await fetch('/personas', { headers: { 'Authorization': token } });
-      const personas = await res.json();
-      const select = document.getElementById('nuevo_psicopedagoga');
-      select.innerHTML = '<option value="">Seleccionar...</option>';
-      personas.filter(p => p.tipo === 'psicopedagoga').forEach(p => {
-        select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-      });
-    }
+  const res = await fetch('/personas', { headers: { 'Authorization': token } });
+  const personas = await res.json();
+  const select = document.getElementById('nuevo_psicopedagoga');
+  select.innerHTML = '<option value="">Seleccionar...</option>';
+  personas
+    .filter(p => p.tipo === 'psicopedagoga')
+    .forEach(p => {
+      const nombreCompleto = `${p.nombre} ${p.apellido}`;
+      select.innerHTML += `<option value="${nombreCompleto}">${nombreCompleto}</option>`;
+    });
+}
+
 
     async function cargarSelectPersonasSuper() {
-      const res = await fetch('/personas', { headers: { 'Authorization': token } });
-      const personas = await res.json();
-      const select = document.getElementById('nuevo_supervisora');
-      select.innerHTML = '<option value="">Seleccionar...</option>';
-      personas.filter(p => p.tipo === 'supervisora').forEach(p => {
-        select.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-      });
-    }
+  const res = await fetch('/personas', { headers: { 'Authorization': token } });
+  const personas = await res.json();
+  const select = document.getElementById('nuevo_supervisora');
+  select.innerHTML = '<option value="">Seleccionar...</option>';
+  personas
+    .filter(p => p.tipo === 'supervisora')
+    .forEach(p => {
+      const nombreCompleto = `${p.nombre} ${p.apellido}`;
+      select.innerHTML += `<option value="${nombreCompleto}">${nombreCompleto}</option>`;
+    });
+}
+
 
     async function cargarSelectObrasSociales() {
       const res = await fetch(API_OBRAS, { headers: { 'Authorization': token } });
