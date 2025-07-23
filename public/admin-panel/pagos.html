@@ -350,27 +350,8 @@
 
 
     <h2 style="margin-top: 30px;">Pagos Registrados</h2>
-    <table id="tablaPagos">
-      <thead>
-  <tr>
-    <th>ID</th>
-    <th>Paciente</th>
-    <th>Fecha</th>
-    <th>Monto Total</th>
-    <th>Monto Supervisora</th>
-    <th>Monto Supervisora 2</th> <!-- 🔔 Nueva columna -->
-    <th>Días Evaluados</th>
-    <th>Cantidad de sesiones</th>
-    <th>Obra Social</th>
-    <th>Tipo de sesión</th>
-    <th>Supervisora</th>
-    <th>Acciones</th>
-  </tr>
-</thead>
+    <table id="tablaPagos"></table>
 
-
-      <tbody></tbody>
-    </table>
   </main>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -521,8 +502,28 @@
   const pagos = await res.json();
 
   const tabla = document.getElementById('tablaPagos');
-  const oldTbodies = tabla.querySelectorAll('tbody');
-  oldTbodies.forEach(t => t.remove()); // Limpieza total antes de renderizar
+tabla.innerHTML = ''; // ✅ borra todo (thead + tbodies)
+
+// ✅ Insertar encabezado de tabla
+tabla.innerHTML = `
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Paciente</th>
+      <th>Fecha</th>
+      <th>Monto Total</th>
+      <th>Monto Supervisora</th>
+      <th>Monto Supervisora 2</th>
+      <th>Días Evaluados</th>
+      <th>Cantidad de sesiones</th>
+      <th>Obra Social</th>
+      <th>Tipo de sesión</th>
+      <th>Supervisora</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+`;
+
 
   const agrupadoPorPsicopedagoga = {};
   pagos.forEach(p => {
