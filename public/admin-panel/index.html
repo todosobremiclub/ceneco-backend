@@ -280,7 +280,7 @@ tbody tr:hover {
       <table id="pacientesTable">
         <thead>
           <tr>
-            <th>N° Paciente</th>
+            <th onclick="ordenarTabla('numero')">N° Paciente <span id="icono-orden-numero">⬍</span></th>
             <th>Nombre</th>
             <th id="sortApellido">Apellido 🔽</th>
             <th>DNI</th>
@@ -512,11 +512,38 @@ tbody tr:hover {
     document.getElementById('searchInput').addEventListener('input', aplicarFiltros);
     document.getElementById('filterPsico').addEventListener('change', aplicarFiltros);
     document.getElementById('filterSuper').addEventListener('change', aplicarFiltros);
-    document.getElementById('sortApellido').addEventListener('click', () => {
-      ordenAscendente = !ordenAscendente;
-      allPacientes.sort((a, b) => ordenAscendente ? a.apellido.localeCompare(b.apellido) : b.apellido.localeCompare(a.apellido));
-      renderizarPacientes(allPacientes);
-    });
+    let ordenActual = { campo: null, asc: true };
+
+function ordenarTabla(campo) {
+  const iconos = {
+    numero_paciente: document.getElementById('icono-orden-numero'),
+    apellido: document.getElementById('icono-orden-apellido')
+  };
+
+  // Resetear íconos
+  Object.values(iconos).forEach(el => { if (el) el.textContent = '⬍'; });
+
+  if (ordenActual.campo === campo) {
+    ordenActual.asc = !ordenActual.asc;
+  } else {
+    ordenActual = { campo, asc: true };
+  }
+
+  const icono = iconos[campo];
+  if (icono) icono.textContent = ordenActual.asc ? '▲' : '▼';
+
+  allPacientes.sort((a, b) => {
+    const valA = a[campo];
+    const valB = b[campo];
+    if (campo === 'numero_paciente') return ordenActual.asc ? valA - valB : valB - valA;
+    return ordenActual.asc
+      ? valA.localeCompare(valB)
+      : valB.localeCompare(valA);
+  });
+
+  renderizarPacientes(allPacientes);
+}
+
 
     cargarPacientes();
   </script>
