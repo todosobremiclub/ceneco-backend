@@ -515,10 +515,35 @@ tbody tr:hover {
     let ordenActual = { campo: null, asc: true };
 
 function ordenarTabla(campo) {
-  const iconos = {
-    numero_paciente: document.getElementById('icono-orden-numero'),
-    apellido: document.getElementById('icono-orden-apellido')
-  };
+  ordenAscendente = !ordenAscendente;
+  allPacientes.sort((a, b) => {
+    const valorA = a[campo] ?? '';
+    const valorB = b[campo] ?? '';
+    
+    if (campo === 'numero_paciente') {
+      return ordenAscendente
+        ? parseInt(valorA) - parseInt(valorB)
+        : parseInt(valorB) - parseInt(valorA);
+    }
+
+    return ordenAscendente
+      ? valorA.localeCompare(valorB)
+      : valorB.localeCompare(valorA);
+  });
+
+  actualizarIconosOrden(campo);
+  renderizarPacientes(allPacientes);
+}
+
+function actualizarIconosOrden(campo) {
+  document.getElementById('icono-orden-numero').innerText = campo === 'numero_paciente'
+    ? (ordenAscendente ? '▲' : '▼')
+    : '⬍';
+  document.getElementById('sortApellido').innerText = campo === 'apellido'
+    ? `Apellido ${ordenAscendente ? '▲' : '▼'}`
+    : 'Apellido ⬍';
+}
+
 
   // Resetear íconos
   Object.values(iconos).forEach(el => { if (el) el.textContent = '⬍'; });
