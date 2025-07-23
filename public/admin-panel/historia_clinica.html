@@ -157,50 +157,42 @@
     margin-bottom: 20px;
   }
 
-  @media (max-width: 768px) {
-    .sidebar { display: none; }
-    header { left: 0; width: 100%; }
-    main { margin-left: 0; padding-top: 100px; }
-  }
-
-  /* 🔔 NUEVO: achicar título h1 en el header */
-  header h1 {
-    font-size: 17px;
-    font-weight: 600;
-    color: #153E75;
-    margin: 0;
-  }
-
-.toggle-btn {
-  display: none;
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  background-color: #0b3d91;
-  color: white;
-  border: none;
-  padding: 10px 12px;
-  font-size: 18px;
-  border-radius: 4px;
-  z-index: 3001;
-}
-
-.sidebar.active {
-  display: block !important;
-}
-
-@media (max-width: 768px) {
+ @media (max-width: 768px) {
   .sidebar {
     display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 47, 108, 0.95);
+    width: 220px;
+    height: 100vh;
+    padding-top: 60px;
+    z-index: 2000;
+  }
+
+  .sidebar.active {
+    display: block !important;
   }
 
   .toggle-btn {
     display: block;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background-color: #0b3d91;
+    color: white;
+    border: none;
+    padding: 10px 12px;
+    font-size: 18px;
+    border-radius: 4px;
+    z-index: 3000;
   }
 
   header {
     left: 0;
     width: 100%;
+    padding-left: 50px;
+    z-index: 1000;
   }
 
   main {
@@ -208,6 +200,7 @@
     padding-top: 100px;
   }
 }
+
 
 
 </style>
