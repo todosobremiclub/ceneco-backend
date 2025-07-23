@@ -280,7 +280,8 @@ tbody tr:hover {
       <table id="pacientesTable">
         <thead>
           <tr>
-            <th onclick="ordenarTabla('numero')">N° Paciente <span id="icono-orden-numero">⬍</span></th>
+            <th onclick="ordenarTabla('numero_paciente')">N° Paciente <span id="icono-orden-numero">⬍</span></th>
+
 <th>Nombre</th>
 <th onclick="ordenarTabla('apellido')">Apellido <span id="icono-orden-apellido">⬍</span></th>
             <th>DNI</th>
@@ -536,12 +537,13 @@ function ordenarTabla(campo) {
 }
 
 function actualizarIconosOrden(campo) {
-  document.getElementById('icono-orden-numero').innerText = campo === 'numero_paciente'
-    ? (ordenAscendente ? '▲' : '▼')
-    : '⬍';
-  document.getElementById('sortApellido').innerText = campo === 'apellido'
-    ? `Apellido ${ordenAscendente ? '▲' : '▼'}`
-    : 'Apellido ⬍';
+  const iconoNumero = document.getElementById('icono-orden-numero');
+  const iconoApellido = document.getElementById('icono-orden-apellido');
+
+  if (iconoNumero && iconoApellido) {
+    iconoNumero.innerText = campo === 'numero_paciente' ? (ordenAscendente ? '▲' : '▼') : '⬍';
+    iconoApellido.innerText = campo === 'apellido' ? (ordenAscendente ? '▲' : '▼') : '⬍';
+  }
 }
 
 
