@@ -138,7 +138,7 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      max-width: 600px;
+      max-width: 400px;
       margin: 0 auto;
       display: none;
     }
@@ -226,6 +226,17 @@
         padding-top: 100px;
       }
     }
+
+.campo-monto {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  font-weight: 500;
+  background-color: #f9f9f9;
+  margin-bottom: 10px;
+}
+
+
   </style>
 </head>
 <body>
@@ -266,14 +277,7 @@
     <button onclick="logout()">🚪 Cerrar sesión</button>
   </div>
 
-  <header>
-    <div class="header-left">
-      <img src="logo.png" alt="Logo" class="logo-header">
-      <h1>Gestión de Pagos - Ceneco</h1>
-    </div>
-  </header>
-
-  <main>
+    <main>
   <button class="nuevo-btn" onclick="abrirFormularioPago()">+ Registrar Pago</button>
 
   <div class="form-container" id="formularioPago">
@@ -311,8 +315,11 @@
 <label>% Supervisora 2 (10%)</label>
 <div id="montoSupervisora2" class="campo-monto">$0</div>
 
-      <button type="submit">Registrar Pago</button>
-      <button type="button" onclick="cerrarFormularioPago()">Cancelar</button>
+      <div style="display: flex; gap: 10px;">
+  <button type="submit" style="background-color: #4CAF50; flex: 1;">Registrar Pago</button>
+  <button type="button" onclick="cerrarFormularioPago()" style="background-color: #aaa; flex: 1;">Cancelar</button>
+</div>
+
     </form>
   </div>
 
