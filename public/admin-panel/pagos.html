@@ -229,19 +229,7 @@
   </style>
 </head>
 <body>
-  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-
-  <div class="sidebar" id="sidebar">
-    <a href="index.html">👤 Pacientes</a>
-    <a href="historia_clinica.html">📄 Historia Clínica</a>
-    <a href="pagos.html">💰 Pagos</a>
-<a href="reportes.html">📊 Reportes</a>
-
-    <a href="configuracion.html">⚙️ Configuración</a>
-    <button onclick="logout()">Cerrar sesión</button>
-  </div>
-
-  <header>
+    <header>
     <div class="header-left">
       <img src="logo.png" alt="Logo" class="logo-header">
       <h1>Pagos - Ceneco</h1>
@@ -350,20 +338,16 @@
   sidebar.innerHTML = '';
 
   if (perfil === 'admin' || perfil === 'supervisora') {
-    sidebar.innerHTML = `
-      <a href="index.html">👥 Pacientes</a>
-      <a href="historia_clinica.html">📄 Historia Clínica</a>
-      <a href="pagos.html">💰 Pagos</a>
-      <a href="configuracion.html">⚙️ Configuración</a>
-      <button onclick="logout()">🚪 Cerrar sesión</button>
-    `;
-  } else if (perfil === 'usuario') {
-    sidebar.innerHTML = `
-      <a href="historia_clinica.html">📄 Historia Clínica</a>
-      <a href="pagos.html">💰 Pagos</a>
-      <button onclick="logout()">🚪 Cerrar sesión</button>
-    `;
-  }
+  sidebar.innerHTML = `
+    <a href="index.html">👥 Pacientes</a>
+    <a href="historia_clinica.html">📄 Historia Clínica</a>
+    <a href="pagos.html">💰 Pagos</a>
+    <a href="reportes.html">📊 Reportes</a>
+    <a href="configuracion.html">⚙️ Configuración</a>
+    <button onclick="logout()">🚪 Cerrar sesión</button>
+  `;
+}
+
 
   flatpickr("#dias", { mode: "multiple", dateFormat: "Y-m-d" });
 
