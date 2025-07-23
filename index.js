@@ -35,6 +35,9 @@ app.use('/api/pagos', pagosRoutes); // Prefijo /api/pagos para las operaciones d
 const obrasSocialesRoutes = require('./routes/obrasSociales');
 app.use('/api/obras-sociales', obrasSocialesRoutes);
 
+const reportesRoutes = require('./routes/reportes');
+app.use('/reportes', reportesRoutes);
+
 
 // Static files para admin-panel
 app.use(express.static(path.join(__dirname, 'public/admin-panel')));
@@ -49,6 +52,4 @@ app.listen(PORT, () => {
   console.log(`Servidor escuchando en puerto ${PORT}`);
 });
 
-const reportesRoutes = require('./routes/reportes');
-app.use('/reportes', reportesRoutes);
 
