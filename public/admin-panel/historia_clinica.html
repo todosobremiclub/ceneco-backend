@@ -170,11 +170,69 @@
     color: #153E75;
     margin: 0;
   }
+
+.toggle-btn {
+  display: none;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background-color: #0b3d91;
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  font-size: 18px;
+  border-radius: 4px;
+  z-index: 3001;
+}
+
+.sidebar.active {
+  display: block !important;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .toggle-btn {
+    display: block;
+  }
+
+  header {
+    left: 0;
+    width: 100%;
+  }
+
+  main {
+    margin-left: 0;
+    padding-top: 100px;
+  }
+}
+
+
 </style>
 
 
 </head>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('active');
+
+    document.addEventListener('click', function fueraDeSidebar(e) {
+      if (!sidebar.contains(e.target) && !e.target.classList.contains('toggle-btn')) {
+        sidebar.classList.remove('active');
+        document.removeEventListener('click', fueraDeSidebar);
+      }
+    });
+  }
+</script>
+
 <body>
+
+<button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
 
   <div class="sidebar" id="sidebar">
     <!-- El menú se va a construir dinámicamente -->
