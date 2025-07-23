@@ -6,204 +6,280 @@
   <title>Pagos - Ceneco</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-  body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: url('/fondo.png') no-repeat center center fixed;
-    background-size: cover;
-    color: #1a1a1a;
-  }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: url('/fondo.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #1a1a1a;
+    }
 
-  h1 {
-    font-size: 20px;
-    color: #153E75;
-    font-weight: 600;
-    margin: 0 0 0 10px;
-  }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 220px;
+      height: 100vh;
+      background-color: #0b3d91;
+      padding-top: 60px;
+      box-sizing: border-box;
+      z-index: 1000;
+    }
 
-  main {
-    margin-left: 220px;
-    padding: 80px 15px 20px 15px; /* 🔧 padding lateral reducido */
-  }
+    .sidebar a, .sidebar button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
 
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 220px;
-    height: 100vh;
-    background-color: #0b3d91;
-    padding-top: 60px;
-    box-sizing: border-box;
-    z-index: 1000;
-  }
+    .sidebar a:hover, .sidebar button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding-left: 30px;
+    }
 
-  .sidebar a, .sidebar button {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 20px;
-    color: #ffffff;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 14px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease, padding-left 0.2s ease;
-  }
+    header {
+      position: fixed;
+      top: 0;
+      left: 220px;
+      right: 0;
+      height: 60px;
+      background-color: rgba(255, 255, 255, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 500;
+      font-weight: 600;
+      font-size: 17px;
+      color: #153E75;
+    }
 
-  .sidebar a:hover, .sidebar button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding-left: 30px;
-  }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-  header {
-    position: fixed;
-    top: 0;
-    left: 220px;
-    right: 0;
-    height: 60px;
-    background-color: rgba(255, 255, 255, 0.95);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    z-index: 500;
-    font-weight: 600;
-    font-size: 17px;
-    color: #153E75;
-  }
+    .logo-header {
+      height: 30px;
+      width: auto;
+    }
 
-  .header-left {
-    display: flex;
-    align-items: center;
-  }
+    main {
+      margin-left: 220px;
+      padding: 80px 15px 20px 15px;
+    }
 
-  .logo-header {
-    height: 30px;
-    width: auto;
-    margin-right: 10px;
-  }
+    h1 {
+      font-size: 20px;
+      color: #153E75;
+      font-weight: 600;
+      margin: 0;
+    }
 
-  .form-container {
-    background: white;
-    padding: 20px 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    max-width: 600px;
-    margin: 0 auto;
-    display: none;
-  }
+    .filtros {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
 
-  .form-container h2 {
-    margin-bottom: 20px;
-    color: #153E75;
-    font-size: 18px;
-    font-weight: 600;
-  }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      font-size: 12px;
+    }
 
-  .form-container label {
-    display: block;
-    font-weight: 500;
-    margin-bottom: 5px;
-    color: #153E75;
-    font-size: 14px;
-  }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 4px;
+      text-align: left;
+      white-space: nowrap;
+    }
 
-  .form-container input, .form-container select {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-  }
+    th {
+      background-color: #f5f7fa;
+      font-weight: 600;
+      color: #0D1B2A;
+    }
 
-  /* 🔧 Mostrar divs como campos */
-  .campo-monto {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-    background-color: #f9f9f9;
-  }
+    tbody tr:hover {
+      background-color: #f0f4f8;
+    }
 
-  .form-container button {
-    padding: 10px 16px;
-    background-color: #2196F3;
-    border: none;
-    color: white;
-    border-radius: 4px;
-    font-weight: 500;
-    font-size: 14px;
-    cursor: pointer;
-    width: 100%;
-  }
+    .nuevo-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      font-size: 13px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
 
-  .form-container button:hover {
-    background-color: #1976D2;
-  }
+    .form-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 0 auto;
+      display: none;
+    }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    font-size: 12px; /* 🔧 fuente reducida para compactar */
-  }
+    .form-container h2 {
+      margin-bottom: 20px;
+      color: #153E75;
+      font-size: 18px;
+    }
 
-  th, td {
-    border: 1px solid #ddd;
-    padding: 4px; /* 🔧 padding reducido */
-    text-align: left;
-    white-space: nowrap; /* 🔧 evita saltos de línea */
-  }
+    .form-container label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 5px;
+      color: #153E75;
+      font-size: 14px;
+    }
 
-  th {
-    background-color: #f5f7fa;
-    font-weight: 600;
-    color: #0D1B2A;
-  }
+    .form-container input, .form-container select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
 
-  tbody tr:hover {
-    background-color: #f0f4f8;
-  }
+    .form-container button {
+      padding: 10px 16px;
+      background-color: #2196F3;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+    }
 
-  .nuevo-btn {
-    display: inline-block;
-    margin-bottom: 15px;
-    padding: 8px 14px;
-    background-color: #4CAF50;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
+    .form-container button:hover {
+      background-color: #1976D2;
+    }
 
-  .nuevo-btn:hover {
-    background-color: #388E3C;
-  }
-</style>
+    /* 🔽 Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
 
+      .sidebar.active {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 47, 108, 0.95);
+        width: 220px;
+        height: 100vh;
+        padding-top: 60px;
+        z-index: 2000;
+      }
+
+      .toggle-btn {
+        display: block;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background-color: #0b3d91;
+        color: white;
+        border: none;
+        padding: 10px 12px;
+        font-size: 18px;
+        border-radius: 4px;
+        z-index: 3000;
+      }
+
+      header {
+        left: 0;
+        width: 100%;
+        padding-left: 50px;
+        z-index: 1000;
+      }
+
+      main {
+        margin-left: 0;
+        padding-top: 100px;
+      }
+    }
+  </style>
 </head>
-
-<script>
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('active');
-  }
-</script>
-
 <body>
+  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
+  <div class="sidebar" id="sidebar">
+    <a href="index.html">👤 Pacientes</a>
+    <a href="historia_clinica.html">📄 Historia Clínica</a>
+    <a href="pagos.html">💰 Pagos</a>
+    <a href="configuracion.html">⚙️ Configuración</a>
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
+
+  <header>
+    <div class="header-left">
+      <img src="logo.png" alt="Logo" class="logo-header">
+      <h1>Pagos - Ceneco</h1>
+    </div>
+    <button onclick="logout()">Cerrar sesión</button>
+  </header>
+
+  <main>
+    <div class="filtros">
+      <input type="text" id="searchInput" placeholder="Buscar Apellido o DNI">
+      <select id="filterPsico">
+        <option value="">Filtrar por Psicopedagoga</option>
+      </select>
+      <select id="filterSuper">
+        <option value="">Filtrar por Supervisora</option>
+      </select>
+    </div>
+
+    <div id="pacientesContainer"></div>
+  </main>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('active');
+
+      document.addEventListener('click', function fueraDeSidebar(e) {
+        if (!sidebar.contains(e.target) && !e.target.classList.contains('toggle-btn')) {
+          sidebar.classList.remove('active');
+          document.removeEventListener('click', fueraDeSidebar);
+        }
+      });
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    }
+  </script>
+</body
 
   <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
 
