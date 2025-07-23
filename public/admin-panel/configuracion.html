@@ -174,10 +174,59 @@
       border-radius: 4px;
       display: inline-block;
     }
+
+.toggle-btn {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .sidebar.active {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 47, 108, 0.95);
+    width: 220px;
+    height: 100vh;
+    padding-top: 60px;
+    z-index: 2000;
+  }
+
+  .toggle-btn {
+    display: block;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background-color: #0b3d91;
+    color: white;
+    border: none;
+    padding: 10px 12px;
+    font-size: 18px;
+    border-radius: 4px;
+    z-index: 3000;
+  }
+
+  header {
+    left: 0;
+    width: 100%;
+    padding-left: 50px;
+    z-index: 1000;
+  }
+
+  main {
+    margin-left: 0;
+    padding-top: 100px;
+  }
+}
+
   </style>
 </head>
 <body>
-  <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+  <button class="toggle-btn" id="toggleBtn" onclick="toggleSidebar()">☰</button>
   <div class="sidebar">
     <a href="index.html">👤 Pacientes</a>
     <a href="historia_clinica.html">📄 Historia Clínica</a>
@@ -314,9 +363,17 @@
   }
 
   function toggleSidebar() {
-    const sidebar = document.querySelector('.sidebar');
-    sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
-  }
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.toggle('active');
+
+  document.addEventListener('click', function fueraDeSidebar(e) {
+    if (!sidebar.contains(e.target) && !e.target.classList.contains('toggle-btn')) {
+      sidebar.classList.remove('active');
+      document.removeEventListener('click', fueraDeSidebar);
+    }
+  });
+}
+
 
   function toggleSection(sectionId) {
     const el = document.getElementById(sectionId);
