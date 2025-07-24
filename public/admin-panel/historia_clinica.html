@@ -480,11 +480,9 @@ function mostrarFormulario(pacienteId) {
   div.style.display = 'block';
 
   const html = `
-  <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px; max-width: 600px;">
+  <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px; width: 100%;">
     <div style="display: flex; gap: 10px;">
-      <select id="tipo-${pacienteId}" onchange="toggleArchivo(${pacienteId})" style="width: 150px; padding: 6px; font-size: 14px;">
-        ${tiposRegistro.map(t => `<option value="${t.nombre}">${t.nombre}</option>`).join('')}
-      </select>
+      <select id="tipo-${pacienteId}" onchange="toggleArchivo(${pacienteId})" style="width: 150px; padding: 6px; font-size: 14px;"></select>
       <textarea id="contenido-${pacienteId}" placeholder="Escribir texto..." style="flex-grow: 1; height: 60px; resize: none; font-size: 14px;"></textarea>
     </div>
 
@@ -496,6 +494,7 @@ function mostrarFormulario(pacienteId) {
     </div>
   </div>
 `;
+
 
 
   div.innerHTML = html;
