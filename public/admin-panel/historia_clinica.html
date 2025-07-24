@@ -473,15 +473,30 @@ function editarRegistro(id, tipo, contenido, pacienteId) {
 
 function mostrarFormulario(pacienteId) {
   const div = document.getElementById(`formulario-${pacienteId}`);
+
+  // ⚠️ Si ya está renderizado, no volver a inyectar
+  if (div.innerHTML.trim()) return;
+
   div.style.display = 'block';
-  let html = `
-    <select id="tipo-${pacienteId}" onchange="toggleArchivo(${pacienteId})">
-      ${tiposRegistro.map(t => `<option value="${t.nombre}">${t.nombre}</option>`).join('')}
-    </select>
-    <textarea id="contenido-${pacienteId}" placeholder="Escribir texto..."></textarea>
-    <input type="file" id="archivo-${pacienteId}" name="archivo" style="display:none"> <!-- 🔧 fix aquí -->
-    <button onclick="guardarActividad(${pacienteId})">Guardar</button>
+
+  const html = `
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px; max-width: 500px;">
+      <div style="display: flex; gap: 10px;">
+        <select id="tipo-${pacienteId}" onchange="toggleArchivo(${pacienteId})" style="flex: 1; padding: 6px; font-size: 14px;">
+          ${tiposRegistro.map(t => `<option value="${t.nombre}">${t.nombre}</option>`).join('')}
+        </select>
+        <textarea id="contenido-${pacienteId}" placeholder="Escribir texto..." style="flex: 2; height: 60px; resize: none; font-size: 14px;"></textarea>
+      </div>
+
+      <input type="file" id="archivo-${pacienteId}" name="archivo" style="display: none; font-size: 14px;">
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button onclick="guardarActividad(${pacienteId})" style="background-color: #4CAF50; padding: 6px 12px; border: none; color: white; border-radius: 4px;">💾 Guardar</button>
+        <button onclick="cancelarActividad(${pacienteId})" style="background-color: #aaa; padding: 6px 12px; border: none; color: white; border-radius: 4px;">❌ Cancelar</button>
+      </div>
+    </div>
   `;
+
   div.innerHTML = html;
   toggleArchivo(pacienteId);
 }
@@ -537,6 +552,21 @@ async function init() {
 }
 
 init();
+
+function cancelarActividad(pacienteId) {
+  const div = document.getElementById(`formulario-${pacienteId}`);
+  
+  // Limpia el contenido
+  div.innerHTML = '';
+
+  // Oculta el formulario
+  div.style.display = 'none';
+
+  // Limpia el archivo seleccionado si quedara uno pendiente
+  const inputArchivo = document.getElementById(`archivo-${pacienteId}`);
+  if (inputArchivo) inputArchivo.value = '';
+}
+
 
   </script>
 
